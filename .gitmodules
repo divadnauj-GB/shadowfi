@@ -1,0 +1,4 @@
+[submodule "Benchmarks/Cores/stereo_vision_core"]
+	path = Benchmarks/Cores/stereo_vision_core
+	url = https://github.com/divadnauj-GB/stereo_vision_core.git
+	branch = develop

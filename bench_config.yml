@@ -1,0 +1,88 @@
+
+stereo_vision_core:
+  bench_name: stereo_vision_core
+  root_dir: Benchmarks/Cores/stereo_vision_core 
+  design_info:
+    src_path: Benchmarks/Cores/stereo_vision_core
+    src_list_files:
+    - Benchmarks/Cores/stereo_vision_core/stereo_match.v
+    top_module: stereo_match
+    output_path: Benchmarks/Cores/stereo_vision_core/sbtr   
+  testbench_info:
+    make_sim_tb: True
+    tb_path: Benchmarks/Cores/stereo_vision_core/TestBench
+    tb_list_files:
+    - Benchmarks/Cores/stereo_vision_core/TestBench/tb_stereo_match.v
+    tb_target_file: tb_stereo_match.v
+    tb_top: tb_stereo_match
+    verilator_params: "--threads 1 -j 4"
+    sim_runtime: 197000
+    make_cmd: "make -f Makefile_sbtr" #bash command
+  sim_info:
+    run_sim_args: ""
+
+
+SFU0:
+  bench_name: SFU_0 
+  design_info:
+    src_path: Benchmarks/Cores/SFU/SFU_0/src
+    inc_directories: 
+    - Benchmarks/Cores/SFU/SFU_0/src
+    top_module: sfu
+    output_path: Benchmarks/Cores/SFU/SFU_0/sbtr
+  testbench_info:
+    make_sim_tb: True
+    tb_path: Benchmarks/Cores/SFU/SFU_0/tb
+    inc_directories: 
+    - Benchmarks/Cores/SFU/SFU_0/tb
+    tb_list_files:
+    - Benchmarks/Cores/SFU/SFU_0/tb/tb_sfu.v
+    - Benchmarks/Cores/SFU/SFU_0/src/RRO/rro.v
+    tb_target_file: tb_sfu.v
+    tb_top: tb_sfu
+    verilator_params: "--threads 1 -j 8"
+    sim_runtime: 10000
+
+
+SFU1:
+  bench_name: SFU_1 
+  design_info:
+    src_path: Benchmarks/Cores/SFU/SFU_1/src
+    inc_directories: 
+    - Benchmarks/Cores/SFU/SFU_1/src
+    top_module: sfu
+    output_path: Benchmarks/Cores/SFU/SFU_1/sbtr
+  testbench_info:
+    make_sim_tb: True
+    tb_path: Benchmarks/Cores/SFU/SFU_1/tb
+    inc_directories: 
+    - Benchmarks/Cores/SFU/SFU_1/tb
+    tb_list_files:
+    - Benchmarks/Cores/SFU/SFU_1/tb/tb_sfu.v
+    tb_target_file: tb_sfu.v
+    tb_top: tb_sfu
+    verilator_params: "--threads 1 -j 8"
+    sim_runtime: 10000
+
+
+
+TCU2:
+  bench_name: TCU_2
+  design_info:
+    src_path: Benchmarks/Cores/TCU/TCU_2/src
+    inc_directories: 
+    - Benchmarks/Cores/TCU/TCU_2/src
+    top_module: sub_tensor_core
+    output_path: Benchmarks/Cores/TCU/TCU_2/sbtr
+  testbench_info:
+    make_sim_tb: True
+    tb_path: Benchmarks/Cores/TCU/TCU_2/tb
+    inc_directories: 
+    - Benchmarks/Cores/TCU/TCU_2/tb
+    tb_list_files:
+    -  Benchmarks/Cores/TCU/TCU_2/tb/tb_tcu.v
+    tb_target_file: tb_tcu.v
+    tb_top: tb_tcu
+    verilator_params: "--threads 1 -j 8"
+    sim_runtime: 10000
+    

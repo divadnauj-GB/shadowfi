@@ -1,0 +1,341 @@
+Adder32:
+  target_modules:
+  - Adder32
+
+
+
+posit_add:
+  hierarchical_component: 
+  - uut_de1@xinst_k->\$paramod\LOD_N\N=s32'00000000000000000000000000010000_sbtr  
+  - dsr2->\$paramod$1bac373892e36610c5170080d2d7c9af8c4094ae\DSR_right_N_S_sbtr
+  - uut_de1@ls->\$paramod$3252fe89cd119cf7c3ef25b9a50779b2d8d95ba3\DSR_left_N_S_sbtr
+  - dsl1->\$paramod$3252fe89cd119cf7c3ef25b9a50779b2d8d95ba3\DSR_left_N_S_sbtr
+  
+  target_modules:
+  - \$paramod$3252fe89cd119cf7c3ef25b9a50779b2d8d95ba3\DSR_left_N_S
+  - \$paramod$1bac373892e36610c5170080d2d7c9af8c4094ae\DSR_right_N_S
+  - \$paramod\LOD_N\N=s32'00000000000000000000000000010000
+
+posit_mult:
+  target_modules:
+  - posit_mult
+
+
+
+FpInvSqrt:
+  target_modules:
+  - FpInvSqrt
+
+
+boothmul:
+  hierarchical_component: 
+  - step1@myadd->Adder_sbtr 
+  - step2@myadd@fa1->fa_sbtr
+  target_modules:
+  - Adder
+  - fa
+
+
+
+core_uriscv:
+  hierarchical_component: 
+  - alu->uriscv_alu_sbtr
+  - u_branch->uriscv_branch_sbtr
+
+  target_modules:
+  - uriscv_alu
+  - uriscv_branch
+
+biriscv:
+  target_modules:
+  - riscv_core
+
+
+
+stereo_vision_core:
+  hierarchical_component: 
+  - shd@\win_l:1.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:2.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:3.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:4.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:5.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:6.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:7.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:8.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:9.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:10.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:11.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:12.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:13.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:14.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:15.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:16.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:17.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:18.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:19.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:20.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:21.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:22.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:23.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:24.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:25.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:26.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:27.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:28.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:29.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:30.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:31.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:32.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:33.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:34.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:35.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:36.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:37.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:38.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:39.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:40.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:41.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:42.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:43.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:44.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:45.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:46.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:47.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:48.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:49.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:50.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:51.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:52.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:53.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:54.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:55.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:56.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:57.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:58.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:59.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:60.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:61.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:62.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:63.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:64.suma->window_sum_13_450_7_sbtr
+  - shd@\cmp:1.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:2.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:3.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:4.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:5.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:6.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:7.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:8.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:9.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:10.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:11.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:12.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:13.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:14.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:15.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:16.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:17.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:18.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:19.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:20.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:21.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:22.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:23.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:24.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:25.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:26.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:27.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:28.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:29.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:30.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:31.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:32.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:33.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:34.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:35.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:36.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:37.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:38.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:39.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:40.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:41.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:42.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:43.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:44.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:45.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:46.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:47.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:48.comparador->disp_cmp_13_64_7_sbtr
+  - shd@\cmp:49.comparador->disp_cmp_13_64_7_sbtr
+
+  target_modules:
+  - window_sum_13_450_7
+  - disp_cmp_13_64_7
+
+
+
+
+SFU0:
+  hierarchical_component:
+  # - uquadraticinterpol@u_specialsquaringunit->squaring_17_sbtr
+  # - uexceptions->sfu_exceptions_sbtr
+
+  # - uquadraticinterpol@ufusedacctree->fused_accum_tree_sbtr
+  
+  # - uquadraticinterpol@ulookuptable->rom_29_20_14_4_7_sbtr
+  # - uquadraticinterpol@u_specialsquaringunit->squaring_17_sbtr
+
+  # - uquadraticinterpol@ulookuptable->rom_29_20_14_4_7_sbtr
+  # - uquadraticinterpol@u_specialsquaringunit->squaring_17_sbtr
+  # - uquadraticinterpol@ufusedacctree->fused_accum_tree_sbtr
+  # - uexceptions->sfu_exceptions_sbtr
+
+  - sfu -> sfu_sbtr
+  target_modules:
+  # - squaring_17
+  # - sfu_exceptions
+
+  #- fused_accum_tree
+
+  # - rom_29_20_14_4_7
+  # - squaring_17
+
+  # - rom_29_20_14_4_7
+  # - squaring_17
+  # - fused_accum_tree
+  # - sfu_exceptions
+
+  - sfu
+
+
+TCU0:
+  hierarchical_component:
+  - tc0@d_unit0@fadd0->fpadd_comb_sbtr
+  - tc0@d_unit0@fadd1->fpadd_comb_sbtr
+  - tc0@d_unit0@fadd2->fpadd_comb_sbtr
+  - tc0@d_unit0@fadd3->fpadd_comb_sbtr
+  - tc0@d_unit0@fmul0->fpmult_comb_sbtr
+  - tc0@d_unit0@fmul1->fpmult_comb_sbtr
+  - tc0@d_unit0@fmul2->fpmult_comb_sbtr
+  - tc0@d_unit0@fmul3->fpmult_comb_sbtr
+  target_modules:
+  - fpadd_comb
+  - fpmult_comb
+
+
+
+SFU1:
+  hierarchical_component:
+  - exp2_inst@addera->sum_ripple_carry_adder_7_0_sbtr
+  - exp2_inst@adderb->sum_ripple_carry_adder_7_2_sbtr
+  - exp2_inst@adderc->sum_ripple_carry_adder_5_0_sbtr
+  - exp2_inst@adderd->sum_ripple_carry_adder_23_0_sbtr
+  - exp2_inst@adderf->sum_ripple_carry_adder_25_0_sbtr
+  - exp2_inst@constants_sub->sum_ripple_carry_adder_23_0_sbtr
+  - exp2_inst@ieee32_case->exp2_ieee_16_sbtr
+  - exp2_inst@ones_complement_lshifter->ones_complement_30_sbtr
+  - exp2_inst@ones_complement_lutb->ones_complement_23_sbtr
+  - exp2_inst@ones_complement_mult->ones_complement_25_sbtr
+  - exp2_inst@ones_complement_muxa->ones_complement_23_sbtr
+  - log2_inst@adder_luta->sum_ripple_carry_adder_5_0_sbtr
+  - log2_inst@adderb->sum_ripple_carry_adder_23_0_sbtr
+  - log2_inst@adderc->sum_ripple_carry_adder_26_0_sbtr
+  - log2_inst@adderd->sum_ripple_carry_adder_7_0_sbtr
+  - log2_inst@addere->sum_ripple_carry_adder_32_0_sbtr
+  - log2_inst@adderf->sum_ripple_carry_adder_7_1_sbtr
+  - log2_inst@case_ieee32->log2_ieee_sbtr
+  - log2_inst@constants_sub->sum_ripple_carry_adder_23_0_sbtr
+  - log2_inst@ones_complement_adderc->ones_complement_32_sbtr
+  - log2_inst@ones_complement_adderd->ones_complement_7_sbtr
+  - log2_inst@ones_complement_luta->ones_complement_23_sbtr
+  - log2_inst@ones_complement_lutb->ones_complement_23_sbtr
+  - log2_inst@ones_complement_mult->ones_complement_26_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - exp2_inst@\lut64c.lut64_23b->exp2_luts_64x23b_64_sbtr
+  # - log2_inst@\lut64c.lut64_23b->log2_luts_64x23b_64_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - cordic_inst@fp_add_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_mul_x->multfp_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - cordic_inst@fp_add_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_sub_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_mul_x->multfp_sbtr
+  # - cordic_inst@fp_mul_y->multfp_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - cordic_inst@fp_add_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_sub_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_mul_x->multfp_sbtr
+  # - cordic_inst@fp_mul_y->multfp_sbtr
+  # - rsqrt_ints@sub->suma_resta_32_sbtr
+  # - rsqrt_ints@fp4->multfp_sbtr
+  # - rsqrt_ints@fp3->multfp_sbtr
+
+
+  target_modules:
+  - sum_ripple_carry_adder_7_0
+  - sum_ripple_carry_adder_7_1
+  - sum_ripple_carry_adder_7_2
+  - sum_ripple_carry_adder_5_0
+  - sum_ripple_carry_adder_23_0
+  - sum_ripple_carry_adder_25_0
+  - sum_ripple_carry_adder_26_0
+  - sum_ripple_carry_adder_32_0
+  - exp2_ieee_16
+  - log2_ieee
+  - ones_complement_30
+  - ones_complement_23
+  - ones_complement_25
+  - ones_complement_26
+  - ones_complement_32
+  - ones_complement_7
+
+  # - suma_resta_32
+  # - exp2_luts_64x23b_64
+  # - log2_luts_64x23b_64
+
+  # - suma_resta_32
+  # - multfp
+
+  # - suma_resta_32
+  # - multfp
+
+  # - suma_resta_32
+  # - multfp
+  
+TCU1:
+  hierarchical_component:
+  - tc0@d_unit0@fadd0->fpadd_comb_sbtr
+  - tc0@d_unit0@fmac0->fpfma_comb_sbtr
+  - tc0@d_unit0@fmac1->fpfma_comb_sbtr
+  - tc0@d_unit0@fmac2->fpfma_comb_sbtr
+  - tc0@d_unit0@fmul0->fpmult_comb_sbtr
+  target_modules:
+  - fpadd_comb
+  - fpmult_comb
+  - fpfma_comb
+
+
+TCU2:
+  hierarchical_component:
+  - d_unit0@adder0->fpadd_3_pipe_sbtr
+  - d_unit1@adder0->fpadd_3_pipe_sbtr
+  - d_unit2@adder0->fpadd_3_pipe_sbtr
+  - d_unit3@adder0->fpadd_3_pipe_sbtr
+  - d_unit4@adder0->fpadd_3_pipe_sbtr
+  - d_unit5@adder0->fpadd_3_pipe_sbtr
+  - d_unit6@adder0->fpadd_3_pipe_sbtr
+  - d_unit7@adder0->fpadd_3_pipe_sbtr
+  - d_unit8@adder0->fpadd_3_pipe_sbtr
+  - d_unit9@adder0->fpadd_3_pipe_sbtr
+  - d_unit10@adder0->fpadd_3_pipe_sbtr
+  - d_unit11@adder0->fpadd_3_pipe_sbtr
+  - d_unit12@adder0->fpadd_3_pipe_sbtr
+  - d_unit13@adder0->fpadd_3_pipe_sbtr
+  - d_unit14@adder0->fpadd_3_pipe_sbtr
+  - d_unit15@adder0->fpadd_3_pipe_sbtr
+  target_modules:
+  - fpadd_3_pipe
