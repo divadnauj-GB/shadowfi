@@ -1,6 +1,6 @@
-from settings import settings
+from .utils.settings import settings
 
-from shadowfi_engine import (
+from .cli.shadowfi_engine import (
     rtl_elaboration_step,
     target_extraction_and_sbrt_insertion,
     final_sbtr_instantiation,
