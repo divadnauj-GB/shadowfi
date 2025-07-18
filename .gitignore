@@ -9,6 +9,7 @@ report_detailed_SEU.csv
 S@_logs
 sbtr
 sw
+projects
 
 
 *.gz

@@ -1,0 +1,58 @@
+shadowfi_root:
+project:
+  name: 
+  root_proj_dir: 
+  bench_name: <optional list>
+  work_dir: 
+  proj_config_file:
+  design_config:
+    inc_directories: <optional list>
+    src_path: 
+    src_list_files: <optional list>
+    top_module: 
+    module_params: <optional list>   
+  testbench_config:
+    make_sim_tb: 
+    tb_path: 
+    tb_list_files: <optional list>
+    tb_target_file: 
+    tb_top: 
+    inc_directories:  <optional list>
+    tb_params: <optional list>
+    verilator_params: <optional>
+    sim_runtime: 
+    make_cmd: <optional>
+  sim_config:
+    run_sim_args: <optional>
+    max_num_faults: 10
+    jobs: 1
+  sbtr_config:
+    sbtr_dir:
+    component_selection:
+      mode:
+      hierarchical_component:
+      target_modules: 
+    fault_model: S@
+    max_num_faults: 10
+
+
+    
+
+
+
+
+# "design_info": {
+#         "inc_directories": [],
+#         "src_list_files": [],
+#         "module_params": []},
+#     "testbench_info": {
+#         "make_sim_tb": False,
+#         "inc_directories": [],
+#         "tb_list_files": [],
+#         "tb_target_file": "",
+#         "tb_top": "",
+#         "tb_params": [],
+#         "verilator_params": "--trace --trace-depth 1",
+#         "make_cmd": ""},
+#     "target_modules": [],
+#     "hierarchical_component": [], 

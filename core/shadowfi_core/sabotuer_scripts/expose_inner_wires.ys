@@ -1,0 +1,23 @@
+read_verilog -ppdump /home/juancho/Documents/GitHub/EmuFaultSim/BenchpyRTLFIv1/Benchmarks/Cores/stereo_vision_core/stereo_match.v
+#read_verilog -ppdump /home/juancho/Documents/GitHub/EmuFaultSim/BenchpyRTLFIv1/Benchmarks/Cores/stereo_vision_core/stereo_match_verilog/stereo_match.v
+hierarchy -check -top num_of_ones_7
+proc; opt; memory; opt; fsm; opt
+#techmap
+splitnets
+opt
+opt_clean -purge
+write_verilog -noattr -renameprefix N_U try.v
+delete num_of_ones_7
+
+read_verilog try.v
+read_verilog /home/EDA_tools/oss-cad-suite/share/yosys/simcells.v 
+hierarchy -top num_of_ones_7
+proc
+opt_clean -purge
+copy num_of_ones_7 num_of_ones_7_sbtr
+portlist num_of_ones_7_sbtr
+# select */x:* %n num_of_ones_7_sbtr %n %d
+# select -write selected_objects.txt
+expose -cut */x:* %n num_of_ones_7_sbtr %n %d
+portlist num_of_ones_7_sbtr
+write_verilog  -noattr  -renameprefix N_U ry.v
