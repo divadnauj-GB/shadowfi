@@ -1,0 +1,6 @@
+design_config:
+    design_root_dir: /home/juancho/Documents/GitHub/EmuFaultSim/benchmarks/Cores/SFU/SFU_1
+    inc_directories: 
+    - benchmarks/Cores/SFU/SFU_1/src
+    src_path: benchmarks/Cores/SFU/SFU_1/src
+    top_module: sfu

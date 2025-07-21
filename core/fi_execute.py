@@ -44,7 +44,7 @@ def run_simulation(config):
 
 
 
-def execute_fault_injection(config):
+def execute_fault_injection(config,args={}):
     project_name = config.get('project', {}).get('name', 'unknown')
     logging.info(f'Executing simulation for project: {project_name}')
     # Simulated logic here

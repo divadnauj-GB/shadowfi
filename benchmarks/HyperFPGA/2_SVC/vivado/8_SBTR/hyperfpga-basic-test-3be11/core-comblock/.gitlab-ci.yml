@@ -1,0 +1,23 @@
+image: ghdl/cosim:vunit-cocotb
+
+comblock:
+  stage: test
+  script:
+    - make -C testbench/comblock
+  only:
+    refs:
+      - branches
+    changes:
+      - "src/**/*"
+      - "testbench/comblock/*"
+
+axi-comblock:
+  stage: test
+  script:
+    - make -C testbench/axi_comblock
+  only:
+    refs:
+      - branches
+    changes:
+      - "src/**/*"
+      - "testbench/axi_comblock/*"

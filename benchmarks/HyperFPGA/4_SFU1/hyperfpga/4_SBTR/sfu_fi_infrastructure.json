@@ -1,0 +1,17 @@
+[
+    {
+        "index": 0,
+        "path": "cordic_inst@fp_add_y",
+        "module": "suma_resta_32"
+    },
+    {
+        "index": 1,
+        "path": "cordic_inst@exp2_inst@\\lut64c.lut64_23b",
+        "module": "exp2_luts_64x23b_64"
+    },
+    {
+        "index": 2,
+        "path": "cordic_inst@exp2_inst@log2_inst@\\lut64c.lut64_23b",
+        "module": "log2_luts_64x23b_64"
+    }
+]

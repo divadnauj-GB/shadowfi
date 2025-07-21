@@ -100,7 +100,9 @@ def inject_sabotuer(i_file, module):
                 else:
                     replace_wire_with = "temp_" + wire_name_assign.replace("\\","_")         # exp: replace "_000_" with "temp__000_"
                 line_parts = line.split("=")
-                new_line = line_parts[0].replace(wire_name_assign, replace_wire_with)+" = "+line_parts[1]  
+                lhs = line_parts[0].split()
+                lhs[1] = lhs[1].replace(wire_name_assign, replace_wire_with)
+                new_line = " ".join(lhs)+" = "+line_parts[1]  
                 file.write(new_line)          
             else:
                 if break_line!=line:

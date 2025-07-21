@@ -1,0 +1,17 @@
+testbench_config:
+    external_tb_build: False
+    external_tb_config: 
+      tb_build_cmd: 
+      - make -f Makefile_sbtr clean
+      - make -f Makefile_sbtr
+      tb_working_dir: benchmarks/Cores/SFU/SFU_1/tb
+    internal_tb_config: 
+       tb_list_files:
+        - benchmarks/Cores/SFU/SFU_1/tb/tb_sfu.v
+       tb_path: benchmarks/Cores/SFU/SFU_1/tb
+       tb_inc_directories: 
+        - benchmarks/Cores/SFU/SFU_1/tb
+       tb_working_dir: benchmarks/Cores/SFU/SFU_1/tb
+       tb_target_file: tb_sfu.v
+       tb_top: tb_sfu
+       tb_verilator_params: "--threads 1 -j 8"

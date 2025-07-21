@@ -1,0 +1,9 @@
+ignore*
+temp*
+build
+
+*.pdf
+*.pyc
+results.xml
+
+!src/comblock/doc/*.pdf

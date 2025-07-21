@@ -8,7 +8,7 @@ import os
 def cli_entry(current_project=None):
     root_dir = os.getenv('SHADOWFI_ROOT', os.path.join(os.path.dirname(os.path.abspath(__file__)),"/.."))
     setup_logger()
-    parser = argparse.ArgumentParser(description='EDA Tool CLI')
+    parser = argparse.ArgumentParser(description='SHADOWFI Tool CLI')
     subparsers = parser.add_subparsers(dest='command')
 
     create_parser = subparsers.add_parser('create')
@@ -36,6 +36,7 @@ def cli_entry(current_project=None):
     fsim_setup_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
     fsim_setup_parser.add_argument('--run-script', default=None, help='Path to the testbench configuration file')
     fsim_setup_parser.add_argument('--sdc-check-script', default=None, help='Path to the testbench configuration file')
+    fsim_setup_parser.add_argument('--set-run-scripts', default=False, action=argparse.BooleanOptionalAction, help= "enable setting any run.sh and sdc_check.sh scripts, otherwise directly provided by the user")
 
     fsim_exec_parser = subparsers.add_parser('fsim_exec')
     fsim_exec_parser.add_argument('--fsim-config', default=None, help='Path to the testbench configuration file')
@@ -74,7 +75,7 @@ def cli_entry(current_project=None):
         fi_setup.setup_fault_injection(config,args)
     elif args.command == 'fsim_exec':
         config = load_config(proj_config_file)
-        fi_execute.execute_fault_injection(config)
+        fi_execute.execute_fault_injection(config,args)
     elif args.command == 'fi_fpga_setup':
         config = load_config(proj_config_file)
         fi_fpga_setup.fpga_setup(config)
@@ -93,7 +94,7 @@ def run_all():
     root_dir = os.getenv('SHADOWFI_ROOT', os.path.join(os.path.dirname(os.path.abspath(__file__)),"/.."))
     setup_logger()
 
-    parser = argparse.ArgumentParser(description='EDA Tool CLI')
+    parser = argparse.ArgumentParser(description='SHADOWFI Tool CLI')
     subparsers = parser.add_subparsers(dest='command')
 
     create_parser = subparsers.add_parser('create')

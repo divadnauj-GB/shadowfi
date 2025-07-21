@@ -1,0 +1,12 @@
+[
+    {
+        "index": 0,
+        "path": "uexceptions",
+        "module": "sfu_exceptions"
+    },
+    {
+        "index": 1,
+        "path": "uquadraticinterpol@u_specialsquaringunit",
+        "module": "squaring_17"
+    }
+]

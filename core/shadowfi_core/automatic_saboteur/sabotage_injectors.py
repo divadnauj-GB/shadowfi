@@ -227,6 +227,10 @@ def sbtr_interconnect_sequence(list_of_components,comp_interc_list):
             children = comp["children"]
             comp_interc_list[-1]["path"] = comp_interc_list[-1]["path"] + comp["instance"] + "@"
             sbtr_interconnect_sequence(children,comp_interc_list)
+            comp_interc_list[-1]["path"] = comp_interc_list[-1]["path"].split('@')[:-2]  # Remove last module
+            comp_interc_list[-1]["path"] = '@'.join(comp_interc_list[-1]["path"]) + '@'  # Rebuild the path
+            comp_interc_list[-1]["path"] = comp_interc_list[-1]["path"][1:] if comp_interc_list[-1]["path"].startswith('@') else comp_interc_list[-1]["path"]  # Remove leading slash
+            
             
 def fi_infrastructure_interconnect_sequence(list_of_components):
     """

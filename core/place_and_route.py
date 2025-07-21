@@ -43,17 +43,20 @@ def get_list_of_instances(module_hierarchy):
     instances = []
     str_path = ""
     def get_instances_recursive(modules, instances, str_path=""):
-        for module in modules['components']:
+        for module in modules:
             if len(module['dependency']['components']) > 0:
                 str_path += f"{module['module']}@"
-                get_instances_recursive(module['dependency'], instances,str_path)
+                get_instances_recursive(module['dependency']['components'], instances,str_path)
+                str_path = str_path.split('@')[:-2]  # Remove last module
+                str_path = '@'.join(str_path) + '@'  # Rebuild the path
+                str_path = str_path[1:] if str_path.startswith('@') else str_path  # Remove leading slash
             else:
                 str_path += f"{module['module']}@"
                 instances.append([str_path[:-1],module['component']])  # Remove trailing slash
                 str_path = str_path.split('@')[:-2]  # Remove last module
                 str_path = '@'.join(str_path) + '@'  # Rebuild the path
                 str_path = str_path[1:] if str_path.startswith('@') else str_path  # Remove leading slash
-    get_instances_recursive(module_hierarchy,instances,str_path)
+    get_instances_recursive(module_hierarchy['components'],instances,str_path)
     return instances
 
 def resolve_target_modules(config):

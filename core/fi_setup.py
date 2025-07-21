@@ -199,31 +199,32 @@ def setup_fault_injection(config, args=None):
 
     os.system(f"cp {os.path.abspath(FI_DESIGN_PATH)}/{FAULT_MODEL}_{F_LIST_NAME} {WORK_DIR}")
 
-    if args.run_script:
-        src_path = args.run_script
-        run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
-        dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
-        os.system(f"mkdir -p {dest_path}")
-        os.system(f"cp {src_path} {dest_path}")
-    else:
-        src_path = os.path.join(config.get('shadowfi_root',""),"config","run.sh")
-        run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
-        dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
-        os.system(f"mkdir -p {dest_path}")
-        os.system(f"cp {src_path} {dest_path}")
+    if args.set_run_scripts:
+        if args.run_script:
+            src_path = args.run_script
+            run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
+            dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
+            os.system(f"mkdir -p {dest_path}")
+            os.system(f"cp {src_path} {dest_path}")
+        else:
+            src_path = os.path.join(config.get('shadowfi_root',""),"config","run.sh")
+            run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
+            dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
+            os.system(f"mkdir -p {dest_path}")
+            os.system(f"cp {src_path} {dest_path}")
 
-    if args.sdc_check_script:
-        src_path = args.sdc_check_script
-        run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
-        dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
-        os.system(f"mkdir -p {dest_path}")
-        os.system(f"cp {src_path} {dest_path}")
-    else:
-        src_path = os.path.join(config.get('shadowfi_root',""),"config","sdc_check.sh")
-        run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
-        dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
-        os.system(f"mkdir -p {dest_path}")
-        os.system(f"cp {src_path} {dest_path}")
+        if args.sdc_check_script:
+            src_path = args.sdc_check_script
+            run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
+            dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
+            os.system(f"mkdir -p {dest_path}")
+            os.system(f"cp {src_path} {dest_path}")
+        else:
+            src_path = os.path.join(config.get('shadowfi_root',""),"config","sdc_check.sh")
+            run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')
+            dest_path = os.path.dirname(os.path.abspath(os.path.join(dest_root_work_dir, run_script_path)))
+            os.system(f"mkdir -p {dest_path}")
+            os.system(f"cp {src_path} {dest_path}")
 
 
 
