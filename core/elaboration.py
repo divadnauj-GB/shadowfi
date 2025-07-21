@@ -39,11 +39,16 @@ def rtl_elaboration_step(config):
 
     SRC_PATH = design_config.get('src_path', '')
     TOP = design_config.get('top_module', '')
-    TOP_PARAMS = design_config.get('module_params', {})
+    TOP_PARAMS = design_config.get('module_params', [])
+    if not isinstance(TOP_PARAMS,list):
+        TOP_PARAMS=[]
     SRC_LIST_FILES = design_config.get('src_list_files', [])
+    if not isinstance(SRC_LIST_FILES,list):
+        SRC_LIST_FILES=[]
     FI_DESIGN_PATH = sbtr_config.get('sbtr_dir','') #design_info.get('output_path', '')
     SRC_INC_DIR = design_config.get('inc_directories', [])
-
+    if not isinstance(SRC_INC_DIR,list):
+        SRC_INC_DIR=[]
     conf_info = config
 
     rtl_elaboration(
@@ -70,11 +75,14 @@ def rtl_elaboration_step(config):
     )
     # TODO : Create a function to select the target components based on the hierarchy of the design
 
+    new_dest_path_rtl_elab = os.path.abspath(os.path.join(FI_DESIGN_PATH,"../src"))
+    os.system(f"cp {os.path.abspath(FI_DESIGN_PATH)}/{TOP}_rtl_elab.v {new_dest_path_rtl_elab}")
+
     return module_hierarchy, verilog_rtl_elab_code
 
 
 
-def elaborate(config):
+def elaborate(config,args=None):
     project_name = config.get('project', {}).get('name', 'unknown')
     logging.info(f'Elaborating project: {project_name}')
     # Simulated logic here

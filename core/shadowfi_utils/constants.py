@@ -1,10 +1,14 @@
 import os
 
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../"))
+SCRIPTS_PATH = os.path.join(ROOT,"core","shadowfi_core/sabotuer_scripts")
+SBTR_CELLS = os.path.join(ROOT,"core","shadowfi_core/sbtr_cells")
 
-ROOT = os.getcwd()
-SCRIPTS_PATH = os.path.abspath("FI/sabotuer_scripts")
-SBTR_CELLS = os.path.abspath("FI/sbtr_cells")
-TARGET_MODULES = os.path.abspath("Config_files/target_modules_original.yml")
+#TARGET_MODULES = os.path.abspath("Config_files/target_modules_original.yml")
+
+#SCRIPTS_PATH = os.path.abspath("core/shadowfi_core/sabotuer_scripts")
+#SBTR_CELLS = os.path.abspath("core/shadowfi_core/sbtr_cells")
+#TARGET_MODULES = os.path.abspath("Config_files/target_modules_original.yml")
 
 F_LIST_NAME = "fault_list.csv"
 F_SIM_REPORT = "fsim_report.csv"

@@ -1,0 +1,17 @@
+testbench_config:
+    external_tb_build: False
+    external_tb_config: 
+      tb_build_cmd: 
+      - make -f Makefile_sbtr clean
+      - make -f Makefile_sbtr
+      tb_working_dir: benchmarks/Cores/TCU/TCU_2/tb
+    internal_tb_config: 
+       tb_list_files:
+       -  benchmarks/Cores/TCU/TCU_2/tb/tb_tcu.v
+       tb_path: benchmarks/Cores/TCU/TCU_2/tb
+       tb_inc_directories: 
+        - benchmarks/Cores/TCU/TCU_2/tb
+       tb_working_dir: benchmarks/Cores/TCU/TCU_2/tb
+       tb_target_file: tb_tcu.v
+       tb_top: tb_tcu
+       tb_verilator_params: "--threads 1 -j 8"

@@ -1,0 +1,15 @@
+testbench_config:
+    external_tb_build: False
+    external_tb_config: 
+      tb_build_cmd: 
+      - make -f Makefile_sbtr clean
+      - make -f Makefile_sbtr
+      tb_working_dir: benchmarks/Cores/stereo_vision_core/TestBench
+    internal_tb_config: 
+       tb_list_files:
+       - benchmarks/Cores/stereo_vision_core/TestBench/tb_stereo_match.v
+       tb_path: benchmarks/Cores/stereo_vision_core/TestBench
+       tb_working_dir: benchmarks/Cores/stereo_vision_core/TestBench
+       tb_target_file: tb_stereo_match.v
+       tb_top: tb_stereo_match
+       tb_verilator_params: --threads 1 -j 4

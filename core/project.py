@@ -5,7 +5,7 @@ import yaml
 import logging
 from utils.config_loader import load_config,save_config
 
-def create_project(project_name, base_dir='projects', template_config='config/project_config.yaml'):
+def create_project(project_name, base_dir='projects', template_config='config/project_config.yaml', design_config=None):
     project_path = os.path.join(base_dir, project_name)
     os.makedirs(project_path, exist_ok=True)
     os.makedirs(os.path.join(project_path, 'src'), exist_ok=True)
@@ -24,6 +24,16 @@ def create_project(project_name, base_dir='projects', template_config='config/pr
         project_config['project']["work_dir"] = os.path.join(project_path, 'work')
         project_config['project']["sbtr_config"]["sbtr_dir"] = os.path.join(project_path, 'sbtr')
         project_config['project']["proj_config_file"] = config_dst
+        if design_config:
+            if os.path.exists(design_config):
+                design_config_data=load_config(design_config)
+                if isinstance(design_config_data, dict):
+                    design_config_data = design_config_data.get('design_config', {})
+                else:
+                    logging.warning(f'Design config file {design_config} does not contain a valid dictionary.')
+                project_config['project']["design_config"] = design_config_data
+            else:
+                logging.warning(f'Design config file not found: {design_config}')
         save_config(project_config, config_dst)
         
     else:

@@ -22,6 +22,16 @@ apt --assume-yes install cmake
 apt --assume-yes install wget
 apt --assume-yes install git
 
+apt --assume-yes install clang
+apt --assume-yes install llvm 
+apt --assume-yes install libmpc-dev
+apt --assume-yes install ninja-build
+apt --assume-yes install libelf-dev help2man zlib1g zlib1g-dev libfl-dev libfl2 flex
+# linux-headers-$(uname -r) 
+apt --assume-yes install linux-headers-generic
+apt --assume-yes install texinfo
+
+
 # apt-get -y update
 # apt-get -y install build-essential python3.11 git libgmp3-dev libmpfr-dev
 # apt-get -y install autoconf automake libtool
@@ -58,7 +68,7 @@ echo "conda activate SHADOWFI" >> $SINGULARITY_ENVIRONMENT
 
 %runscript
 # Script to run when executing environment
-
+python eda_shell.py "$@"
 
 %startscript
 # Script to run when executing as instance
@@ -70,7 +80,7 @@ echo "conda activate SHADOWFI" >> $SINGULARITY_ENVIRONMENT
 %files
 # Files to copy from the host system.
 ./oss-cad-suite /usr/local/oss-cad-suite
-./requirements /usr/local/miniconda3/
+../requirements /usr/local/miniconda3/
 
 
 %environment

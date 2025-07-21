@@ -1,0 +1,45 @@
+sim_config:
+  jobs: 10
+  workers: 10
+  sim_runtime: 197000
+  max_num_faults: 1
+  work_sim_root_dir: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/benchmarks/Cores/stereo_vision_core
+  work_sim_dir: ./TestBench
+  tb_build_dir: ./TestBench/obj_dir
+  tb_run_info:
+    tb_run_script: ./TestBench/run.sh
+    tb_run_args: ''
+    tb_run_timeout: 1000
+    tb_run_env_vars: 
+      - SHADOWFI_LD_PRELOAD=benchmarks/Cores/stereo_vision_core/TestBench/obj
+  tb_sdc_check_info:
+    tb_sdc_check_script: ./TestBench/sdc_check.sh
+    tb_sdc_check_args: ''
+    tb_sdc_check_env_vars: 
+      - SHADOWFI_LD_PRELOAD=benchmarks/Cores/stereo_vision_core/TestBench/obj
+  tb_test_app_info:
+    test_app: test_app
+    test_app_args: ''
+    test_app_env_vars: 
+      - SHADOWFI_LD_PRELOAD=benchmarks/Cores/stereo_vision_core/TestBench/obj_dir
+    test_app_dirs: 
+      - ./dataset
+    test_app_files: 
+      - ./scripts/Image_input_test.py
+      - ./scripts/Image_result_test.py
+      - ./run_stereo_simulation_tb.py
+  slurm:
+    account: emufaultsim
+    partition: emufaultsim
+    qos: emufaultsim
+    time: 00:10:00
+    nodes: 1
+    tasks_per_node: 1
+    cpus_per_task: 1
+    mem: 4G
+    job_name: stereo_vision_core_sim
+    output: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/projects/stereo_vision_core/work/sim/slurm-%j.out
+    error: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/projects/stereo_vision_core/work/sim/slurm-%j.err
+  
+    
+  

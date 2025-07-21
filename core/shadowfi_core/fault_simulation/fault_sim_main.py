@@ -5,8 +5,12 @@ import shutil
 import json
 import multiprocessing as mp
 import itertools
+import logging
+
+from core.shadowfi_utils.constants import ROOT
 
 def run_cmd(cmd):
+    logging.info(f"Running command: {cmd}")
     pr = subprocess.Popen(cmd, shell=True, executable="/bin/bash", preexec_fn=os.setsid)
     wait = True
     while wait:
@@ -59,13 +63,25 @@ def create_fault_descriptor(fi_structure):
                 file.write(f"{0}\n")
 
 
-def fault_classification(fi_structure, FAULT_MODEL):
+def fault_classification(work_dir, fi_structure, fi_config={}):
     component = fi_structure["component"]
     bit_pos = fi_structure["bit_pos"]
     fault_model = fi_structure["f_model"]
-    bit_pos = fi_structure["bit_pos"]
 
-    run_cmd("bash sdc_check.sh")
+    f_model_str = fi_config.get('project',{}).get('sbtr_config').get('fault_model',"S@")
+
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+
+    tb_sdc_check_ags = sim_config.get('tb_sdc_check_info', {}).get('tb_sdc_check_args', '')
+    tb_sdc_check_env_vars = sim_config.get('tb_sdc_check_info', {}).get('tb_sdc_check_env_vars', [])
+    if not isinstance(tb_sdc_check_env_vars, list):
+        tb_sdc_check_env_vars = []
+    tb_run_env_vars_str = " ".join([f"export {var};" for var in tb_sdc_check_env_vars])
+    tb_sdc_check_script = sim_config.get('tb_sdc_check_info',{}).get('tb_sdc_check_script', 'sdc_check.sh')
+
+    tb_sdc_check_script_path = os.path.abspath(os.path.join(work_dir,tb_sdc_check_script))
+
+    run_cmd(f"{tb_run_env_vars_str} bash {tb_sdc_check_script_path} {tb_sdc_check_ags}")
     res_message = "Masked"
     if os.path.getsize("logs/special_check.log") == 0:
         res_message = "Masked"
@@ -76,17 +92,28 @@ def fault_classification(fi_structure, FAULT_MODEL):
         shutil.rmtree(tmp_dir, True)
         os.system(f"mv logs {tmp_dir}")
         shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
-        os.system(f"mv *.gz {FAULT_MODEL}_logs/")
+        os.system(f"mv *.gz {f_model_str}_logs/")
         shutil.rmtree(tmp_dir, True)
 
     return res_message
 
 
-def run_fault_free_simulation(WORK_DIR,fi_config={}):
-    fault_model = fi_config.get("FAULT_MODEL","S@")
-    num_target_components = fi_config.get("NUM_TARGET_COMPONENTS", 1)
-    total_bit_shift = fi_config.get("TOTAL_BIT_SHIFT", 0)
-    args = fi_config.get("ARGS", "")
+def run_fault_free_simulation(work_dir,fi_config={}):
+    sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+
+    fault_model = sbtr_config.get('fault_model', 'S@')
+    num_target_components = int(sim_config.get('num_target_components', 0))
+    total_bit_shift = int(sim_config.get('total_bit_shift', 0))
+    tb_run_ags = sim_config.get('tb_run_info', {}).get('tb_run_args', '')
+    tb_run_env_vars = sim_config.get('tb_run_info', {}).get('tb_run_env_vars', [])
+    if not isinstance(tb_run_env_vars, list):
+        tb_run_env_vars = []
+    tb_run_env_vars_str = " ".join([f"export {var};" for var in tb_run_env_vars])
+    tb_run_script = sim_config.get('tb_run_info',{}).get('tb_run_script', 'run.sh')
+
+    tb_run_script_path = os.path.abspath(os.path.join(work_dir, tb_run_script))
+
     fi_structure = {
         "modules": num_target_components,  # 
         "sr_lenght": total_bit_shift,  # 
@@ -97,34 +124,59 @@ def run_fault_free_simulation(WORK_DIR,fi_config={}):
         "bit_pos": 0,
         "seu_time": 0,
     }
-    os.chdir(WORK_DIR)
+
+    work_sim_dir = sim_config.get('work_sim_dir', '')
+    golden_work_dir = os.path.abspath(os.path.join(work_dir,work_sim_dir))
+
+    os.chdir(golden_work_dir)
     os.system(f"rm -r {fault_model}_logs")
     os.system(f"mkdir -p {fault_model}_logs")
     create_fault_descriptor(fi_structure)  # all disabled
-    run_cmd(f"export GOLDEN=1; bash run.sh {args}" )
+    run_cmd(f"export GOLDEN=1; {tb_run_env_vars_str} bash {tb_run_script_path} {tb_run_ags}" )
+    
+    root_dir = fi_config.get('shadowfi_root',"")
+    os.chdir(root_dir)
     return
 
 
-def run_one_injection_job(fi_structure, fi_config={}):
-    fault_model = fi_config.get("FAULT_MODEL","S@")
-    args = fi_config.get("ARGS", "")
+def run_one_injection_job(work_dir, fi_structure, fi_config={}):
+    sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+
+    fault_model = sbtr_config.get('fault_model', 'S@')
+    tb_run_ags = sim_config.get('tb_run_info', {}).get('tb_run_args', '')
+    tb_run_env_vars = sim_config.get('tb_run_info', {}).get('tb_run_env_vars', [])
+    if not isinstance(tb_run_env_vars, list):
+        tb_run_env_vars = []
+    tb_run_env_vars_str = " ".join([f"export {var};" for var in tb_run_env_vars])
+    tb_run_script = sim_config.get('tb_run_info',{}).get('tb_run_script', 'run.sh')
+
+    tb_run_script_path = os.path.abspath(os.path.join(work_dir,tb_run_script))
+
     create_fault_descriptor(fi_structure)
     os.system(f"mkdir -p logs")
-    run_cmd(f"bash run.sh {args}")
-    fault_class = fault_classification(fi_structure, fault_model)
+    run_cmd(f"{tb_run_env_vars_str} bash {tb_run_script_path} {tb_run_ags}")
+    fault_class = fault_classification(work_dir,fi_structure, fi_config=fi_config)
     return fault_class
 
 
 
-def run_one_job_fault_simulation(WORK_DIR, fi_config={}):
-    fault_list_name= fi_config.get("FAULT_LIST_NAME", "fault_list.txt")
-    fault_model = fi_config.get("FAULT_MODEL","S@")
-    F_sim_report = fi_config.get("F_SIM_REPORT", "simulation_report.csv")
-    max_num_inj = fi_config.get("MAX_NUM_INJ", -1)
-    num_target_components = fi_config.get("NUM_TARGET_COMPONENTS", 1)
-    total_bit_shift = fi_config.get("TOTAL_BIT_SHIFT", 0)
+def run_one_job_fault_simulation(work_dir, fi_config={}):
+    sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+
+    fault_list_name = fi_config.get('project', {}).get('fault_list_name', 'fault_list.csv')
+    fault_model = sbtr_config.get('fault_model', 'S@')
+    fault_list_name = f"{fault_model}_{fault_list_name}"
+    F_sim_report = fi_config.get('project', {}).get('fault_sim_report', 'fsim_report.csv')
+    max_num_inj = sim_config.get('max_num_faults', -1)
+    num_target_components = int(sim_config.get('num_target_components', 0))
+    total_bit_shift = int(sim_config.get('total_bit_shift', 0))
     
-    os.chdir(WORK_DIR)
+    work_sim_dir = sim_config.get('work_sim_dir', '')
+    work_path_dir = os.path.abspath(os.path.join(work_dir,work_sim_dir))
+
+    os.chdir(work_path_dir)
     with open(fault_list_name, "r") as f:
         fault_list = f.readlines()
     if len(fault_list) > 0:
@@ -155,7 +207,7 @@ def run_one_job_fault_simulation(WORK_DIR, fi_config={}):
         fi_structure["bit_pos"] = int(fault_info[5])
         fi_structure["f_model"] = int(fault_info[6])
         fi_structure["seu_time"] = int(fault_info[7])
-        result_sim = run_one_injection_job(fi_structure, fi_config)
+        result_sim = run_one_injection_job(work_dir, fi_structure, fi_config)
         if result_sim == "Masked":
             masked += 1
         else:
@@ -168,25 +220,39 @@ def run_one_job_fault_simulation(WORK_DIR, fi_config={}):
 
     print(f"SDC: {sdc_count}, Masked: {masked}")
     save_file(f"{fault_model}_{F_sim_report}", "w", simulation_report)
+    root_dir = fi_config.get('shadowfi_root',"")
+    os.chdir(root_dir)
 
 
-def run_fault_simulation(WORK_DIR, fi_config={}):
-    if WORK_DIR[-1] == "/":
-        work_dir_clean = WORK_DIR[:-1]
-    else:
-        work_dir_clean = WORK_DIR
-        
-    fault_list_name= fi_config.get("FAULT_LIST_NAME", "fault_list.txt")
-    fault_model = fi_config.get("FAULT_MODEL","S@")
-    F_sim_report = fi_config.get("F_SIM_REPORT", "simulation_report.csv")
-    num_jobs = fi_config.get("JOBS", 1)
-    num_workers = fi_config.get("WORKERS", 10)
+def run_fault_simulation(work_dir, fi_config={}):
+    #if WORK_DIR[-1] == "/":
+    #    work_dir_clean = WORK_DIR[:-1]
+    #else:
+    #    work_dir_clean = WORK_DIR
     
+    sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+    fault_list_name = fi_config.get('project', {}).get('fault_list_name', 'fault_list.csv')
+    fault_model = sbtr_config.get('fault_model', 'S@')
+    fault_list_name = f"{fault_model}_{fault_list_name}"
+
+    F_sim_report = fi_config.get('project', {}).get('fault_sim_report', 'fsim_report.csv')
+    num_jobs = sim_config.get('jobs', 1)
+    num_workers = sim_config.get('workers', 10)
+    work_sim_dir = sim_config.get('work_sim_dir', '')
+
+    work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
+    src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean,work_sim_dir))
+    #work_dir_rel = work_dir_clean.split("/")[-1]
+    work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
+    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,".parsims"))
+    os.system(f"rm -r {parallel_sims_path}")
+    os.system(f"mkdir -p {parallel_sims_path}")
     # check if multiple jobs are required
     if num_jobs > 1:
         # read the fault list
         fault_list_job = []
-        with open(f"{os.path.abspath(work_dir_clean)}/{fault_list_name}", "r") as f:
+        with open(f"{os.path.abspath(src_work_path_dir)}/{fault_list_name}", "r") as f:
             fault_list = f.readlines()
             if len(fault_list) == 0:
                 print("No fault list found")
@@ -195,16 +261,13 @@ def run_fault_simulation(WORK_DIR, fi_config={}):
                 fault_list_job = [fault_list[job_id::num_jobs] for job_id in range(num_jobs)]
         
         # create hidden work directories       
-        
-        work_dir_rel = work_dir_clean.split("/")[-1]
-        parallel_sims_path = work_dir_clean.replace(work_dir_rel, ".parsims")      
-        os.system(f"mkdir -p {parallel_sims_path}")
         list_work_dir = []
         for job_id in range(num_jobs):
-            new_work_dir = f"{parallel_sims_path}/.job{job_id}"
+            new_work_dir = os.path.abspath(f"{parallel_sims_path}/.job{job_id}")
             list_work_dir.append(new_work_dir)
             os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
-            save_file(f"{os.path.abspath(new_work_dir)}/{fault_list_name}", "w", fault_list_job[job_id])
+            new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
+            save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_job[job_id])
             
         # run the jobs
         with mp.Pool(processes=num_workers) as pool:
@@ -213,10 +276,11 @@ def run_fault_simulation(WORK_DIR, fi_config={}):
             pool.join()
            
         # merge the results
-        os.system(f"echo  > {os.path.abspath(work_dir_clean)}/{fault_model}_{F_sim_report}")
+        os.system(f"echo  > {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
         for job_work_dir in list_work_dir:
-            os.system(f"cat {job_work_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(work_dir_clean)}/{fault_model}_{F_sim_report}")
-            os.system(f"cp -rf {job_work_dir}/{fault_model}_logs {os.path.abspath(work_dir_clean)}")
+            new_work_sim_dir = os.path.abspath(os.path.join(job_work_dir, work_sim_dir))
+            os.system(f"cat {new_work_sim_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+            os.system(f"cp -rf {new_work_sim_dir}/{fault_model}_logs {os.path.abspath(src_work_path_dir)}")
             os.system(f"rm -r {job_work_dir}")
             print(f"rm -r {job_work_dir}")
         os.system(f"rm -r {parallel_sims_path}")
@@ -224,8 +288,20 @@ def run_fault_simulation(WORK_DIR, fi_config={}):
 
     else:
         # run the fault simulation in one job
-        run_one_job_fault_simulation(WORK_DIR, fi_config)
+        new_work_dir = os.path.abspath(f"{parallel_sims_path}/.job0")
+        os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
+        run_one_job_fault_simulation(new_work_dir, fi_config)
+        new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
+        os.system(f"echo  > {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+        os.system(f"cat {new_work_sim_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+        os.system(f"cp -rf {new_work_sim_dir}/{fault_model}_logs {os.path.abspath(src_work_path_dir)}")
+        os.system(f"rm -r {new_work_dir}")
+        os.system(f"rm -r {parallel_sims_path}")
         print("Fault simulation finished")
+
+    logs_path_dir = os.path.abspath(os.path.join(work_dir_rel,"logs"))
+    os.system(f"cp -r {src_work_path_dir}/*_logs {logs_path_dir}")
+    os.system(f"cp {src_work_path_dir}/*.csv {logs_path_dir}")
     return
     ...
     

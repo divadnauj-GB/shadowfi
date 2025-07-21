@@ -118,9 +118,15 @@ def target_extraction_and_sbrt_insertion(config):
 
     TOP = design_config.get('top_module', '')
     SRC_LIST_FILES = design_config.get('src_list_files', [])
+    if not isinstance(SRC_LIST_FILES,list):
+        SRC_LIST_FILES=[]
     MODULES = sbtr_config.get('component_selection',{}).get('target_modules',[]) 
+    if not isinstance(MODULES,list):
+        MODULES=[]
     FI_DESIGN_PATH = sbtr_config.get('sbtr_dir','') #design_info.get('output_path', '')
     SRC_INC_DIR = design_config.get('inc_directories', [])
+    if not isinstance(SRC_INC_DIR,list):
+        SRC_INC_DIR=[]
     FAULT_MODEL = sbtr_config.get('fault_model', 'S@')
 
     if FAULT_MODEL in ["S@", "SET"]:
@@ -188,6 +194,8 @@ def final_sbtr_instantiation(config, module_hierarchy, verilog_rtl_elab_code):
 
     TOP = design_config.get('top_module', '')
     SELECTED_INSTANCE_PATHS = sbtr_config.get('component_selection', {}).get('hierarchical_component', [])
+    if not isinstance(SELECTED_INSTANCE_PATHS,list):
+        SELECTED_INSTANCE_PATHS=[]
     SBTR_CELLS = os.path.join(config.get('shadowfi_root', "./"),"core/shadowfi_core/sbtr_cells")
     FI_DESIGN_PATH = sbtr_config.get('sbtr_dir','') #design_info.get('output_path', '')
 
@@ -227,7 +235,7 @@ def final_sbtr_instantiation(config, module_hierarchy, verilog_rtl_elab_code):
         write_verilog_file(f"{os.path.abspath(FI_DESIGN_PATH)}/{TOP}_fi_sbtr.v", verilog_rtl_elab_code)
     
 
-    #os.system(f"rm {os.path.abspath(FI_DESIGN_PATH)}/{TOP}_rtl_elab.v")
+    os.system(f"rm {os.path.abspath(FI_DESIGN_PATH)}/{TOP}_rtl_elab.v")
     os.system(f"cp {SBTR_CELLS}/basic_sabotuer.v {os.path.abspath(FI_DESIGN_PATH)}/ ")
     os.system(f"cp {SBTR_CELLS}/super_sabouter.v {os.path.abspath(FI_DESIGN_PATH)}/ ")
     os.system(f"cp {SBTR_CELLS}/shift_register.v {os.path.abspath(FI_DESIGN_PATH)}/ ")
@@ -253,10 +261,10 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
     testbench_config = config.get('project',{}).get('testbench_config', {})
 
     TOP = design_config.get('top_module', '')
-    TB_PATH = testbench_config.get('tb_path', '')
     WORK_DIR = config.get('project', {}).get('work_dir', '')
-    MAX_TB_RUN_TIME = testbench_config.get('sim_runtime', 1000)
+    #MAX_TB_RUN_TIME = testbench_config.get('sim_runtime', 1000)
     FAULT_MODEL = sbtr_config.get('fault_model', 'S@')
+    FI_DESIGN_PATH = sbtr_config.get('sbtr_dir','')
 
     if FAULT_MODEL in ["S@", "SET"]:
         TYPE_SABOTEUR = "SABOTUER"
@@ -277,14 +285,14 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
     start_bit_pos=0
     num_target_components=0
     total_bit_shift=0
-    with open(f"{os.path.abspath(WORK_DIR)}/{FAULT_MODEL}_{F_LIST_NAME}", "w") as fp:
+    with open(f"{os.path.abspath(FI_DESIGN_PATH)}/{FAULT_MODEL}_{F_LIST_NAME}", "w") as fp:
         List_injections=[]
 
         if len(fi_infrastructure_system) == 0:
             end_bit_pos = (start_bit_pos + faults_per_module[TOP] + 2) 
             for fault_index in range(faults_per_module[TOP]):
                 for ftype in F_CNTRL:
-                    seutime = random.randint(1, MAX_TB_RUN_TIME)
+                    seutime = 0
                     List_injections.append([0, TOP, TOP, start_bit_pos, end_bit_pos, fault_index, ftype, seutime])
                     fp.write(f"{0},{TOP},{TOP},{start_bit_pos},{end_bit_pos},{fault_index},{ftype},{seutime}\n")
             start_bit_pos = start_bit_pos + faults_per_module[TOP] + 2
@@ -293,7 +301,7 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
                 end_bit_pos = (start_bit_pos + faults_per_module[module] + 2) 
                 for fault_index in range(faults_per_module[module]):
                     for ftype in F_CNTRL:
-                        seutime = random.randint(1, MAX_TB_RUN_TIME)
+                        seutime = 0
                         List_injections.append([idx, inst, module, start_bit_pos, end_bit_pos, fault_index, ftype, seutime])
                         fp.write(f"{idx},{inst},{module},{start_bit_pos},{end_bit_pos},{fault_index},{ftype},{seutime}\n")
                 start_bit_pos = start_bit_pos + faults_per_module[module] + 2
@@ -315,7 +323,12 @@ def run_pnr(config,args=None):
 
     design_config = config.get('project',{}).get('design_config', {})
     sbtr_config = config.get('project', {}).get('sbtr_config', {})
+    path_rtl_elab = os.path.abspath(os.path.join(sbtr_config['sbtr_dir'],"../src"))
+    os.system(f"cp {path_rtl_elab}/{design_config['top_module']}_rtl_elab.v {sbtr_config['sbtr_dir']}")
+
     file_name = f"{sbtr_config['sbtr_dir']}/{design_config['top_module']}_rtl_elab.v"
+    
+
     verilog_rtl_elab_code = read_verilog_file(
         file_name
     )
