@@ -43,7 +43,7 @@ def create_project(project_name, base_dir='projects', template_config='config/pr
 
 
 def load_project_config(project_dir):
-    config_path = os.path.join(project_dir, 'config.yaml')
+    config_path = os.path.abspath(os.path.join(project_dir, 'config.yaml'))
     if not os.path.exists(config_path):
         logging.error(f'Config file not found in {project_dir}')
         return None

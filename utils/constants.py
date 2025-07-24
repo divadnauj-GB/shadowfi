@@ -38,11 +38,14 @@ pnr_help_str = """
 ############################################################################################
 Help for pnr comand
 Places and routes the saboteur circuits in the desgn
-Syntax: pnr [--cmp-sel <opt>] [--fault-model <opt>] [--fault-sampling <opt>]
+Syntax: pnr [--cmp-sel <opt> --user-cmp-sel <config yaml file> --max-sel-cmp <num> ] 
+            [--fault-model <opt>] [--fault-sampling <opt>]
 --cmp-sel: Indicates the insertion mode of saboteurs: opts = [random, top, hierarchy]; default=random
          random: random selection of components across the design hierarchy
+         --max-sel-cmp: Maximum number of intrumented components, default: 4
          top: fatten the complete design and select the top component as fault insertion target
          hierarchy: explicit component selection provided by the user
+         --user-cmp-sel: A yaml file containing the selected target components for fault instrumentation
 --fault-model: Indicates the fault model. opts = [S@, SET, SEU, MEU], default: S@
          S@: stuck-at fault model
          SET: Single Event Transient
