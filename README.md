@@ -36,15 +36,15 @@ git submodule update --init --recursive
 3. Download the prebuild singuarity image with all dependencies
 
 ```bash
-cd sif
-wget the image
-cd -
+singularity pull  --arch amd64 library://divadnauj-gb/shadowfi/shadowfi:v1
 ```
 4. Run SHADOWFI in CLI mode
 ```bash
-singularty run sif/shadowfi.sif
+singularty run shadowfi_v1.sif
+# the following prompt will appear
+Welcome to the SHADOWFI Tool shell. Type help or ? to list commands.
+Shadowfi> 
 ```
-
 
 #### Option 2: Custom instalation
 1. Clone the SHADOWFI repository
@@ -67,7 +67,7 @@ echo "${PWD}/oss-cad-suite/bin" >> ~/.bashrc
 cd -
 ```
 
-3. Create a conda environmet with the necesary packages
+3. Create a conda environmet with all the necesary packages
 
 ```bash
 conda create -n SHADOWFI python=3.11
@@ -79,6 +79,10 @@ pip install -r requirements
 ```bash
 conda activate SHADOWFI
 python shadowfi_shell.py 
+
+# the following prompt will appear
+Welcome to the SHADOWFI Tool shell. Type help or ? to list commands.
+Shadowfi> 
 ```
 
 #### Option3: Build your own singularity container
@@ -89,21 +93,21 @@ git clone https://github.com/divadnauj-GB/shadowfi.git
 cd shadowfi
 git submodule update --init --recursive
 ```
-2. Download OSS CAD Suite and build the singularity image
+2. Build the singularity image: 
+For a different OSS CAD Suite version please modify the oss-cad-link and version on the shadowfi.def file
 
 ```bash
-cd sif
-wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2024-11-17/oss-cad-suite-linux-x64-20241117.tgz
-# uncompress into the current directory
-tar -xvzf oss-cad-suite-linux-x64-20241117.tgz
-# build the singularity image
+# This automatically download and integrate OSS CAD on the image
+# For a different OSS CAD Suite version please modify the download link on the shadowfi.def file
 sudo singularity build shadowfi.sif shadowfi.def
-cd -
 ```
 
 3. Run SHADOWFI in CLI mode
 ```bash
-singularty run sif/shadowfi.sif
+singularty run shadowfi.sif
+# the following prompt will appear
+Welcome to the SHADOWFI Tool shell. Type help or ? to list commands.
+Shadowfi> 
 ```
 
 ### Executing the first Fault Injection Campaign
