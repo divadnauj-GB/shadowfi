@@ -1,34 +1,110 @@
-# shadowfi
-SHADOWFI is an open source fault injection framework that leverages hyperscale computing to speed up the fault evalaution tasks. 
+# SHADOWFI
+SHADOWFI is an emulation-based fault injection framework for fault chareacterization and reliability assesemnt of hardware designs.  SHADOWFI leverages the acceleration capabilities of hiperscale infrastructures providing support for executing long fault injection tasks in both High Performance Computing (HPC) and FPGA hiperscaler systems. 
 
-## Getting Statarted with Shadowfi
+SHADOWFI implments fault instrumentation by inserting saboteur circuits directly on syntesizable HDL designs. This instrumentation is applied automatically based on user configurations, providing flexibility regarding the target components or hardware structures subject of evaluation. 
 
-### Prerequisites
-- 
+SHADOWFI provides both a CLI and GUI interfaces to automate the configuration and setup of the fault injection campaigns. SHADOWFI incorporates two main workflows. The simulation workflow is mainly dedicated for executing fault injection workloads on HPC systems, whereas the emulation workflow accelerates the fault injection taks by using FPGA hiperscale systems.  
 
+## Host System Requirements
+- linux X64
+- gcc >= 10
+- g++ >= 10
+- Clang
+- llvm
+- ninja-build
+- Singularity >= 3.10.5
+- OSS CAD Suite >= 20241117 or superior
+- Anaconda / Miniconda
+- Python >=3.11
+- Vivado v2022.2 (For HyperFPGA binaries generation)
 
-### local instalation 
+## Getting Statarted with SHADOWFI on a local machine
+This guide shows the basic steps for install and use SHADOWFI. You can follow any of the following procedures.
 
-#### Install OSS CAD SUITE
--
+### Instalation procedure
 
+#### Option 1: Use a prebuild singularity container
+1. Install singularity on your machine or ensure that singularity is already installed in your system. Follow the indications presented in this link [https://docs.sylabs.io/guides/3.5/user-guide/quick_start.html. ] 
 
-## local instalation
+2. Clone the SHADOWFI repository
 
-
-## Build your singularity container
-
-Clone oss-cad-suite into the `sif` directory
-
+```bash
+git clone https://github.com/divadnauj-GB/shadowfi.git
+cd shadowfi
+git submodule update --init --recursive
 ```
+3. Download the prebuild singuarity image with all dependencies
+
+```bash
 cd sif
-# download the oss-cad suit 20241117 release 
+wget the image
+cd -
+```
+4. Run SHADOWFI in CLI mode
+```bash
+singularty run sif/shadowfi.sif
+```
+
+
+#### Option 2: Custom instalation
+1. Clone the SHADOWFI repository
+
+```bash
+git clone https://github.com/divadnauj-GB/shadowfi.git
+cd shadowfi
+git submodule update --init --recursive
+```
+2. Download and install OSS CAD Suite, for a customize intalation you can also the guidelines introduced in https://github.com/YosysHQ/oss-cad-suite-build
+
+```bash
+cd sif
 wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2024-11-17/oss-cad-suite-linux-x64-20241117.tgz
 # uncompress into the current directory
 tar -xvzf oss-cad-suite-linux-x64-20241117.tgz
-# create the singularity image 
-sudo singularity build oss-cad-container.sif oss-cad-container.def
+# Add environmental variables to .bashrc
+PWD = `pwd`
+echo "${PWD}/oss-cad-suite/bin" >> ~/.bashrc
+cd -
 ```
 
+3. Create a conda environmet with the necesary packages
 
+```bash
+conda create -n SHADOWFI python=3.11
+conda activate SHADOWFI
+pip install -r requirements 
+```
+
+4. Run SHADOWFI in CLI mode
+```bash
+conda activate SHADOWFI
+python shadowfi_shell.py 
+```
+
+#### Option3: Build your own singularity container
+1. Clone the SHADOWFI repository
+
+```bash
+git clone https://github.com/divadnauj-GB/shadowfi.git
+cd shadowfi
+git submodule update --init --recursive
+```
+2. Download OSS CAD Suite and build the singularity image
+
+```bash
+cd sif
+wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2024-11-17/oss-cad-suite-linux-x64-20241117.tgz
+# uncompress into the current directory
+tar -xvzf oss-cad-suite-linux-x64-20241117.tgz
+# build the singularity image
+sudo singularity build shadowfi.sif shadowfi.def
+cd -
+```
+
+3. Run SHADOWFI in CLI mode
+```bash
+singularty run sif/shadowfi.sif
+```
+
+### Executing the first Fault Injection Campaign
 
