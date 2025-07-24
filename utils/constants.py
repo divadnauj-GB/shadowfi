@@ -80,20 +80,20 @@ Help for fsim_setup comand
 Configures the simulation parameters. Be sure the simulation has been properly compiled and
 there is a valid verilator executable. 
 Syntax: fsim_setup [--fsim-config <config-file> | --kwargs <key1=val key2=val ..>] 
-                   [--set-run-scripts] [--run-script <path-to-run.sh>]
+                   [--noset-run-scripts] [--run-script <path-to-run.sh>]
                    [--sdc-check-script <path-to-sdc-check.sh>]
 --fsim-config: configuration file in yaml format, please refer to the documentation to obtain
              further information regarding the condifuration details.
 --kwargs: custom configuration values in the form key:val, it support nested key-value pairs, 
           e.g. a.b.c=val
---set-run-scripts: This flag enables or disables the run scripts configuration otherwise 
-                    the user must manually add them to the project. For more details please 
+--noset-run-scripts: This flag enables or disables the run scripts configuration, when used 
+                    the user must manually copy the scripts to the project. For more details please 
                     refer to the documentation
 --run-script: run.sh script to be added to the project
 --sdc-check-script: sdc-check.sh script to be added to the project
 Examples:  fsim_setup --fsim-config <config-file>
-           fsim_setup --kwargs sim_config.jobs=10 sim_config.sim_runtime=2000
-           fsim_setup --fsim-config <config-file> --set-run-scripts --run-script <path-to-run.sh>
+           fsim_setup --kwargs sim_config.jobs=10 sim_config.sim_runtime=2000 --noset-run-scripts
+           fsim_setup --fsim-config <config-file>  --run-script <path-to-run.sh>
                       --sdc-check-script <path-to-sdc-check.sh>
 ############################################################################################                
 """

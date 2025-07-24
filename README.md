@@ -103,7 +103,7 @@ For a different OSS CAD Suite version please modify the oss-cad-link and version
 ```bash
 # This automatically download and integrate OSS CAD on the image
 # For a different OSS CAD Suite version please modify the download link on the shadowfi.def file
-sudo singularity build shadowfi.sif shadowfi.def
+sudo singularity build shadowfi.sif ./sif/shadowfi.def
 ```
 
 3. Run SHADOWFI in CLI mode

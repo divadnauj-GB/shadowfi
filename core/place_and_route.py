@@ -68,6 +68,7 @@ def resolve_target_modules(config):
     design_config = config.get('project', {}).get('design_config', {})
     
     cmp_sel = sbtr_config.get('component_selection', {}).get('mode', 'random')
+    max_num_cmp = sbtr_config.get('component_selection', {}).get('max_sel_cmp', 4)
     file_name = f"{sbtr_config['sbtr_dir']}/{design_config['top_module']}_hierarchy.json"
     module_hierarchy=read_json(os.path.join(sbtr_config['sbtr_dir'], file_name))
     instances=get_list_of_instances(module_hierarchy)
@@ -76,7 +77,7 @@ def resolve_target_modules(config):
     selected_components = []
     if cmp_sel == "random":
         # TODO: Implement a more sophisticated random selection
-        N=4
+        N=random.randint(1,max_num_cmp)
         while len(selected_instances) < N:
             randindex = randint(0, len(instances) - 1)
             instance_path, module_name = instances[randindex]
@@ -88,16 +89,7 @@ def resolve_target_modules(config):
 
     if cmp_sel == "hierarchy":
         # TODO: Implement a more sophisticated hierarchical selection
-        selected_instances = [
-            "shd@\win_l:1.suma->window_sum_13_450_7_sbtr",
-            "shd@\win_l:2.suma->window_sum_13_450_7_sbtr",
-            "shd@\win_l:3.suma->window_sum_13_450_7_sbtr",
-            "shd@\win_l:4.suma->window_sum_13_450_7_sbtr",
-            "shd@\win_l:5.suma->window_sum_13_450_7_sbtr",
-        ]
-        selected_components = [
-            "window_sum_13_450_7",
-        ]
+        pass
 
     if cmp_sel == "top":
         # Select the top module as the only target
@@ -322,6 +314,23 @@ def run_pnr(config,args=None):
     config['project']['sbtr_config']['fault_model'] = args.fault_model
     config['project']['sbtr_config']['fault_sampling'] = args.fault_sampling
     logging.info(f"Component selection: {args.cmp_sel}, Fault model: {args.fault_model}, Fault sampling: {args.fault_sampling}")
+
+    if args.cmp_sel=='hierarchy':
+        if args.user_cmp_sel:
+            components_config = args.user_cmp_sel
+            target_components = load_config(components_config)
+            selection=target_components.get('component_selection',{})
+            config['project']['sbtr_config']['component_selection']['hierarchical_component']=selection.get('hierarchical_component',[])
+            config['project']['sbtr_config']['component_selection']['target_modules']=selection.get('target_modules',[])
+        else:
+            raise Exception(f"The user components selections were not provided")
+    
+    if args.cmp_sel=='random':
+        if args.max_sel_cmp:
+            config['project']['sbtr_config']['component_selection']['max_sel_cmp']=int(args.max_sel_cmp)
+        else:
+            raise Exception(f"Please enter a number")
+     
     save_config(config, config['project']['proj_config_file'])
 
     design_config = config.get('project',{}).get('design_config', {})

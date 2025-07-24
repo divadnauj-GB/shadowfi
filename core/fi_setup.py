@@ -139,12 +139,15 @@ def setup_fault_injection(config, args=None):
     if args: 
         if args.fsim_config:
             fsim_config = args.fsim_config
-            fsim_config_data = load_config(fsim_config)
-            if isinstance(fsim_config_data, dict):
-                config['project']['sim_config'].update(fsim_config_data.get('sim_config', {}))
-                save_config(config, config['project']['proj_config_file'])
+            if os.path.exists(fsim_config):
+                fsim_config_data = load_config(fsim_config)
+                if isinstance(fsim_config_data, dict):
+                    config['project']['sim_config'].update(fsim_config_data.get('sim_config', {}))
+                    save_config(config, config['project']['proj_config_file'])
+                else:
+                    logging.error(f'Testbench config file {fsim_config} does not contain a valid dictionary.')
             else:
-                logging.error(f'Testbench config file {fsim_config} does not contain a valid dictionary.')
+                logging.warning(f'Simulation config file not found: {fsim_config}')
         elif args.kwargs:
             kwargs_dict = args.kwargs.get('sim_config', {})
             print(f"Parsed kwargs: {kwargs_dict}")
@@ -199,7 +202,7 @@ def setup_fault_injection(config, args=None):
 
     os.system(f"cp {os.path.abspath(FI_DESIGN_PATH)}/{FAULT_MODEL}_{F_LIST_NAME} {WORK_DIR}")
 
-    if args.set_run_scripts:
+    if not args.noset_run_scripts:
         if args.run_script:
             src_path = args.run_script
             run_script_path = sim_config.get('tb_run_info',{}).get('tb_run_script', '')

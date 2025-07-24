@@ -24,8 +24,12 @@ class ShadowfiShell(cmd.Cmd):
         try:
             self.current_project=cli_entry(self.current_project)
         except Exception as e:
-            logging.error(f"Error executing command '{line}': {e}")
             print(f"Error: {e}")
+            logging.error(f"Error executing command '{line}': {e}")
+            if self.current_project==None:
+                logging.error(f"Please be sure the project is open, and properly configured!")
+            else:
+                logging.error(f"The executed command or the project configuration is not correct, \n please refer to SHADOWFI documentation or type help")
         
     def do_exit(self, arg):
         print("Exiting SHADOWFI shell.")
