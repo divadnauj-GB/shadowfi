@@ -1,0 +1,10 @@
+
+
+OPTION psf_version = 2.1;
+
+BEGIN DRIVER comblock
+	OPTION supported_peripherals = (comblock);
+	OPTION copyfiles = all;
+	OPTION VERSION = 2.0;
+	OPTION NAME = comblock;
+END DRIVER

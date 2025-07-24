@@ -2,3 +2,4 @@ pyyaml
 omegaconf
 numpy == 2.1.3
 pillow == 11.0.0
+memory_profiler

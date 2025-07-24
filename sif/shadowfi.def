@@ -1,0 +1,99 @@
+Bootstrap: docker
+From: ubuntu
+
+%pre
+# Before install (host)
+
+%setup
+# After install (host)
+
+%post
+# After install (guest)
+
+apt update -y
+apt install -y software-properties-common
+add-apt-repository ppa:deadsnakes/ppa
+apt update -y
+apt --assume-yes install build-essential
+apt --assume-yes install gcc-10 g++-10 cpp-10
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
+
+apt --assume-yes install cmake
+apt --assume-yes install wget
+apt --assume-yes install git
+
+apt --assume-yes install clang
+apt --assume-yes install llvm 
+apt --assume-yes install libmpc-dev
+apt --assume-yes install ninja-build
+apt --assume-yes install libelf-dev help2man zlib1g zlib1g-dev libfl-dev libfl2 flex
+# linux-headers-$(uname -r) 
+apt --assume-yes install linux-headers-generic
+apt --assume-yes install texinfo
+
+
+# apt-get -y update
+# apt-get -y install build-essential python3.11 git libgmp3-dev libmpfr-dev
+# apt-get -y install autoconf automake libtool
+# apt-get -y install pip
+# update-alternatives --install /usr/bin/python python /usr/bin/python3.11 10
+
+wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2024-11-17/oss-cad-suite-linux-x64-20241117.tgz -O /usr/local/oss-cad-suite-linux-x64-20241117.tgz
+tar -xvzf /usr/local/oss-cad-suite-linux-x64-20241117.tgz -C /usr/local
+rm /usr/local/oss-cad-suite-linux-x64-20241117.tgz
+
+mkdir -p /usr/local/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /usr/local/miniconda3/miniconda.sh
+bash /usr/local/miniconda3/miniconda.sh -b -u -p /usr/local/miniconda3
+rm /usr/local/miniconda3/miniconda.sh
+
+. /usr/local/miniconda3/bin/activate
+
+conda tos accept 
+conda create -n SHADOWFI python=3.11 -y
+
+conda activate SHADOWFI
+
+pip install -r /usr/local/miniconda3/requirements 
+
+conda deactivate
+
+
+# echo ". /usr/local/miniconda3/etc/profile.d/conda.sh" >> /etc/bash.bashrc
+# echo "conda activate SHADOWFI" >> /etc/bash.bashrc
+
+echo ". /usr/local/miniconda3/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+echo "conda activate SHADOWFI" >> $SINGULARITY_ENVIRONMENT
+
+
+%test
+# Test to run in order to ensure working environment
+    exit 0
+
+%runscript
+# Script to run when executing environment
+python shadowfi_shell.py "$@"
+
+%startscript
+# Script to run when executing as instance
+
+
+%labels
+    author Juan David Guerrero
+
+%files
+# Files to copy from the host system.
+#./oss-cad-suite /usr/local/oss-cad-suite
+./requirements /usr/local/miniconda3/
+
+
+%environment
+# Environment variables
+# export SINGULARITY_SHELL=/bin/bash
+TZ=UTC
+DEBIAN_FRONTEND=noninteractive
+export PATH="/usr/local/oss-cad-suite/bin:$PATH"
+
+
+%help
+# Text to show when help for the image is requested.

@@ -1,0 +1,6 @@
+design_config:
+    design_root_dir: /home/juancho/Documents/GitHub/EmuFaultSim/benchmarks/Cores/stereo_vision_core
+    src_list_files:
+    - benchmarks/Cores/stereo_vision_core/stereo_match.v
+    src_path: benchmarks/Cores/stereo_vision_core
+    top_module: stereo_match

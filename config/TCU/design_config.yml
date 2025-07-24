@@ -1,0 +1,6 @@
+design_config:
+    design_root_dir: /home/juancho/Documents/GitHub/EmuFaultSim/benchmarks/Cores/TCU/TCU_2
+    inc_directories: 
+    - benchmarks/Cores/TCU/TCU_2/src
+    src_path: benchmarks/Cores/TCU/TCU_2/src
+    top_module: sub_tensor_core
