@@ -1,5 +1,8 @@
-# SHADOWFI
-![SHADOWFI](doc/SHADOWFI-logo.png)
+# SHADOWFI 
+<div style="text-align: center;">
+    <img src="./doc/SHADOWFI-logo.png" width="100" >
+</div>
+
 SHADOWFI is an emulation-based fault injection framework for fault chareacterization and reliability assesemnt of hardware designs.  SHADOWFI leverages the acceleration capabilities of hiperscale infrastructures providing support for executing long fault injection tasks in both High Performance Computing (HPC) and FPGA hiperscaler systems. 
 
 SHADOWFI implments fault instrumentation by inserting saboteur circuits directly on syntesizable HDL designs. This instrumentation is applied automatically based on user configurations, providing flexibility regarding the target components or hardware structures subject of evaluation. 
