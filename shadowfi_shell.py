@@ -6,10 +6,13 @@ import logging
 import argparse
 from cli.main import cli_entry
 from utils.logger import setup_logger
+from utils.constants import *
 
 class ShadowfiShell(cmd.Cmd):
     intro = "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands.\n"
     prompt = "Shadowfi> "
+    doc_header = "Help (type help <Shadowfi cmd>):"
+    misc_header = "Documented Shadowfi comands:"
 
     def __init__(self):
         super().__init__()
@@ -24,13 +27,36 @@ class ShadowfiShell(cmd.Cmd):
             logging.error(f"Error executing command '{line}': {e}")
             print(f"Error: {e}")
         
-
     def do_exit(self, arg):
         print("Exiting SHADOWFI shell.")
         return True
 
     def do_EOF(self, arg):
         return self.do_exit(arg)
+
+    def help_create(self):
+        print(create_help_str)
+        
+    def help_load(self):
+        print(load_help_str)
+
+    def help_elaborate(self):
+        print(elaborate_help_str)
+
+    def help_pnr(self):
+        print(pnr_help_str)
+    
+    def help_tb_setup(self):
+        print(tb_setup_help_str)
+
+    def help_fsim_setup(self):
+        print(fsim_setup_help_str)
+    
+    def help_fsim_exec(self):
+        print(fsim_exec_help_str)
+
+    
+    
 
 def main():
     os.environ['SHADOWFI_ROOT'] = os.path.dirname(os.path.abspath(__file__))  # export root directory
