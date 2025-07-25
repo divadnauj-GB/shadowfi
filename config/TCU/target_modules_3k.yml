@@ -1,0 +1,40 @@
+component_selection:
+  hierarchical_component:
+  - d_unit0@adder0->fpadd_3_pipe_sbtr
+
+  # - d_unit0@adder0->fpadd_3_pipe_sbtr
+  # - d_unit1@adder1->fpadd_3_pipe_sbtr
+
+  # - d_unit0@adder0->fpadd_3_pipe_sbtr
+  # - d_unit1@adder0->fpadd_3_pipe_sbtr
+  # - d_unit2@adder0->fpadd_3_pipe_sbtr
+  # - d_unit3@adder0->fpadd_3_pipe_sbtr
+
+  # - d_unit0@adder0->fpadd_3_pipe_sbtr
+  # - d_unit1@adder0->fpadd_3_pipe_sbtr
+  # - d_unit2@adder0->fpadd_3_pipe_sbtr
+  # - d_unit3@adder0->fpadd_3_pipe_sbtr
+  # - d_unit4@adder0->fpadd_3_pipe_sbtr
+  # - d_unit5@adder0->fpadd_3_pipe_sbtr
+  # - d_unit6@adder0->fpadd_3_pipe_sbtr
+  # - d_unit7@adder0->fpadd_3_pipe_sbtr
+
+
+  # - d_unit0@adder0->fpadd_3_pipe_sbtr
+  # - d_unit1@adder0->fpadd_3_pipe_sbtr
+  # - d_unit2@adder0->fpadd_3_pipe_sbtr
+  # - d_unit3@adder0->fpadd_3_pipe_sbtr
+  # - d_unit4@adder0->fpadd_3_pipe_sbtr
+  # - d_unit5@adder0->fpadd_3_pipe_sbtr
+  # - d_unit6@adder0->fpadd_3_pipe_sbtr
+  # - d_unit7@adder0->fpadd_3_pipe_sbtr
+  # - d_unit8@adder0->fpadd_3_pipe_sbtr
+  # - d_unit9@adder0->fpadd_3_pipe_sbtr
+  # - d_unit10@adder0->fpadd_3_pipe_sbtr
+  # - d_unit11@adder0->fpadd_3_pipe_sbtr
+  # - d_unit12@adder0->fpadd_3_pipe_sbtr
+  # - d_unit13@adder0->fpadd_3_pipe_sbtr
+  # - d_unit14@adder0->fpadd_3_pipe_sbtr
+  # - d_unit15@adder0->fpadd_3_pipe_sbtr
+  target_modules:
+  - fpadd_3_pipe

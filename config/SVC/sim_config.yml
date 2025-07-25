@@ -3,7 +3,7 @@ sim_config:
   workers: 10
   sim_runtime: 197000
   max_num_faults: 1
-  work_sim_root_dir: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/benchmarks/Cores/stereo_vision_core
+  work_sim_root_dir: ./benchmarks/Cores/stereo_vision_core
   work_sim_dir: ./TestBench
   tb_build_dir: ./TestBench/obj_dir
   tb_run_info:
@@ -38,8 +38,8 @@ sim_config:
     cpus_per_task: 1
     mem: 4G
     job_name: stereo_vision_core_sim
-    output: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/projects/stereo_vision_core/work/sim/slurm-%j.out
-    error: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/projects/stereo_vision_core/work/sim/slurm-%j.err
+    output: ./projects/stereo_vision_core/work/sim/slurm-%j.out
+    error: ./projects/stereo_vision_core/work/sim/slurm-%j.err
   
     
   

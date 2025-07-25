@@ -1,0 +1,32 @@
+
+component_selection:
+  hierarchical_component:
+  # - uquadraticinterpol@u_specialsquaringunit->squaring_17_sbtr
+  # - uexceptions->sfu_exceptions_sbtr
+
+  # - uquadraticinterpol@ufusedacctree->fused_accum_tree_sbtr
+  
+  # - uquadraticinterpol@ulookuptable->rom_29_20_14_4_7_sbtr
+  # - uquadraticinterpol@u_specialsquaringunit->squaring_17_sbtr
+
+  # - uquadraticinterpol@ulookuptable->rom_29_20_14_4_7_sbtr
+  # - uquadraticinterpol@u_specialsquaringunit->squaring_17_sbtr
+  # - uquadraticinterpol@ufusedacctree->fused_accum_tree_sbtr
+  # - uexceptions->sfu_exceptions_sbtr
+
+  - sfu -> sfu_sbtr
+  target_modules:
+  # - squaring_17
+  # - sfu_exceptions
+
+  # - fused_accum_tree
+
+  # - rom_29_20_14_4_7
+  # - squaring_17
+
+  # - rom_29_20_14_4_7
+  # - squaring_17
+  # - fused_accum_tree
+  # - sfu_exceptions
+
+  - sfu

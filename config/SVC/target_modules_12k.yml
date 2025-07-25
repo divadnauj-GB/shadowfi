@@ -1,0 +1,120 @@
+
+component_selection:
+  hierarchical_component: 
+  - shd@\win_l:1.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:2.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:3.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:4.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:5.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:6.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:7.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:8.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:9.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:10.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:11.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:12.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:13.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:14.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:15.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:16.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:17.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:18.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:19.suma->window_sum_13_450_7_sbtr
+  - shd@\win_l:20.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:21.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:22.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:23.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:24.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:25.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:26.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:27.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:28.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:29.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:30.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:31.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:32.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:33.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:34.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:35.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:36.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:37.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:38.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:39.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:40.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:41.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:42.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:43.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:44.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:45.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:46.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:47.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:48.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:49.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:50.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:51.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:52.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:53.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:54.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:55.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:56.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:57.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:58.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:59.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:60.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:61.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:62.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:63.suma->window_sum_13_450_7_sbtr
+  # - shd@\win_l:64.suma->window_sum_13_450_7_sbtr
+  # - shd@\cmp:1.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:2.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:3.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:4.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:5.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:6.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:7.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:8.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:9.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:10.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:11.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:12.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:13.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:14.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:15.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:16.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:17.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:18.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:19.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:20.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:21.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:22.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:23.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:24.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:25.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:26.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:27.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:28.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:29.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:30.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:31.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:32.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:33.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:34.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:35.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:36.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:37.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:38.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:39.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:40.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:41.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:42.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:43.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:44.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:45.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:46.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:47.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:48.comparador->disp_cmp_13_64_7_sbtr
+  # - shd@\cmp:49.comparador->disp_cmp_13_64_7_sbtr
+
+  target_modules:
+  - window_sum_13_450_7
+  # - disp_cmp_13_64_7
