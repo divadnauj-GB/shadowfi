@@ -35,7 +35,6 @@ This guide shows the basic steps for install and use SHADOWFI. You can follow an
 ```bash
 git clone https://github.com/divadnauj-GB/shadowfi.git
 cd shadowfi
-git submodule update --init --recursive
 ```
 3. Download the prebuild singuarity image with all dependencies
 
@@ -44,10 +43,12 @@ singularity pull  --arch amd64 library://divadnauj-gb/shadowfi/shadowfi:v1
 ```
 4. Run SHADOWFI in CLI mode
 ```bash
-singularty run shadowfi_v1.sif
-# the following prompt will appear
+singularity run shadowfi_v1.sif
+# the following prompt will appear 
+```
+```bash
 Welcome to the SHADOWFI Tool shell. Type help or ? to list commands.
-Shadowfi> 
+Shadowfi>
 ```
 
 #### Option 2: Custom instalation
@@ -56,7 +57,6 @@ Shadowfi>
 ```bash
 git clone https://github.com/divadnauj-GB/shadowfi.git
 cd shadowfi
-git submodule update --init --recursive
 ```
 2. Download and install OSS CAD Suite, for a customize intalation you can also the guidelines introduced in https://github.com/YosysHQ/oss-cad-suite-build
 
@@ -95,14 +95,12 @@ Shadowfi>
 ```bash
 git clone https://github.com/divadnauj-GB/shadowfi.git
 cd shadowfi
-git submodule update --init --recursive
 ```
 2. Build the singularity image: 
-For a different OSS CAD Suite version please modify the oss-cad-link and version on the shadowfi.def file
+For a different OSS CAD Suite version please modify the oss-cad-link and version on the [shadowfi.def](./sif/shadowfi.def) file
 
 ```bash
 # This automatically download and integrate OSS CAD on the image
-# For a different OSS CAD Suite version please modify the download link on the shadowfi.def file
 sudo singularity build shadowfi.sif ./sif/shadowfi.def
 ```
 
@@ -110,7 +108,9 @@ sudo singularity build shadowfi.sif ./sif/shadowfi.def
 ```bash
 singularty run shadowfi.sif
 # the following prompt will appear
-Welcome to the SHADOWFI Tool shell. Type help or ? to list commands.
+```
+```bash
+"Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
 Shadowfi> 
 ```
 

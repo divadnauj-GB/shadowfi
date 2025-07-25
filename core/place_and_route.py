@@ -88,8 +88,8 @@ def resolve_target_modules(config):
                 selected_components.append(module_name)
 
     if cmp_sel == "hierarchy":
-        # TODO: Implement a more sophisticated hierarchical selection
-        pass
+        selected_instances=sbtr_config['component_selection']['hierarchical_component'] 
+        selected_components=sbtr_config['component_selection']['target_modules'] 
 
     if cmp_sel == "top":
         # Select the top module as the only target
@@ -319,12 +319,12 @@ def run_pnr(config,args=None):
         if args.user_cmp_sel:
             components_config = args.user_cmp_sel
             target_components = load_config(components_config)
-            selection=target_components.get('component_selection',{})
-            config['project']['sbtr_config']['component_selection']['hierarchical_component']=selection.get('hierarchical_component',[])
-            config['project']['sbtr_config']['component_selection']['target_modules']=selection.get('target_modules',[])
+            selection_val=target_components.get('component_selection',{})
+            config['project']['sbtr_config']['component_selection']['hierarchical_component']=selection_val.get('hierarchical_component',[])
+            config['project']['sbtr_config']['component_selection']['target_modules']=selection_val.get('target_modules',[])
         else:
             raise Exception(f"The user components selections were not provided")
-    
+
     if args.cmp_sel=='random':
         if args.max_sel_cmp:
             config['project']['sbtr_config']['component_selection']['max_sel_cmp']=int(args.max_sel_cmp)

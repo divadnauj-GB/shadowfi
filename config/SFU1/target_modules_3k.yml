@@ -1,0 +1,82 @@
+
+component_selection:
+  hierarchical_component:
+  - exp2_inst@addera->sum_ripple_carry_adder_7_0_sbtr
+  - exp2_inst@adderb->sum_ripple_carry_adder_7_2_sbtr
+  - exp2_inst@adderc->sum_ripple_carry_adder_5_0_sbtr
+  - exp2_inst@adderd->sum_ripple_carry_adder_23_0_sbtr
+  - exp2_inst@adderf->sum_ripple_carry_adder_25_0_sbtr
+  - exp2_inst@constants_sub->sum_ripple_carry_adder_23_0_sbtr
+  - exp2_inst@ieee32_case->exp2_ieee_16_sbtr
+  - exp2_inst@ones_complement_lshifter->ones_complement_30_sbtr
+  - exp2_inst@ones_complement_lutb->ones_complement_23_sbtr
+  - exp2_inst@ones_complement_mult->ones_complement_25_sbtr
+  - exp2_inst@ones_complement_muxa->ones_complement_23_sbtr
+  - log2_inst@adder_luta->sum_ripple_carry_adder_5_0_sbtr
+  - log2_inst@adderb->sum_ripple_carry_adder_23_0_sbtr
+  - log2_inst@adderc->sum_ripple_carry_adder_26_0_sbtr
+  - log2_inst@adderd->sum_ripple_carry_adder_7_0_sbtr
+  - log2_inst@addere->sum_ripple_carry_adder_32_0_sbtr
+  - log2_inst@adderf->sum_ripple_carry_adder_7_1_sbtr
+  - log2_inst@case_ieee32->log2_ieee_sbtr
+  - log2_inst@constants_sub->sum_ripple_carry_adder_23_0_sbtr
+  - log2_inst@ones_complement_adderc->ones_complement_32_sbtr
+  - log2_inst@ones_complement_adderd->ones_complement_7_sbtr
+  - log2_inst@ones_complement_luta->ones_complement_23_sbtr
+  - log2_inst@ones_complement_lutb->ones_complement_23_sbtr
+  - log2_inst@ones_complement_mult->ones_complement_26_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - exp2_inst@\lut64c.lut64_23b->exp2_luts_64x23b_64_sbtr
+  # - log2_inst@\lut64c.lut64_23b->log2_luts_64x23b_64_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - cordic_inst@fp_add_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_mul_x->multfp_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - cordic_inst@fp_add_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_sub_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_mul_x->multfp_sbtr
+  # - cordic_inst@fp_mul_y->multfp_sbtr
+
+  # - cordic_inst@fp_add_y->suma_resta_32_sbtr
+  # - cordic_inst@fp_add_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_sub_x->suma_resta_32_sbtr
+  # - cordic_inst@fp_mul_x->multfp_sbtr
+  # - cordic_inst@fp_mul_y->multfp_sbtr
+  # - rsqrt_ints@sub->suma_resta_32_sbtr
+  # - rsqrt_ints@fp4->multfp_sbtr
+  # - rsqrt_ints@fp3->multfp_sbtr
+
+
+  target_modules:
+  - sum_ripple_carry_adder_7_0
+  - sum_ripple_carry_adder_7_1
+  - sum_ripple_carry_adder_7_2
+  - sum_ripple_carry_adder_5_0
+  - sum_ripple_carry_adder_23_0
+  - sum_ripple_carry_adder_25_0
+  - sum_ripple_carry_adder_26_0
+  - sum_ripple_carry_adder_32_0
+  - exp2_ieee_16
+  - log2_ieee
+  - ones_complement_30
+  - ones_complement_23
+  - ones_complement_25
+  - ones_complement_26
+  - ones_complement_32
+  - ones_complement_7
+
+  # - suma_resta_32
+  # - exp2_luts_64x23b_64
+  # - log2_luts_64x23b_64
+
+  # - suma_resta_32
+  # - multfp
+
+  # - suma_resta_32
+  # - multfp
+
+  # - suma_resta_32
+  # - multfp
