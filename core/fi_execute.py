@@ -4,6 +4,7 @@ import os
 from core.shadowfi_core.fault_simulation.fault_sim_main import (
     run_fault_free_simulation,
     run_fault_simulation,
+    split_fault_injection_task
 )
 
 def run_simulation(config):
@@ -52,8 +53,35 @@ def execute_fault_injection(config,args={}):
 
     work_dir_root = config.get('project', {}).get('work_dir', '')
 
+    #run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
+
+    if not args.hpc:
+        print(args.work_dir_root)
+        if args.work_dir_root:
+            work_dir_root = args.work_dir_root
+            run_fault_simulation(work_dir=work_dir_root, fi_config=config, slurm_jobid=args.slurm_jobid)
+        else:
+            work_dir_root = config.get('project', {}).get('work_dir', '')
+            run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
+            run_fault_simulation(work_dir=work_dir_root, fi_config=config)
+    else:
+        run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
+        split_fault_injection_task(work_dir=work_dir_root, fi_config=config)
+
+    logging.info('Simulation execution complete.')
+
+
+def execute_fault_injection_slurm(config,args={}):
+    project_name = config.get('project', {}).get('name', 'unknown')
+    logging.info(f'Executing simulation for project: {project_name}')
+    # Simulated logic here
+    sim_config = config.get('project',{}).get('sim_config', {})
+
+
+    work_dir_root = config.get('project', {}).get('work_dir', '')
+
     run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
 
-    run_fault_simulation(work_dir=work_dir_root, fi_config=config)
+    split_fault_injection_task(work_dir=work_dir_root, fi_config=config)
 
     logging.info('Simulation execution complete.')

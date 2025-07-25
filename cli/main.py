@@ -47,6 +47,9 @@ def cli_entry(current_project=None):
     fsim_exec_parser = subparsers.add_parser('fsim_exec')
     fsim_exec_parser.add_argument('--fsim-config', default=None, help='Path to the testbench configuration file')
     fsim_exec_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
+    fsim_exec_parser.add_argument('--hpc',default=False, action=argparse.BooleanOptionalAction, help="enable HPC execution")
+    fsim_exec_parser.add_argument('--work-dir-root',default=None,  help="optionalworking directory root, useful when hpc job is executed")
+    fsim_exec_parser.add_argument('--slurm-jobid',default="./",  help="optionalworking directory root, useful when hpc job is executed")
 
 
     fi_fpga_setup_parser = subparsers.add_parser('fi_fpga_setup')
