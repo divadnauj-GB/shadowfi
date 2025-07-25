@@ -247,7 +247,7 @@ def run_fault_simulation(work_dir, fi_config={}, slurm_jobid="./"):
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean,work_sim_dir))
     #work_dir_rel = work_dir_clean.split("/")[-1]
     work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
-    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,slurm_jobid,".parsims"))
+    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,".parsims",slurm_jobid))
     os.system(f"rm -r {parallel_sims_path}")
     os.system(f"mkdir -p {parallel_sims_path}")
     # check if multiple jobs are required
@@ -356,6 +356,7 @@ def split_fault_injection_task(work_dir, fi_config):
     
     # create hidden work directories       
     list_work_dir = []
+    os.system(f"echo '' > launch_slurm_jobs.sh")
     for job_id in range(num_jobs):
         new_work_dir = os.path.abspath(f"{parallel_sims_path}/.slurm_job{job_id}")
         list_work_dir.append(new_work_dir)
@@ -381,6 +382,6 @@ def split_fault_injection_task(work_dir, fi_config):
                                PATH_TO_FILE=new_work_dir
                                )
         os.system(f"echo '{slurm_script}' > {new_work_dir}/sbatch.sh")
-        os.system(f"bash {new_work_dir}/sbatch.sh")
+        os.system(f"echo 'bash {new_work_dir}/sbatch.sh' >> launch_slurm_jobs.sh")
 
         #os.system(f"python shadowfi_shell.py -s {new_work_dir}/script.s")
