@@ -157,6 +157,18 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     Shadowfi>
     ```
 
+    After executing this command the project `TCU`is created under the `projects`directory. The following corresponds to the project directory structure:
+
+    ```bash
+    ./projects/
+      └── TCU/
+          ├── config.yaml # The project information
+          ├── logs/ #directory with final fault simulation results
+          ├── sbtr/ #modified CUT files
+          ├── src/ #temporary source files
+          └── work/ # work directory
+    ```
+
 3. Elaborate the project:
 
     ```bash
@@ -240,3 +252,31 @@ NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps 
     ```
 
 ## Getting Started with HPC simulations
+
+1. Clone the SHADOWFI repository
+
+    ```bash
+    git clone https://github.com/divadnauj-GB/shadowfi.git
+    cd shadowfi
+    ```
+
+2. Download the prebuild singuarity image with all dependencies
+
+    ```bash
+    singularity pull  --arch amd64 library://divadnauj-gb/shadowfi/shadowfi:v1
+    ```
+
+3. Run SHADOWFI in CLI mode
+
+    ```bash
+    singularity run shadowfi_v1.sif
+    # the following prompt will appear 
+    ```
+
+    ```bash
+    "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
+    Shadowfi>
+    ```
+
+
+## Getting Started with FPGA emulations

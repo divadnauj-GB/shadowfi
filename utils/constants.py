@@ -109,3 +109,17 @@ Syntax: fsim_exec
 Examples:  fsim_exec 
 ############################################################################################                
 """
+
+sbatch_template = """
+#!/bin/bash
+#SBATCH --time={TIMEOUT}
+#SBATCH --nodes={NODES}
+#SBATCH --ntasks-per-node={TASK_PER_NODE}
+#SBATCH --job-name={JOB_NAME}
+#SBATCH --mem={MEM}
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user={EMAIL}
+
+singularity run shadowfi_v1.sif -s {PATH_TO_FILE}/script.s
+
+"""

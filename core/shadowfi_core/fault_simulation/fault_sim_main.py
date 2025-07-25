@@ -8,6 +8,7 @@ import itertools
 import logging
 
 from core.shadowfi_utils.constants import ROOT
+from utils.constants import sbatch_template
 
 def run_cmd(cmd):
     logging.info(f"Running command: {cmd}")
@@ -224,7 +225,7 @@ def run_one_job_fault_simulation(work_dir, fi_config={}):
     os.chdir(root_dir)
 
 
-def run_fault_simulation(work_dir, fi_config={}):
+def run_fault_simulation(work_dir, fi_config={}, slurm_jobid="./"):
     #if WORK_DIR[-1] == "/":
     #    work_dir_clean = WORK_DIR[:-1]
     #else:
@@ -241,11 +242,12 @@ def run_fault_simulation(work_dir, fi_config={}):
     num_workers = sim_config.get('workers', 10)
     work_sim_dir = sim_config.get('work_sim_dir', '')
 
-    work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
+    #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
+    work_dir_clean = work_dir
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean,work_sim_dir))
     #work_dir_rel = work_dir_clean.split("/")[-1]
     work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
-    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,".parsims"))
+    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,slurm_jobid,".parsims"))
     os.system(f"rm -r {parallel_sims_path}")
     os.system(f"mkdir -p {parallel_sims_path}")
     # check if multiple jobs are required
@@ -322,3 +324,63 @@ if __name__ == "__main__":
     #WORK_DIR = "/home/juancho/Documents/GitHub/EmuFaultSim/BenchpyRTLFIv1/Benchmarks/Cores/Adder32/tb"
     run_fault_simulation(WORK_DIR, fi_config)
 
+
+def split_fault_injection_task(work_dir, fi_config):
+    sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+    fault_list_name = fi_config.get('project', {}).get('fault_list_name', 'fault_list.csv')
+    fault_model = sbtr_config.get('fault_model', 'S@')
+    fault_list_name = f"{fault_model}_{fault_list_name}"
+
+    num_jobs = sim_config.get('slurm_jobs', 1)
+    work_sim_dir = sim_config.get('work_sim_dir', '')
+
+    #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
+    work_dir_clean = work_dir
+    src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean,work_sim_dir))
+    #work_dir_rel = work_dir_clean.split("/")[-1]
+    work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
+    parallel_sims_path = os.path.abspath(work_dir_rel) #os.path.abspath(os.path.join(work_dir_rel,"./"))
+    #os.system(f"rm -r {parallel_sims_path}")
+    #os.system(f"mkdir -p {parallel_sims_path}")
+    # check if multiple jobs are required
+    # read the fault list
+    fault_list_job = []
+    with open(f"{os.path.abspath(src_work_path_dir)}/{fault_list_name}", "r") as f:
+        fault_list = f.readlines()
+        if len(fault_list) == 0:
+            print("No fault list found")
+            return
+        else:
+            fault_list_job = [fault_list[job_id::num_jobs] for job_id in range(num_jobs)]
+    
+    # create hidden work directories       
+    list_work_dir = []
+    for job_id in range(num_jobs):
+        new_work_dir = os.path.abspath(f"{parallel_sims_path}/.slurm_job{job_id}")
+        list_work_dir.append(new_work_dir)
+        os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
+        new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
+        save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_job[job_id])
+
+        timeout=sim_config.get('slurm',{}).get('time',"4:00:00")
+        nodes =sim_config.get('slurm',{}).get('nodes',1)
+        task_per_node = sim_config.get('slurm',{}).get('tasks_per_node',10)
+        mem = sim_config.get('slurm',{}).get('mem',"4G")
+        email = sim_config.get('slurm',{}).get('email',"juand.guerrero@polito.it")
+
+        os.system(f"echo 'load --project-dir {work_dir_rel}' > {new_work_dir}/script.s")
+        os.system(f"echo 'fsim_exec --work-dir-root {new_work_dir} --slurm-jobid .slurm_job{job_id}' >> {new_work_dir}/script.s")
+
+        slurm_script=sbatch_template.format(TIMEOUT=timeout, 
+                               NODES=nodes, 
+                               TASK_PER_NODE=task_per_node, 
+                               JOB_NAME=f".slurm_job{job_id}",
+                               MEM=mem,
+                               EMAIL=email,
+                               PATH_TO_FILE=new_work_dir
+                               )
+        os.system(f"echo '{slurm_script}' > {new_work_dir}/sbatch.sh")
+        os.system(f"bash {new_work_dir}/sbatch.sh")
+
+        #os.system(f"python shadowfi_shell.py -s {new_work_dir}/script.s")
