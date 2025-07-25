@@ -1,8 +1,8 @@
 sim_config:
-  jobs: 10
-  workers: 10
+  jobs: 1
+  workers: 1
   sim_runtime: 197000
-  max_num_faults: 1
+  max_num_faults: 10
   work_sim_root_dir: ./benchmarks/Cores/stereo_vision_core
   work_sim_dir: ./TestBench
   tb_build_dir: ./TestBench/obj_dir

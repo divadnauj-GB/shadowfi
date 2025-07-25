@@ -2,7 +2,7 @@ sim_config:
   jobs: 1
   workers: 1
   sim_runtime: 10000
-  max_num_faults: 1
+  max_num_faults: 10
   work_sim_root_dir: ./benchmarks/Cores/SFU/SFU_1/tb
   work_sim_dir: ./
   tb_build_dir: ./obj_dir
