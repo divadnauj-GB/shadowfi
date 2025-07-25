@@ -110,8 +110,7 @@ Examples:  fsim_exec
 ############################################################################################                
 """
 
-sbatch_template = """
-#!/bin/bash
+sbatch_template = """#!/bin/bash
 #SBATCH --time={TIMEOUT}
 #SBATCH --nodes={NODES}
 #SBATCH --ntasks-per-node={TASK_PER_NODE}

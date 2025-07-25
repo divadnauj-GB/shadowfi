@@ -356,7 +356,7 @@ def split_fault_injection_task(work_dir, fi_config):
     
     # create hidden work directories       
     list_work_dir = []
-    os.system(f"echo '' > launch_slurm_jobs.sh")
+    os.system(f"echo '#!/bin/bash' > launch_slurm_jobs.sh")
     for job_id in range(num_jobs):
         new_work_dir = os.path.abspath(f"{parallel_sims_path}/.slurm_job{job_id}")
         list_work_dir.append(new_work_dir)
@@ -368,7 +368,7 @@ def split_fault_injection_task(work_dir, fi_config):
         nodes =sim_config.get('slurm',{}).get('nodes',1)
         task_per_node = sim_config.get('slurm',{}).get('tasks_per_node',10)
         mem = sim_config.get('slurm',{}).get('mem',"4G")
-        email = sim_config.get('slurm',{}).get('email',"juand.guerrero@polito.it")
+        email = sim_config.get('slurm',{}).get('email',"juan.guerrero@polito.it")
 
         os.system(f"echo 'load --project-dir {work_dir_rel}' > {new_work_dir}/script.s")
         os.system(f"echo 'fsim_exec --work-dir-root {new_work_dir} --slurm-jobid .slurm_job{job_id}' >> {new_work_dir}/script.s")
@@ -382,6 +382,6 @@ def split_fault_injection_task(work_dir, fi_config):
                                PATH_TO_FILE=new_work_dir
                                )
         os.system(f"echo '{slurm_script}' > {new_work_dir}/sbatch.sh")
-        os.system(f"echo 'bash {new_work_dir}/sbatch.sh' >> launch_slurm_jobs.sh")
+        os.system(f"echo 'sbatch {new_work_dir}/sbatch.sh' >> launch_slurm_jobs.sh")
 
         #os.system(f"python shadowfi_shell.py -s {new_work_dir}/script.s")

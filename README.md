@@ -266,17 +266,41 @@ NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps 
     singularity pull  --arch amd64 library://divadnauj-gb/shadowfi/shadowfi:v1
     ```
 
-3. Run SHADOWFI in CLI mode
+3. Run the shadowfi script for an specific CUT
+
+    ```bash
+    singularity run shadowfi_v1.sif -s TCU.s
+    ```
+
+4. Open the project
 
     ```bash
     singularity run shadowfi_v1.sif
-    # the following prompt will appear 
+    "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
+    Shadowfi> load --project-dir ./projects/TCU
+    ...
     ```
+
+5. Set the desired number of slurm jobs
 
     ```bash
-    "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
-    Shadowfi>
+    Shadowfi> fsim_setup --kwargs sim_config.slurm_jobs=10 --noset-run-scripts
+    ...
     ```
 
+6. Prepare the fault injection execution
+
+    ```bash
+    Shadowfi> fsim_exec --hpc
+    ...
+    Shadowfi> exit
+    ```
+
+7. run slurm jobs
+
+    ```bash
+    bash launch_slurm_jobs.sh
+    ...
+    ```
 
 ## Getting Started with FPGA emulations

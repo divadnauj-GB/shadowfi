@@ -53,7 +53,7 @@ def execute_fault_injection(config,args={}):
 
     work_dir_root = config.get('project', {}).get('work_dir', '')
 
-    run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
+    #run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
 
     if not args.hpc:
         print(args.work_dir_root)
