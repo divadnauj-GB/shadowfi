@@ -134,7 +134,12 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
 1. Run the CLI interface by typing the following command:
 
     ```bash
+    # when using singularity run this command
     singularity run shadowfi_v1.sif
+
+    # When not using singularity run the following commands
+    conda activate SHADOWFI
+    python shadowfi_shell.py
     ```
 
 2. Create a new project:
@@ -216,7 +221,13 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
 NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps can be executed automatically by executing the following command:
 
 ```bash
+# when using singularity run this command
 singularity run shadowfi_v1.sif -s TCU.s
+
+# When not using singularity run the following commands
+conda activate SHADOWFI
+python shadowfi_shell.py -s TCU.s
 ```
+
 ## Getting Started with HPC simulations
 
