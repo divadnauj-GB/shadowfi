@@ -368,7 +368,7 @@ def split_fault_injection_task(work_dir, fi_config):
         nodes =sim_config.get('slurm',{}).get('nodes',1)
         task_per_node = sim_config.get('slurm',{}).get('tasks_per_node',10)
         mem = sim_config.get('slurm',{}).get('mem',"4G")
-        email = sim_config.get('slurm',{}).get('email',"juan.guerrero@polito.it")
+        email = sim_config.get('slurm',{}).get('email',"")
 
         os.system(f"echo 'load --project-dir {work_dir_rel}' > {new_work_dir}/script.s")
         os.system(f"echo 'fsim_exec --work-dir-root {new_work_dir} --slurm-jobid .slurm_job{job_id}' >> {new_work_dir}/script.s")

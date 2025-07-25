@@ -284,7 +284,7 @@ NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps 
 5. Set the desired number of slurm jobs
 
     ```bash
-    Shadowfi> fsim_setup --kwargs sim_config.slurm_jobs=10 --noset-run-scripts
+    Shadowfi> fsim_setup --kwargs sim_config.slurm_jobs=10 sim_config.slurm.email="user@email.com" --noset-run-scripts
     ...
     ```
 
