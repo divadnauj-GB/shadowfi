@@ -10,6 +10,8 @@ import logging
 from core.shadowfi_utils.constants import ROOT
 from utils.constants import sbatch_template
 
+#import ipyparallel as ipp
+
 def run_cmd(cmd):
     logging.info(f"Running command: {cmd}")
     pr = subprocess.Popen(cmd, shell=True, executable="/bin/bash", preexec_fn=os.setsid)
@@ -140,7 +142,7 @@ def run_fault_free_simulation(work_dir,fi_config={}):
     return
 
 
-def run_one_injection_job(work_dir, fi_structure, fi_config={}):
+def run_one_injection_task(work_dir, fi_structure, fi_config={}):
     sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
     sim_config = fi_config.get('project',{}).get('sim_config', {})
 
@@ -162,7 +164,7 @@ def run_one_injection_job(work_dir, fi_structure, fi_config={}):
 
 
 
-def run_one_job_fault_simulation(work_dir, fi_config={}):
+def run_one_task_fault_simulation(work_dir, fi_config={}):
     sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
     sim_config = fi_config.get('project',{}).get('sim_config', {})
 
@@ -208,7 +210,7 @@ def run_one_job_fault_simulation(work_dir, fi_config={}):
         fi_structure["bit_pos"] = int(fault_info[5])
         fi_structure["f_model"] = int(fault_info[6])
         fi_structure["seu_time"] = int(fault_info[7])
-        result_sim = run_one_injection_job(work_dir, fi_structure, fi_config)
+        result_sim = run_one_injection_task(work_dir, fi_structure, fi_config)
         if result_sim == "Masked":
             masked += 1
         else:
@@ -225,7 +227,7 @@ def run_one_job_fault_simulation(work_dir, fi_config={}):
     os.chdir(root_dir)
 
 
-def run_fault_simulation(work_dir, fi_config={}, slurm_jobid="./"):
+def run_fault_simulation(work_dir, fi_config={}, slurm_taskid="./"):
     #if WORK_DIR[-1] == "/":
     #    work_dir_clean = WORK_DIR[:-1]
     #else:
@@ -238,8 +240,8 @@ def run_fault_simulation(work_dir, fi_config={}, slurm_jobid="./"):
     fault_list_name = f"{fault_model}_{fault_list_name}"
 
     F_sim_report = fi_config.get('project', {}).get('fault_sim_report', 'fsim_report.csv')
-    num_jobs = sim_config.get('jobs', 1)
-    num_workers = sim_config.get('workers', 10)
+    num_tasks = sim_config.get('tasks', 1)
+    num_workers = sim_config.get('engines', 10)
     work_sim_dir = sim_config.get('work_sim_dir', '')
 
     #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
@@ -247,59 +249,59 @@ def run_fault_simulation(work_dir, fi_config={}, slurm_jobid="./"):
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean,work_sim_dir))
     #work_dir_rel = work_dir_clean.split("/")[-1]
     work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
-    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,".parsims",slurm_jobid))
+    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,".parsims",slurm_taskid))
     os.system(f"rm -r {parallel_sims_path}")
     os.system(f"mkdir -p {parallel_sims_path}")
-    # check if multiple jobs are required
-    if num_jobs > 1:
+    # check if multiple tasks are required
+    if num_tasks >= 1:
         # read the fault list
-        fault_list_job = []
+        fault_list_task = []
         with open(f"{os.path.abspath(src_work_path_dir)}/{fault_list_name}", "r") as f:
             fault_list = f.readlines()
             if len(fault_list) == 0:
                 print("No fault list found")
                 return
             else:
-                fault_list_job = [fault_list[job_id::num_jobs] for job_id in range(num_jobs)]
+                fault_list_task = [fault_list[task_id::num_tasks] for task_id in range(num_tasks)]
         
         # create hidden work directories       
         list_work_dir = []
-        for job_id in range(num_jobs):
-            new_work_dir = os.path.abspath(f"{parallel_sims_path}/.job{job_id}")
+        for task_id in range(num_tasks):
+            new_work_dir = os.path.abspath(f"{parallel_sims_path}/.task{task_id}")
             list_work_dir.append(new_work_dir)
             os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
             new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
-            save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_job[job_id])
+            save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_task[task_id])
             
-        # run the jobs
+        # run the tasks
         with mp.Pool(processes=num_workers) as pool:
-            pool.starmap_async(run_one_job_fault_simulation, zip(list_work_dir, itertools.repeat(fi_config)))
+            pool.starmap_async(run_one_task_fault_simulation, zip(list_work_dir, itertools.repeat(fi_config)))
             pool.close()
             pool.join()
            
         # merge the results
         os.system(f"echo  > {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
-        for job_work_dir in list_work_dir:
-            new_work_sim_dir = os.path.abspath(os.path.join(job_work_dir, work_sim_dir))
+        for task_work_dir in list_work_dir:
+            new_work_sim_dir = os.path.abspath(os.path.join(task_work_dir, work_sim_dir))
             os.system(f"cat {new_work_sim_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
             os.system(f"cp -rf {new_work_sim_dir}/{fault_model}_logs {os.path.abspath(src_work_path_dir)}")
-            os.system(f"rm -r {job_work_dir}")
-            print(f"rm -r {job_work_dir}")
+            os.system(f"rm -r {task_work_dir}")
+            print(f"rm -r {task_work_dir}")
         os.system(f"rm -r {parallel_sims_path}")
         print("Fault simulation finished")               
 
-    else:
-        # run the fault simulation in one job
-        new_work_dir = os.path.abspath(f"{parallel_sims_path}/.job0")
-        os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
-        run_one_job_fault_simulation(new_work_dir, fi_config)
-        new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
-        os.system(f"echo  > {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
-        os.system(f"cat {new_work_sim_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
-        os.system(f"cp -rf {new_work_sim_dir}/{fault_model}_logs {os.path.abspath(src_work_path_dir)}")
-        os.system(f"rm -r {new_work_dir}")
-        os.system(f"rm -r {parallel_sims_path}")
-        print("Fault simulation finished")
+    # else:
+    #     # run the fault simulation in one task
+    #     new_work_dir = os.path.abspath(f"{parallel_sims_path}/.task0")
+    #     os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
+    #     run_one_task_fault_simulation(new_work_dir, fi_config)
+    #     new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
+    #     os.system(f"echo  > {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+    #     os.system(f"cat {new_work_sim_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+    #     os.system(f"cp -rf {new_work_sim_dir}/{fault_model}_logs {os.path.abspath(src_work_path_dir)}")
+    #     os.system(f"rm -r {new_work_dir}")
+    #     os.system(f"rm -r {parallel_sims_path}")
+    #     print("Fault simulation finished")
 
     logs_path_dir = os.path.abspath(os.path.join(work_dir_rel,"logs"))
     os.system(f"cp -r {src_work_path_dir}/*_logs {logs_path_dir}")
@@ -332,7 +334,7 @@ def split_fault_injection_task(work_dir, fi_config):
     fault_model = sbtr_config.get('fault_model', 'S@')
     fault_list_name = f"{fault_model}_{fault_list_name}"
 
-    num_jobs = sim_config.get('slurm_jobs', 1)
+    num_tasks = sim_config.get('slurm_tasks', 1)
     work_sim_dir = sim_config.get('work_sim_dir', '')
 
     #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
@@ -343,26 +345,26 @@ def split_fault_injection_task(work_dir, fi_config):
     parallel_sims_path = os.path.abspath(work_dir_rel) #os.path.abspath(os.path.join(work_dir_rel,"./"))
     #os.system(f"rm -r {parallel_sims_path}")
     #os.system(f"mkdir -p {parallel_sims_path}")
-    # check if multiple jobs are required
+    # check if multiple tasks are required
     # read the fault list
-    fault_list_job = []
+    fault_list_task = []
     with open(f"{os.path.abspath(src_work_path_dir)}/{fault_list_name}", "r") as f:
         fault_list = f.readlines()
         if len(fault_list) == 0:
             print("No fault list found")
             return
         else:
-            fault_list_job = [fault_list[job_id::num_jobs] for job_id in range(num_jobs)]
+            fault_list_task = [fault_list[task_id::num_tasks] for task_id in range(num_tasks)]
     
     # create hidden work directories       
     list_work_dir = []
-    os.system(f"echo '#!/bin/bash' > launch_slurm_jobs.sh")
-    for job_id in range(num_jobs):
-        new_work_dir = os.path.abspath(f"{parallel_sims_path}/.slurm_job{job_id}")
+    os.system(f"echo '#!/bin/bash' > launch_slurm_tasks.sh")
+    for task_id in range(num_tasks):
+        new_work_dir = os.path.abspath(f"{parallel_sims_path}/.slurm_task{task_id}")
         list_work_dir.append(new_work_dir)
         os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
         new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
-        save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_job[job_id])
+        save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_task[task_id])
 
         timeout=sim_config.get('slurm',{}).get('time',"4:00:00")
         nodes =sim_config.get('slurm',{}).get('nodes',1)
@@ -371,17 +373,94 @@ def split_fault_injection_task(work_dir, fi_config):
         email = sim_config.get('slurm',{}).get('email',"")
 
         os.system(f"echo 'load --project-dir {work_dir_rel}' > {new_work_dir}/script.s")
-        os.system(f"echo 'fsim_exec --work-dir-root {new_work_dir} --slurm-jobid .slurm_job{job_id}' >> {new_work_dir}/script.s")
+        os.system(f"echo 'fsim_exec --work-dir-root {new_work_dir} --slurm-taskid .slurm_task{task_id}' >> {new_work_dir}/script.s")
 
         slurm_script=sbatch_template.format(TIMEOUT=timeout, 
                                NODES=nodes, 
                                TASK_PER_NODE=task_per_node, 
-                               JOB_NAME=f".slurm_job{job_id}",
+                               JOB_NAME=f".slurm_task{task_id}",
                                MEM=mem,
                                EMAIL=email,
                                PATH_TO_FILE=new_work_dir
                                )
         os.system(f"echo '{slurm_script}' > {new_work_dir}/sbatch.sh")
-        os.system(f"echo 'sbatch {new_work_dir}/sbatch.sh' >> launch_slurm_jobs.sh")
+        os.system(f"echo 'sbatch {new_work_dir}/sbatch.sh' >> launch_slurm_tasks.sh")
 
         #os.system(f"python shadowfi_shell.py -s {new_work_dir}/script.s")
+
+def run_fault_simulation_hpc(work_dir, fi_config={}, slurm_taskid="./"):
+    import ipyparallel as ipp
+    #if WORK_DIR[-1] == "/":
+    #    work_dir_clean = WORK_DIR[:-1]
+    #else:
+    #    work_dir_clean = WORK_DIR
+    
+    sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
+    sim_config = fi_config.get('project',{}).get('sim_config', {})
+    fault_list_name = fi_config.get('project', {}).get('fault_list_name', 'fault_list.csv')
+    fault_model = sbtr_config.get('fault_model', 'S@')
+    fault_list_name = f"{fault_model}_{fault_list_name}"
+
+    F_sim_report = fi_config.get('project', {}).get('fault_sim_report', 'fsim_report.csv')
+    num_tasks = sim_config.get('tasks', 1)
+    num_workers = sim_config.get('engines', 10)
+    work_sim_dir = sim_config.get('work_sim_dir', '')
+
+    #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
+    work_dir_clean = work_dir
+    src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean,work_sim_dir))
+    #work_dir_rel = work_dir_clean.split("/")[-1]
+    work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
+    parallel_sims_path = os.path.abspath(os.path.join(work_dir_rel,".parsims",slurm_taskid))
+    os.system(f"rm -r {parallel_sims_path}")
+    os.system(f"mkdir -p {parallel_sims_path}")
+    # check if multiple tasks are required
+    if num_tasks >= 1:
+        # read the fault list
+        fault_list_task = []
+        with open(f"{os.path.abspath(src_work_path_dir)}/{fault_list_name}", "r") as f:
+            fault_list = f.readlines()
+            if len(fault_list) == 0:
+                print("No fault list found")
+                return
+            else:
+                fault_list_task = [fault_list[task_id::num_tasks] for task_id in range(num_tasks)]
+        
+        # create hidden work directories       
+        list_work_dir = []
+        for task_id in range(num_tasks):
+            new_work_dir = os.path.abspath(f"{parallel_sims_path}/.task{task_id}")
+            list_work_dir.append(new_work_dir)
+            os.system(f"cp -rf {work_dir_clean} {new_work_dir}")
+            new_work_sim_dir = os.path.abspath(os.path.join(new_work_dir, work_sim_dir))
+            save_file(f"{os.path.abspath(new_work_sim_dir)}/{fault_list_name}", "w", fault_list_task[task_id])
+            
+        # run the tasks
+        """
+        with mp.Pool(processes=num_workers) as pool:
+            pool.starmap_async(run_one_task_fault_simulation, zip(list_work_dir, itertools.repeat(fi_config)))
+            pool.close()
+            pool.join()
+        """
+        with ipp.Client(profile='shadowfi_parsims') as rc:
+            view = rc[:]
+            asyncresult=view.map_async(run_one_task_fault_simulation, list_work_dir, [fi_config for _ in range(len(list_work_dir))])
+            asyncresult.wait_interactive()
+            results = asyncresult.get()
+           
+        # merge the results
+        os.system(f"echo  > {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+        for task_work_dir in list_work_dir:
+            new_work_sim_dir = os.path.abspath(os.path.join(task_work_dir, work_sim_dir))
+            os.system(f"cat {new_work_sim_dir}/{fault_model}_{F_sim_report} >> {os.path.abspath(src_work_path_dir)}/{fault_model}_{F_sim_report}")
+            os.system(f"cp -rf {new_work_sim_dir}/{fault_model}_logs {os.path.abspath(src_work_path_dir)}")
+            os.system(f"rm -r {task_work_dir}")
+            print(f"rm -r {task_work_dir}")
+        os.system(f"rm -r {parallel_sims_path}")
+        print("Fault simulation finished")               
+
+    logs_path_dir = os.path.abspath(os.path.join(work_dir_rel,"logs"))
+    os.system(f"cp -r {src_work_path_dir}/*_logs {logs_path_dir}")
+    os.system(f"cp {src_work_path_dir}/*.csv {logs_path_dir}")
+    return
+    ...

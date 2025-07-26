@@ -1,6 +1,6 @@
 sim_config:
-  jobs: 1
-  workers: 1
+  tasks: 1
+  engines: 1
   sim_runtime: 10000
   max_num_faults: 1
   work_sim_root_dir: ./benchmarks/Cores/TCU/TCU_2/tb

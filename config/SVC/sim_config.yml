@@ -1,6 +1,6 @@
 sim_config:
-  jobs: 10
-  workers: 10
+  tasks: 1
+  engines: 1
   sim_runtime: 197000
   max_num_faults: 1
   work_sim_root_dir: ./benchmarks/Cores/stereo_vision_core

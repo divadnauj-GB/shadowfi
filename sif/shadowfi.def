@@ -71,7 +71,10 @@ echo "conda activate SHADOWFI" >> $SINGULARITY_ENVIRONMENT
     exit 0
 
 %runscript
-# Script to run when executing environment
+#!/bin/bash
+
+# Script to run when executing environment  
+
 python shadowfi_shell.py "$@"
 
 %startscript
