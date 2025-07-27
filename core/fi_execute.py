@@ -4,7 +4,8 @@ import os
 from core.shadowfi_core.fault_simulation.fault_sim_main import (
     run_fault_free_simulation,
     run_fault_simulation,
-    split_fault_injection_task
+    split_fault_injection_task,
+    run_fault_simulation_hpc
 )
 
 def run_simulation(config):
@@ -20,7 +21,7 @@ def run_simulation(config):
     MAX_NUM_INJ = sim_config.get('max_num_faults', -1)
     F_LIST_NAME = config.get('project', {}).get('fault_list_name', 'fault_list.csv')
     F_SIM_REPORT = config.get('project', {}).get('fault_sim_report', 'fsim_report.csv')
-    NUM_JOBS = sim_config.get('jobs', 1)    
+    NUM_JOBS = sim_config.get('tasks', 1)    
 
     work_dir_root = config.get('project', {}).get('work_dir', '')
     work_dir = sim_config.get('work_sim_dir', '')
@@ -56,6 +57,7 @@ def execute_fault_injection(config,args={}):
     #run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
 
     if not args.hpc:
+        """
         print(args.work_dir_root)
         if args.work_dir_root:
             work_dir_root = args.work_dir_root
@@ -64,24 +66,13 @@ def execute_fault_injection(config,args={}):
             work_dir_root = config.get('project', {}).get('work_dir', '')
             run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
             run_fault_simulation(work_dir=work_dir_root, fi_config=config)
+        """
+        run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
+        run_fault_simulation(work_dir=work_dir_root, fi_config=config)
     else:
         run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
-        split_fault_injection_task(work_dir=work_dir_root, fi_config=config)
+        run_fault_simulation_hpc(work_dir=work_dir_root, fi_config=config)
 
     logging.info('Simulation execution complete.')
 
 
-def execute_fault_injection_slurm(config,args={}):
-    project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Executing simulation for project: {project_name}')
-    # Simulated logic here
-    sim_config = config.get('project',{}).get('sim_config', {})
-
-
-    work_dir_root = config.get('project', {}).get('work_dir', '')
-
-    run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
-
-    split_fault_injection_task(work_dir=work_dir_root, fi_config=config)
-
-    logging.info('Simulation execution complete.')

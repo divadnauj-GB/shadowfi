@@ -27,8 +27,8 @@ project:
        tb_params: #<optional list>
        tb_verilator_params: #<optional> 
   sim_config:
-    jobs: 1
-    workers: 1
+    tasks: 1
+    engines: 1
     sim_runtime: 
     max_num_faults: 1
     work_sim_root_dir: 

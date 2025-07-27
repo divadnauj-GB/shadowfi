@@ -105,8 +105,11 @@ fsim_exec_help_str = """
 ############################################################################################
 Help for fsim_exec comand
 launch a fault injection campaing 
-Syntax: fsim_exec 
+Syntax: fsim_exec [--hpc] 
+--hpc: enables distributed computing engines on HPC systems, for running this option it is 
+       necesary to create a paralell world. 
 Examples:  fsim_exec 
+           fsim_exec --hpc
 ############################################################################################                
 """
 
