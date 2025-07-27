@@ -5,7 +5,6 @@ elaborate
 pnr --cmp-sel hierarchy --user-cmp-sel ./config/TCU/target_modules_3k.yml
 tb_setup --tb-config ./config/TCU/tb_config.yml
 fsim_setup --fsim-config ./config/TCU/sim_config.yml --run-script ./config/TCU/run.sh --sdc-check-script ./config/TCU/sdc_check.sh
-fsim_setup --noset-run-scripts --kwargs sim_config.tasks=20 sim_config.engines=20 sim_config.max_num_faults=10
-fsim_exec --hpc
+fsim_exec 
 # fi_fpga_setup
 # fi_fpga_exec

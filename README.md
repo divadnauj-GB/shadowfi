@@ -235,21 +235,21 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     Shadowfi> 
     ```
 
-NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps can be executed automatically by executing the following command:
+    NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps can be executed automatically by executing the following command:
 
-- For singularity enabled systems
+    - For singularity enabled systems
 
-    ```bash
-    singularity run shadowfi_v1.sif -s TCU.s
-    ```
+        ```bash
+        singularity run shadowfi_v1.sif -s TCU.s
+        ```
 
-- For local instalation NO singularity
+    - For local instalation NO singularity
 
-    ```bash
-    # When not using singularity run the following commands
-    conda activate SHADOWFI
-    python shadowfi_shell.py -s TCU.s
-    ```
+        ```bash
+        # When not using singularity run the following commands
+        conda activate SHADOWFI
+        python shadowfi_shell.py -s TCU.s
+        ```
 
 ## Getting Started with HPC simulations
 
@@ -266,41 +266,79 @@ NOTE: SHADOWFI supports a basic scripting support, therefore the previous steps 
     singularity pull  --arch amd64 library://divadnauj-gb/shadowfi/shadowfi:v1
     ```
 
-3. Run the shadowfi script for an specific CUT
+3. Allocate the necesary computational resources on the HPC by creating and SLURM JOB. For this step it is crucial to configure the [run_world.sh](./run_world.sh) script.
 
-    ```bash
-    singularity run shadowfi_v1.sif -s TCU.s
+    - Open the [run_world.sh](./run_world.sh) script and edit the SLURM config accordingly, here some guidelines.
+
+        ```bash
+        #!/bin/bash -l
+        #SBATCH --job-name=ipcluster # set ay name to the job
+        #SBATCH --nodes=16  #assign a given number of Nodes
+        #SBATCH --ntasks-per-node=8 # select the number of tasks per node
+        #SBATCH --cpus-per-task=1 # select the number of CPUs per task
+        #SBATCH --mail-user=user@email.com # set an email 
+        #SBATCH --mail-type=ALL 
+        #SBATCH --time=04:00:00 # set a maximum JOB duration
+        #SBATCH --qos= # set the qos according to the HPC system setting
+        #SBATCH --partition= # set the partitions according to the HPC system setting
+        #SBATCH --account= # set the account if required 
+        #SBATCH --output=ipcluster-log-%J.out
+        #SBATCH --error=ipcluster-err-%J.out
+        ```
+
+    - Submit the job allocation on the HPC system
+
+        ```bash
+        sbatch run_world.sh -hpc
+        ```
+
+    - Wait until the HPC start executing the job, for that you can check the job status by executing the following command:
+
+        ```bash
+        squeue -u $USER
+
+        JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+          18041943 boost_usr ipcluste jguerre1  R    1:28:00     16 lrdn[...] 
+        ```
+
+4. You can run an extensive fault simulation by editing any of the Shadowfi scripts, setting the number of parallel tast to be executed according to the parallel world size. The following configuration split the fault injection into 128 tasks and enable the execution on the HPC cluster.
+
+    ```python
+    #TCU.s
+    create --name TCU --design-config ./config/TCU/design_config.yml
+    load --project-dir ./projects/TCU
+    elaborate
+    pnr --cmp-sel hierarchy --user-cmp-sel ./config/TCU/target_modules_3k.yml
+    tb_setup --tb-config ./config/TCU/tb_config.yml
+    fsim_setup --fsim-config ./config/TCU/sim_config.yml --run-script ./config/TCU/run.sh --sdc-check-script ./config/TCU/sdc_check.sh
+    fsim_setup --noset-run-scripts --kwargs sim_config.tasks=128 sim_config.max_num_faults=-1
+    fsim_exec --hpc
     ```
 
-4. Open the project
+5. Open `tmux` or `screen` and run SHADOWFI in an interactive SLURM JOB either using the CLI or executing an script as follows.
 
     ```bash
-    singularity run shadowfi_v1.sif
-    "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
-    Shadowfi> load --project-dir ./projects/TCU
-    ...
+    srun -N 1 -n 1 -c 10 --account=<your account> --partition=<target partition> singularity run shadowfi_v1.sif -s TCU.s
     ```
 
-5. Set the desired number of slurm jobs
+    You will see something like:
 
     ```bash
-    Shadowfi> fsim_setup --kwargs sim_config.slurm_jobs=10 sim_config.slurm.email="user@email.com" --noset-run-scripts
+    srun: job <SLURM_JOB_ID> queued and waiting for resources
     ...
+    Executing: fsim_setup --noset-run-scripts --kwargs sim_config.tasks=20 sim_config.engines=20 sim_config.max_num_faults=10
+    Parsed kwargs: {'tasks': 20, 'engines': 20, 'max_num_faults': 10}
+    Configuration saved to /leonardo/home/userexternal/jguerre1/shadowfi/projects/TCU/config.yaml
+    Executing: fsim_exec --hpc
+    run_one_task_fault_simulation: 100%|██████████| 128/128 [00:15<00:00,  1.29tasks/s] 
+    run_one_task_fault_simulat[2025-07-27 02:21:32] INFO - Simulation execution complete.
+    Fault simulation finished
     ```
 
-6. Prepare the fault injection execution
+6. Release the resources from the HPC
 
     ```bash
-    Shadowfi> fsim_exec --hpc
-    ...
-    Shadowfi> exit
-    ```
-
-7. run slurm jobs
-
-    ```bash
-    bash launch_slurm_jobs.sh
-    ...
+    scancel -u $USER #This will cancell all jobs from the current user
     ```
 
 ## Getting Started with FPGA emulations

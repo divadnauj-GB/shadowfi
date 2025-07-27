@@ -38,17 +38,11 @@ while test $# -gt 0; do
       shift
       ;;
     -s)
-        STOP="1"
+      STOP="1"
       shift
       ;;
     -hpc)
-      shift
-      if test $# -gt 0; then
-        HPC=$1
-      else
-        echo "no argument specified"
-        exit 1
-      fi
+      HPC=$1
       shift
       ;;
     *)
