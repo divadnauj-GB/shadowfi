@@ -75,8 +75,9 @@ This guide shows the basic steps for install and use SHADOWFI. You can follow an
     # uncompress into the current directory
     tar -xvzf oss-cad-suite-linux-x64-20241117.tgz
     # Add environmental variables to .bashrc
-    PWD = `pwd`
-    echo "${PWD}/oss-cad-suite/bin" >> ~/.bashrc
+    PWD=`pwd`
+    echo "export PATH=\$PATH:${PWD}/oss-cad-suite/bin" >> ~/.bashrc
+    source ~/.bashrc
     cd -
     ```
 
@@ -297,8 +298,8 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
         ```bash
         squeue -u $USER
 
-        JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-          18041943 boost_usr ipcluste jguerre1  R    1:28:00     16 lrdn[...] 
+        JOBID    PARTITION     NAME     USER     ST    TIME     NODES NODELIST(REASON)
+        18041943 boost_usr   ipcluste  jguerre1  R    1:28:00     16  lrdn[...] 
         ```
 
 4. You can run an extensive fault simulation by editing any of the Shadowfi scripts, setting the number of parallel tast to be executed according to the parallel world size. The following configuration split the fault injection into 128 tasks and enable the execution on the HPC cluster.
@@ -318,7 +319,7 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
 5. Open `tmux` or `screen` and run SHADOWFI in an interactive SLURM JOB either using the CLI or executing an script as follows.
 
     ```bash
-    srun -N 1 -n 1 -c 10 --account=<your account> --partition=<target partition> singularity run shadowfi_v1.sif -s TCU.s
+    srun -N 1 -n 1 -c 10 --account=<your account> --partition=<target --time=<hh:mm:ss> partition> singularity run shadowfi_v1.sif -s TCU.s
     ```
 
     You will see something like:
@@ -342,3 +343,100 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     ```
 
 ## Getting Started with FPGA emulations
+
+Shadowfi has initial support for the HyperFPGA system, more information about the HyperFPGA can be [found here](https://indico.cern.ch/event/1253805/contributions/5556273/attachments/2726155/4741772/HyperFPGA_CERN_SoC.pptx.pdf). We are working to extend ShadowFI to other FPGAs as A Service (FAAS) systems such as AWS EC2, cloudFPGA among others.
+
+The following steps will guide you on how to execute fault emulation of several benchmarks included by ShadowFI.
+
+1. Login into the HyperFPGA platform:
+
+    <div style="text-align: center;">
+        <img src="./doc/HyperFPGA-Sign-In.png" width="400" >
+    </div>
+
+2. Open a shell and clone the ShSHADOWFI repository
+
+    ```bash
+    git clone https://github.com/divadnauj-GB/shadowfi.git
+    cd shadowfi
+    ```
+
+3. Download and install OSS CAD Suite, for a customize intalation you can also the guidelines introduced in <https://github.com/YosysHQ/oss-cad-suite-build>
+
+    ```bash
+    cd sif
+    wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2024-11-17/oss-cad-suite-linux-x64-20241117.tgz
+    # uncompress into the current directory
+    tar -xvzf oss-cad-suite-linux-x64-20241117.tgz
+    # Add environmental variables to .bashrc
+    PWD=`pwd`
+    echo "export PATH=\$PATH:${PWD}/oss-cad-suite/bin" >> ~/.bashrc
+    source ~/.bashrc
+    cd -
+    ```
+
+4. Create a conda environmet with all the necesary packages
+
+    ```bash
+    conda create -n SHADOWFI python=3.11
+    conda activate SHADOWFI
+    pip install -r requirements 
+    ```
+
+5. Run SHADOWFI in CLI mode
+
+    ```bash
+    conda activate SHADOWFI
+    python shadowfi_shell.py 
+    # the following prompt will appear
+    "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
+    Shadowfi> 
+    ```
+
+Until here you have succesfully prepare ShadowFI for HyperFPGA integration. You can use interactiveley Shadowfi for inserting saboteurs on the target CUT. Let's walk the the procedure for running a complete fault emulation on FPGA devices for the TCU benchmark.
+
+1. Execute the following commands either using the CLI interface or the scripting support in Shadowfi. 
+
+    ```bash
+    Shadowfi> create --name TCU --design-config ./config/TCU/design_config.yml
+    Shadowfi> load --project-dir ./projects/TCU
+    Shadowfi>  elaborate
+    Shadowfi> pnr --cmp-sel hierarchy --user-cmp-sel ./config/TCU/target_modules_3k.yml
+    ```
+
+2. Copy all files generated under the `.projects/TCU/sbtr/` directory to `benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11/sbtr/`:
+
+    ```bash
+    cp -r .projects/TCU/sbtr/* ./benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11/sbtr/
+    ```
+
+3. Change the diretory to the vivado project and recreate the project
+
+    ```bash
+    cd ./benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11
+    vivado -mode tcl -source recreate_project.tcl
+    ```
+
+4. Once the projects has been recreated you can compile and generate the XSA file required by the HyperFPGA nodes.
+
+    ```bash
+    vivado -mode batch -source build_project.tcl
+    # This will take around 30 minutes
+    ```
+
+    After compiling, ~30 min later, vivado will generate the file called `TCU_1_SBTR-3be11.xsa`.
+
+5. Copy the *.XSA file to the `~/bistreams` directory
+
+    ```bash
+    cp ./TCU_1_SBTR-3be11.xsa ~/bitstreams
+    ```
+
+6. Change directoy to ShadowFi root directory and start the CLI mode
+
+    ```bash
+    cd <path to ShadowFI>
+    python shadowfi_shell.py
+    ...
+    Shadowfi>
+    ```

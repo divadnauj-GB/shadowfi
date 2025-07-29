@@ -359,6 +359,9 @@ def run_pnr(config,args=None):
     logging.info(f"Number of target components: {num_target_components}, Total bit shift: {total_bit_shift}")
     config['project']['sim_config']['num_target_components'] = num_target_components
     config['project']['sim_config']['total_bit_shift'] = total_bit_shift
+
+    config['project']['emu_config']['num_target_components'] = num_target_components
+    config['project']['emu_config']['total_bit_shift'] = total_bit_shift
     save_config(config, config['project']['proj_config_file'])
 
     # Simulated logic here

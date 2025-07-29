@@ -69,6 +69,20 @@ project:
       target_modules: 
     fault_model: S@
     max_num_faults: -1
+  emu_config:
+    engines: 1
+    target_nodes: #<List of target nodes>
+    - 1
+    design_name: #Vivado design name
+    path_file: #path to python module with engine functions
+    load_args:
+       work_dir: #work dir of dataset
+    write_args:
+       work_dir: #work dir of dataset
+       mode: # mode, golden or faulty
+    max_num_faults: #max num of fault to simulate
+    sim_runtime: #sim runtime
+    tasks: #Num of tasks
 
 
     

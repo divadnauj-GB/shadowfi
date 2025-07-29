@@ -181,9 +181,9 @@ def run_one_task_fault_simulation(work_dir, fi_config={}):
 
     os.chdir(work_path_dir)
     with open(fault_list_name, "r") as f:
-        fault_list = f.readlines()
-    if len(fault_list) > 0:
-        fault_list = [fault.strip().split(",") for fault in fault_list]
+        fault_list_input = f.readlines()
+    if len(fault_list_input) > 0:
+        fault_list = [fault.strip().split(",") for fault in fault_list_input]
     else:
         print("No fault list found")
         return
