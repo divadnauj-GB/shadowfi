@@ -319,7 +319,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     nodes_selected = emu_config.get('target_nodes',[1,2])
     work_dir_client = emu_config.get('work_dir_client', '~/work')
     design_name = emu_config.get('design_name', 'TCU_1_SBTR')
-    module_path_file = os.path.abspath(emu_config.get('path_file',"./run.py"))
+    module_path_file = os.path.abspath(emu_config.get('path_file',"./config/fpga_engine.py"))
 
 
     work_dir_clean = work_dir
@@ -374,20 +374,11 @@ def run_golden_emulation(work_dir, fi_config={}):
 
 
 def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
-    #sys.executable
-    # import sys
     import os
     from core.hyperfpga.clusterconf.clusterconf import hyperfpga, get_nodes
     from core.hyperfpga.comblock.comblock import Comblock
-    # sys.path.insert(0, os.path.expanduser("~"))
-    # sys.path.insert(0, os.path.expanduser("~/Comblock/"))
-    # #import asyncssh
-    # from hyperfpga_conf.clusterconf import hyperfpga, get_nodes 
+
     
-    #import ipyparallel as ipp
-    #from comblock import Comblock
-    
-    shadowfi_root = fi_config.get('shadowfi_root','')
     sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
     emu_config = fi_config.get('project',{}).get('emu_config', {})
     fault_list_name = fi_config.get('project', {}).get('fault_list_name', 'fault_list.csv')
@@ -398,16 +389,10 @@ def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
     num_tasks = emu_config.get('tasks', 2)
     nodes_selected = emu_config.get('target_nodes',[1,2])
     work_dir_client = emu_config.get('work_dir_client', '~/work')
-    #work_dir_client = os.path.abspath(os.path.join(work_dir_client_init,"../"))
-    work_dir_host = emu_config.get('work_dir_host', '')
-    design_name = emu_config.get('design_name', 'TCU_1_SBTR')
-    module_name = emu_config.get('test_module','test_module')
-    module_path_file = os.path.abspath(emu_config.get('path_file',"./run.py"))
 
     #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
     work_dir_clean = work_dir
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean))
-    work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
     # check if multiple tasks are required
     if num_tasks >= 1:
         # read the fault list
@@ -444,7 +429,7 @@ def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
                 from struct import unpack
                 from comblock import Comblock
             # Send and write the module to each engine
-            nodes.execute(exec_ipp.format(path=work_dir_client,module_name=module_name))
+            nodes.execute(exec_ipp.format(path=work_dir_client,module_name="fpga_engine"))
             asyncresult = nodes.map_async(run_one_task_fault_emulation,[flist_id for flist_id in fault_list_task],[cut_test_data_info for _ in range(num_tasks)],[golden_data for _ in range(num_tasks)], [fi_config for _ in range(num_tasks)])
             asyncresult.wait_interactive()
             logging.info(asyncresult)
