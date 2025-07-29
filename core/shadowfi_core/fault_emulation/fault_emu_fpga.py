@@ -6,9 +6,10 @@ import importlib.util
 from warnings import warn
 import asyncio
 import time
-
-
-from core.shadowfi_utils.constants import ROOT
+import logging
+from ipyparallel import require
+from core.shadowfi_core.fault_emulation.fi_manager_fpga import *
+from core.shadowfi_core.fault_emulation.run import *
 
 
 exec_ipp="""
@@ -21,7 +22,10 @@ if cwd not in sys.path:
 if os.path.expanduser("{path}") not in sys.path:
     sys.path.insert(0, os.path.expanduser("{path}"))
     
-from {module_name} import *
+#from {module_name} import apply_test_data
+from core.shadowfi_core.fault_emulation.fi_manager_fpga import *
+from core.shadowfi_core.fault_emulation.run import *
+
 """
 
 
@@ -41,12 +45,14 @@ def read_test_data(args={}):
     module_name = emu_config.get('test_module','test_module')
     module_path_file = emu_config.get('path_file',"./run.py")
     load_data_args = emu_config.get('load_args',{})
+    work_dir_clean = os.path.abspath(project.get('work_dir', ''))
+    logging.info(f"{module_name}, {module_path_file}")
     test_module = import_from_path(module_name, module_path_file)
-    cut_input_data = test_module.load_data(load_data_args)
+    cut_input_data = test_module.load_data(load_data_args,work_dir=work_dir_clean)
     return(cut_input_data)
 
 
-def write_sdc_data(args={},result_sim=[]):
+def write_sdc_data(args={},results_tasks=[]):
     project = args.get('project',{})
     emu_config = project.get('emu_config',{})
     module_name = emu_config.get('test_module','test_module')
@@ -54,37 +60,40 @@ def write_sdc_data(args={},result_sim=[]):
     write_args = emu_config.get('write_args',{})
     test_module = import_from_path(module_name, module_path_file)
     work_dir_clean = os.path.abspath(project.get('work_dir', ''))
-    for result in result_sim:
-        fault_descriptor = result[0].split(',')
-        tmp_dir = f"{work_dir_clean}/C{int(fault_descriptor)}_B{int(fault_descriptor[5])}_F{int(fault_descriptor[6])}"
-        os.system(f"mkdir -p {work_dir_clean}/tmp")
-        write_args['work_dir']=f"{work_dir_clean}/tmp"
-        test_module.write_result(write_args,result[2])
-        shutil.rmtree(tmp_dir, True)
-        os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
-        shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
-        os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/logs/")
-        shutil.rmtree(tmp_dir, True)
+    os.system(f"mkdir -p {work_dir_clean}/logs")
+    for results_task in results_tasks:
+        for fault_result in results_task:
+            if fault_result[1] == "SDC":
+                fault_descriptor = fault_result[0].split(',')
+                tmp_dir = f"{work_dir_clean}/C{int(fault_descriptor[0])}_B{int(fault_descriptor[5])}_F{int(fault_descriptor[6])}"
+                os.system(f"mkdir -p {work_dir_clean}/tmp")
+                test_module.write_result(write_args,fault_result[2],work_dir=f"{work_dir_clean}/tmp")
+                shutil.rmtree(tmp_dir, True)
+                os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
+                shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
+                os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/logs/")
+                shutil.rmtree(tmp_dir, True)
+    os.system(f"mv {work_dir_clean}/logs {work_dir_clean}/../logs/")
 
 def write_golden_data(args={},result_sim=[]):
-    project = args.get('project',{})
-    emu_config = project.get('emu_config',{})
-    module_name = emu_config.get('test_module','test_module')
-    module_path_file = emu_config.get('path_file',"./run.py")
-    write_args = emu_config.get('write_args',{})
-    test_module = import_from_path(module_name, module_path_file)
-    work_dir_clean = os.path.abspath(project.get('work_dir', ''))
-    for result in result_sim:
-        tmp_dir = f"{work_dir_clean}/golden"
-        os.system(f"mkdir -p {work_dir_clean}/tmp")
-        write_args['work_dir']=f"{work_dir_clean}/tmp"
-        test_module.write_result(write_args,result[0])
-        shutil.rmtree(tmp_dir, True)
-        os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
-        shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
-        os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/logs/")
-        shutil.rmtree(tmp_dir, True)
+        project = args.get('project',{})
+        emu_config = project.get('emu_config',{})
+        module_name = emu_config.get('test_module','test_module')
+        module_path_file = emu_config.get('path_file',"./run.py")
+        write_args = emu_config.get('write_args',{})
+        test_module = import_from_path(module_name, module_path_file)
+        work_dir_clean = os.path.abspath(project.get('work_dir', ''))
+        for result in result_sim:
+            tmp_dir = f"{work_dir_clean}/golden"
+            shutil.rmtree(tmp_dir, True)
+            os.system(f"mkdir -p {work_dir_clean}/golden")
+            test_module.write_result(write_args,result,work_dir=f"{work_dir_clean}/golden")
+            #os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
+            shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
+            os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/../logs/")
+            shutil.rmtree(tmp_dir, True)
 
+"""
 def create_fault_descriptor(fi_structure):
     modules = fi_structure["modules"]
     sr_leght = fi_structure["sr_lenght"]
@@ -120,7 +129,9 @@ def create_fault_descriptor(fi_structure):
             f_descriptor.append(0)
     return(f_descriptor) 
 
+
 def fi_sbtr_config(fault_descriptor):
+    from comblock import Comblock
     def fi_port_conf(cb,RSTN=0, TFEN=0, SREN=0):
         FI_PORT = ((RSTN<<2)|(TFEN<<1)|(SREN))
         cb.write_reg(0,FI_PORT)
@@ -163,7 +174,7 @@ def fi_sbtr_config(fault_descriptor):
     for _ in range(2):
         clk_gen(cb1,FI_PORT)   
 
-
+"""
 
 def run_one_task_fault_free_emulation(input_data={},fi_config={}):
     emu_config = fi_config.get('project',{}).get('emu_config', {})
@@ -188,13 +199,11 @@ def run_one_task_fault_free_emulation(input_data={},fi_config={}):
         result_data=apply_test_data(input_data)
     except Exception as error:
         raise(error)
-
-
     return result_data
 
 
 
-def run_one_task_fault_emulation(fault_list, input_data={}, golden_results={},fi_config={}):
+def run_one_task_fault_emulation(fault_list_input: list, input_data={}, golden_results={},fi_config={}):
     emu_config = fi_config.get('project',{}).get('emu_config', {})
     max_num_inj = emu_config.get('max_num_faults', -1)
     num_target_components = int(emu_config.get('num_target_components', 0))
@@ -213,6 +222,19 @@ def run_one_task_fault_emulation(fault_list, input_data={}, golden_results={},fi
         "bit_pos": 0,
         "seu_time": 0,
     }
+    
+    with open(os.path.expanduser("~/stdout.txt"),"w") as fp:
+        print(f"{len(fault_list_input)}",file=fp)
+        print(fault_list_input,file=fp)
+        for fault in fault_list_input:
+            print(f"{fault}",file=fp)
+            print(fault.strip().split(","), file=fp)
+    
+    if len(fault_list_input) > 0:
+        fault_list = [fault.strip().split(",") for fault in fault_list_input]
+    else:
+        return ([[{},{},{}]])
+        
     for idx, fault_info in enumerate(fault_list):
         # generate one fault descriptor
         # List_injections.append([idx, inst, module, start_bit_pos, end_bit_pos, fault_index, ftype, seutime])
@@ -274,12 +296,15 @@ async def sshcmd(host, username: str, client_keys: str, cmd: str):
 
 
 def run_golden_emulation(work_dir, fi_config={}):
-    #sys.executable
+    import sys
+    import os
     sys.path.insert(0, os.path.expanduser("~"))
     sys.path.insert(0, os.path.expanduser("~/Comblock/"))
-    from hyperfpga_conf.clusterconf import hyperfpga, get_nodes
-    #import ipyparallel as ipp
-    from comblock import Comblock
+    from hyperfpga_conf.clusterconf import hyperfpga, get_nodes, NODES_PATH
+    #from hyperfpga_conf.clusterconf import *
+    #NODES_PATH = "~/"
+    
+    shadowfi_root = fi_config.get('shadowfi_root','')    
     
     sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
     emu_config = fi_config.get('project',{}).get('emu_config', {})
@@ -291,24 +316,27 @@ def run_golden_emulation(work_dir, fi_config={}):
     num_tasks = 1
     nodes_selected = emu_config.get('target_nodes',[1,2])
     work_dir_client = emu_config.get('work_dir_client', '~/work')
+    #work_dir_client = os.path.abspath(os.path.join(work_dir_client_init,"../"))
+    work_dir_host = emu_config.get('work_dir_host', '')
     design_name = emu_config.get('design_name', 'TCU_1_SBTR')
+    module_name = emu_config.get('test_module','test_module')
+    module_path_file = os.path.abspath(emu_config.get('path_file',"./run.py"))
 
-    #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
+
     work_dir_clean = work_dir
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean))
     work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
     # check if multiple tasks are required
     if num_tasks >= 1:
-        # create hidden work directories  
-        cut_test_data_info = read_test_data(emu_config)
+        cut_test_data_info = read_test_data(fi_config)
         input_data_list = []
         for _ in range(num_tasks):
             input_data_list.append(cut_test_data_info)
             
         # run the tasks
 
-        nodes = get_nodes()
-        testnode = [nodes[k] for k in nodes_selected]
+        nodes_config = get_nodes()
+        testnode = [nodes_config[k] for k in nodes_selected]
         cluster = hyperfpga(testnode, design_name ,n_engines = len(testnode), engines_per_node = 1)
         cluster.create_profile()
         async def myfunction():
@@ -322,38 +350,42 @@ def run_golden_emulation(work_dir, fi_config={}):
             sshkey = cluster.SSH_KEY_PATH
             for node in testnode:
                 asyncio.run(sshcmd(node['ip'],uname, sshkey,f"rm -rf {work_dir_client}"))
-                asyncio.run(sshcmd(node['ip'],uname, sshkey,f"mkdir -p {work_dir_client}"))
+                asyncio.run(sshcmd(node['ip'],uname, sshkey,f"rm -rf ~/core"))
                 asyncio.run(scp_handler(node['ip'],uname, sshkey, src_work_path_dir,work_dir_client,True))
-                asyncio.run(scp_handler(node['ip'],uname, sshkey, src_work_path_dir,work_dir_client,False))
-        
+                asyncio.run(scp_handler(node['ip'],uname, sshkey, f"{shadowfi_root}/core","~",True))
+                asyncio.run(sshcmd(node['ip'],uname, sshkey,f"mkdir -p {work_dir_client}"))
+                asyncio.run(scp_handler(node['ip'],uname, sshkey, module_path_file,"~/core/shadowfi_core/fault_emulation",False))
+ 
             nodes = rc[:]
-            nodes.push({'run_one_task_fault_emulation':run_one_task_fault_emulation, 'create_fault_descriptor':create_fault_descriptor, 'fi_sbtr_config':fi_sbtr_config, })
             with nodes.sync_imports():
                 import os
                 from struct import unpack
                 from comblock import Comblock
             # Send and write the module to each engine
-            #print(exec_ipp.format(path="~/work",module_name=module_name))
-            module_name = emu_config.get('test_module','test_module')
-            nodes.execute(exec_ipp.format(path=work_dir_client,module_name=module_name))
+            logging.info(exec_ipp.format(path=work_dir_client,module_name="module_name"))
+            nodes.execute(exec_ipp.format(path=work_dir_client,module_name="module_name"))
             asyncresult = nodes.map_async(run_one_task_fault_free_emulation,input_data_list,[fi_config])
             asyncresult.wait_interactive()
             results = asyncresult.get()
-        
+        logging.info(asyncresult)
         write_golden_data(fi_config,results)
 
+    return(results[0])
 
 
-
-def run_fault_emulation(work_dir, fi_config={}):
+def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
     #sys.executable
+    import sys
+    import os
     sys.path.insert(0, os.path.expanduser("~"))
     sys.path.insert(0, os.path.expanduser("~/Comblock/"))
     #import asyncssh
-    from hyperfpga_conf.clusterconf import hyperfpga, get_nodes
-    #import ipyparallel as ipp
+    from hyperfpga_conf.clusterconf import hyperfpga, get_nodes 
+    
+    import ipyparallel as ipp
     from comblock import Comblock
     
+    shadowfi_root = fi_config.get('shadowfi_root','')
     sbtr_config = fi_config.get('project',{}).get('sbtr_config', {})
     emu_config = fi_config.get('project',{}).get('emu_config', {})
     fault_list_name = fi_config.get('project', {}).get('fault_list_name', 'fault_list.csv')
@@ -364,7 +396,11 @@ def run_fault_emulation(work_dir, fi_config={}):
     num_tasks = emu_config.get('tasks', 2)
     nodes_selected = emu_config.get('target_nodes',[1,2])
     work_dir_client = emu_config.get('work_dir_client', '~/work')
+    #work_dir_client = os.path.abspath(os.path.join(work_dir_client_init,"../"))
+    work_dir_host = emu_config.get('work_dir_host', '')
     design_name = emu_config.get('design_name', 'TCU_1_SBTR')
+    module_name = emu_config.get('test_module','test_module')
+    module_path_file = os.path.abspath(emu_config.get('path_file',"./run.py"))
 
     #work_dir_clean = os.path.abspath(fi_config.get('project', {}).get('work_dir', ''))
     work_dir_clean = work_dir
@@ -381,52 +417,41 @@ def run_fault_emulation(work_dir, fi_config={}):
                 return
             else:
                 fault_list_task = [fault_list[task_id::num_tasks] for task_id in range(num_tasks)]
-        
+
         # create hidden work directories  
-        cut_test_data_info = read_test_data(emu_config)
+        cut_test_data_info = read_test_data(fi_config)
         input_data_list = []
         for _ in range(num_tasks):
             input_data_list.append(cut_test_data_info)
-            
         # run the tasks
-
-        nodes = get_nodes()
-        testnode = [nodes[k] for k in nodes_selected]
+        """
+        nodes_config = get_nodes()
+        testnode = [nodes_config[k] for k in nodes_selected]
         cluster = hyperfpga(testnode, design_name ,n_engines = len(testnode), engines_per_node = 1)
         cluster.create_profile()
         async def myfunction():
             await cluster.configure()
         asyncio.run(myfunction())
         with cluster.start_and_connect_sync() as rc:
-            #rc = cluster.start_and_connect_sync() 
-            print(cluster.NODE_USER_NAME)
-            print(cluster.SSH_KEY_PATH)
-            uname = cluster.NODE_USER_NAME
-            sshkey = cluster.SSH_KEY_PATH
-            for node in testnode:
-                asyncio.run(sshcmd(node['ip'],uname, sshkey,f"rm -rf {work_dir_client}"))
-                asyncio.run(sshcmd(node['ip'],uname, sshkey,f"mkdir -p {work_dir_client}"))
-                asyncio.run(scp_handler(node['ip'],uname, sshkey, src_work_path_dir,work_dir_client,True))
-                asyncio.run(scp_handler(node['ip'],uname, sshkey, src_work_path_dir,work_dir_client,False))
-        
+        """
+        with ipp.Cluster(profile="ssh",n=len(nodes_selected)) as rc:
             nodes = rc[:]
-            nodes.push({'run_one_task_fault_emulation':run_one_task_fault_emulation, 'parse_fault':parse_fault, 'create_fault_descriptor':create_fault_descriptor, 'fi_sbtr_config':fi_sbtr_config, })
             with nodes.sync_imports():
                 import os
                 from struct import unpack
                 from comblock import Comblock
             # Send and write the module to each engine
-            #print(exec_ipp.format(path="~/work",module_name=module_name))
-            module_name = emu_config.get('test_module','test_module')
             nodes.execute(exec_ipp.format(path=work_dir_client,module_name=module_name))
-            asyncresult = nodes.map_async(run_one_task_fault_emulation,fault_list_task,input_data_list,[fi_config for _ in range(len(input_data_list))])
+            asyncresult = nodes.map_async(run_one_task_fault_emulation,[flist_id for flist_id in fault_list_task],[cut_test_data_info for _ in range(num_tasks)],[golden_data for _ in range(num_tasks)], [fi_config for _ in range(num_tasks)])
             asyncresult.wait_interactive()
-            results = asyncresult.get()
+            logging.info(asyncresult)
+            results_tasks = asyncresult.get()
         
         with open(f"{work_dir_clean}/{fault_model}_{F_sim_report}","w") as fp:
-            for data in results:
-                fault_descriptor = data[0]
-                fi_class = data[1]
-                fp.write(f"{fault_descriptor},{fi_class}\n")
+            for result_task in results_tasks:
+                for fault_result in result_task:
+                    fault_descriptor = fault_result[0]
+                    fi_class = fault_result[1]
+                    fp.write(f"{fault_descriptor},{fi_class}\n")
 
-        write_sdc_data(fi_config,results)
+        write_sdc_data(fi_config,results_tasks)

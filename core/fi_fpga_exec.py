@@ -15,7 +15,7 @@ def fpga_execute(config):
     work_dir_root = config.get('project', {}).get('work_dir', '')
 
     #run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
-    run_golden_emulation(work_dir=work_dir_root, fi_config=config)
-    run_fault_emulation(work_dir=work_dir_root, fi_config=config)
+    golden_results=run_golden_emulation(work_dir=work_dir_root, fi_config=config)
+    run_fault_emulation(work_dir=work_dir_root, fi_config=config, golden_data=golden_results)
 
     logging.info(' FPGA execution complete.')
