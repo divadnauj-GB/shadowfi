@@ -11,7 +11,9 @@ from ipyparallel import require
 import ipyparallel as ipp
 
 from core.hyperfpga.fi_manager_fpga import *
-from core.hyperfpga.run import *
+#from core.hyperfpga.run import *
+
+from core.hyperfpga.fpga_engine import *
 
 
 exec_ipp="""
@@ -26,7 +28,8 @@ if os.path.expanduser("{path}") not in sys.path:
     
 #from {module_name} import apply_test_data
 from core.hyperfpga.fi_manager_fpga import *
-from core.hyperfpga.run import *
+#from core.hyperfpga.run import *
+from core.hyperfpga.fpga_engine import *
 
 """
 
@@ -57,19 +60,19 @@ def read_test_data(args={}):
 def write_sdc_data(args={},results_tasks=[]):
     project = args.get('project',{})
     emu_config = project.get('emu_config',{})
-    module_name = emu_config.get('test_module','test_module')
-    module_path_file = emu_config.get('path_file',"./run.py")
     write_args = emu_config.get('write_args',{})
-    test_module = import_from_path(module_name, module_path_file)
+    write_args['work_dir'] = f"{write_args['work_dir']}/tmp"
+
     work_dir_clean = os.path.abspath(project.get('work_dir', ''))
     os.system(f"mkdir -p {work_dir_clean}/logs")
+    FPGA_ENGINE = emu_config.get('fpga_engine',fpga_engine)
     for results_task in results_tasks:
         for fault_result in results_task:
             if fault_result[1] == "SDC":
                 fault_descriptor = fault_result[0].split(',')
                 tmp_dir = f"{work_dir_clean}/C{int(fault_descriptor[0])}_B{int(fault_descriptor[5])}_F{int(fault_descriptor[6])}"
                 os.system(f"mkdir -p {work_dir_clean}/tmp")
-                test_module.write_result(write_args,fault_result[2],work_dir=f"{work_dir_clean}/tmp")
+                FPGA_ENGINE.write_result(write_args,fault_result[2])
                 shutil.rmtree(tmp_dir, True)
                 os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
                 shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
@@ -80,16 +83,15 @@ def write_sdc_data(args={},results_tasks=[]):
 def write_golden_data(args={},result_sim=[]):
         project = args.get('project',{})
         emu_config = project.get('emu_config',{})
-        module_name = emu_config.get('test_module','test_module')
-        module_path_file = emu_config.get('path_file',"./run.py")
         write_args = emu_config.get('write_args',{})
-        test_module = import_from_path(module_name, module_path_file)
+        write_args['work_dir'] = f"{write_args['work_dir']}/golden"
         work_dir_clean = os.path.abspath(project.get('work_dir', ''))
+        FPGA_ENGINE = emu_config.get('fpga_engine',fpga_engine)
         for result in result_sim:
             tmp_dir = f"{work_dir_clean}/golden"
             shutil.rmtree(tmp_dir, True)
             os.system(f"mkdir -p {work_dir_clean}/golden")
-            test_module.write_result(write_args,result,work_dir=f"{work_dir_clean}/golden")
+            FPGA_ENGINE.write_result(write_args,result)
             #os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
             shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
             os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/../logs/")
@@ -302,11 +304,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     import os
     from core.hyperfpga.clusterconf.clusterconf import hyperfpga, get_nodes
     from core.hyperfpga.comblock.comblock import Comblock
-    # sys.path.insert(0, os.path.expanduser("~"))
-    # sys.path.insert(0, os.path.expanduser("~/Comblock/"))
-    # from hyperfpga_conf.clusterconf import hyperfpga, get_nodes, NODES_PATH
-    #from hyperfpga_conf.clusterconf import *
-    #NODES_PATH = "~/"
+
     
     shadowfi_root = fi_config.get('shadowfi_root','')    
     
@@ -316,23 +314,20 @@ def run_golden_emulation(work_dir, fi_config={}):
     fault_model = sbtr_config.get('fault_model', 'S@')
     fault_list_name = f"{fault_model}_{fault_list_name}"
 
-    F_sim_report = fi_config.get('project', {}).get('fault_sim_report', 'fsim_report.csv')
     num_tasks = 1
     nodes_selected = emu_config.get('target_nodes',[1,2])
     work_dir_client = emu_config.get('work_dir_client', '~/work')
-    #work_dir_client = os.path.abspath(os.path.join(work_dir_client_init,"../"))
-    work_dir_host = emu_config.get('work_dir_host', '')
     design_name = emu_config.get('design_name', 'TCU_1_SBTR')
-    module_name = emu_config.get('test_module','test_module')
     module_path_file = os.path.abspath(emu_config.get('path_file',"./run.py"))
 
 
     work_dir_clean = work_dir
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean))
-    work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
     # check if multiple tasks are required
     if num_tasks >= 1:
-        cut_test_data_info = read_test_data(fi_config,)
+        CUT_engine = fpga_engine()
+        cut_test_data_info = CUT_engine.load_test_data(emu_config.get('load_args',{}))
+
         input_data_list = []
         for _ in range(num_tasks):
             input_data_list.append(cut_test_data_info)
@@ -372,6 +367,7 @@ def run_golden_emulation(work_dir, fi_config={}):
             asyncresult.wait_interactive()
             results = asyncresult.get()
         logging.info(asyncresult)
+        fi_config['project']['emu_config']['fpga_engine'] = CUT_engine
         write_golden_data(fi_config,results)
 
     return(results[0])
@@ -425,7 +421,8 @@ def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
                 fault_list_task = [fault_list[task_id::num_tasks] for task_id in range(num_tasks)]
 
         # create hidden work directories  
-        cut_test_data_info = read_test_data(fi_config)
+        CUT_engine = fpga_engine()
+        cut_test_data_info = CUT_engine.load_test_data(emu_config.get('load_args',{}))
         input_data_list = []
         for _ in range(num_tasks):
             input_data_list.append(cut_test_data_info)
@@ -459,5 +456,5 @@ def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
                     fault_descriptor = fault_result[0]
                     fi_class = fault_result[1]
                     fp.write(f"{fault_descriptor},{fi_class}\n")
-
+        fi_config['project']['emu_config']['fpga_engine'] = CUT_engine        
         write_sdc_data(fi_config,results_tasks)
