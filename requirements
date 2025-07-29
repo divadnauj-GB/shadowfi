@@ -5,3 +5,4 @@ pillow == 11.0.0
 memory_profiler
 ipyparallel
 asyncssh
+matplotlib

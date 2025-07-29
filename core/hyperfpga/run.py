@@ -2,7 +2,7 @@ import os
 import sys
 import json
 
-
+from core.hyperfpga.comblock.comblock import *
 
 def load_data(args={},work_dir="~/work"):
     #work_dir = args.get('work_dir',"~/work")
@@ -45,7 +45,6 @@ def write_result(args={},wite_data={},work_dir="~/work"):
             
 
 def apply_test_data(input_args={}):
-    from comblock import Comblock
     data_input = input_args.get('data',[])
     cb0 = Comblock(0)
     def reset_SVC(cb):

@@ -7,7 +7,7 @@ import asyncio
 import time
 import logging
 
-
+from core.hyperfpga.comblock.comblock import *
 
 def create_fault_descriptor(fi_structure):
     modules = fi_structure["modules"]
@@ -48,7 +48,6 @@ def create_fault_descriptor(fi_structure):
 
 
 def fi_sbtr_config(fault_descriptor):
-    from comblock import Comblock
     def fi_port_conf(cb,RSTN=0, TFEN=0, SREN=0):
         FI_PORT = ((RSTN<<2)|(TFEN<<1)|(SREN))
         cb.write_reg(0,FI_PORT)

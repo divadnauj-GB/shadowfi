@@ -1,7 +1,7 @@
 import logging
 import os
 
-from core.shadowfi_core.fault_emulation.fault_emu_fpga import(
+from core.hyperfpga.fault_emu_fpga import(
     run_fault_emulation,
     run_golden_emulation
 )
