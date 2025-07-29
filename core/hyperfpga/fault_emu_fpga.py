@@ -12,8 +12,7 @@ import ipyparallel as ipp
 
 from core.hyperfpga.fi_manager_fpga import *
 from core.hyperfpga.run import *
-from core.hyperfpga.clusterconf.clusterconf import *
-from core.hyperfpga.comblock.comblock import *
+
 
 exec_ipp="""
 import sys
@@ -26,8 +25,8 @@ if os.path.expanduser("{path}") not in sys.path:
     sys.path.insert(0, os.path.expanduser("{path}"))
     
 #from {module_name} import apply_test_data
-from core.shadowfi_core.fault_emulation.fi_manager_fpga import *
-from core.shadowfi_core.fault_emulation.run import *
+from core.hyperfpga.fi_manager_fpga import *
+from core.hyperfpga.run import *
 
 """
 
@@ -300,7 +299,9 @@ async def sshcmd(host, username: str, client_keys: str, cmd: str):
 
 def run_golden_emulation(work_dir, fi_config={}):
     # import sys
-    # import os
+    import os
+    from core.hyperfpga.clusterconf.clusterconf import hyperfpga, get_nodes
+    from core.hyperfpga.comblock.comblock import Comblock
     # sys.path.insert(0, os.path.expanduser("~"))
     # sys.path.insert(0, os.path.expanduser("~/Comblock/"))
     # from hyperfpga_conf.clusterconf import hyperfpga, get_nodes, NODES_PATH
@@ -331,7 +332,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     work_dir_rel = os.path.abspath(fi_config.get('project', {}).get('root_proj_dir', ''))
     # check if multiple tasks are required
     if num_tasks >= 1:
-        cut_test_data_info = read_test_data(fi_config)
+        cut_test_data_info = read_test_data(fi_config,)
         input_data_list = []
         for _ in range(num_tasks):
             input_data_list.append(cut_test_data_info)
@@ -379,7 +380,9 @@ def run_golden_emulation(work_dir, fi_config={}):
 def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
     #sys.executable
     # import sys
-    # import os
+    import os
+    from core.hyperfpga.clusterconf.clusterconf import hyperfpga, get_nodes
+    from core.hyperfpga.comblock.comblock import Comblock
     # sys.path.insert(0, os.path.expanduser("~"))
     # sys.path.insert(0, os.path.expanduser("~/Comblock/"))
     # #import asyncssh
