@@ -1,0 +1,17 @@
+emu_config:
+    engines: 1
+    target_nodes: 
+    - 1
+    design_name: TCU_1_SBTR
+    path_file: ./config/TCU/emu_config.py
+    load_args:
+       work_dir: ./projects/TCU/work
+    write_args:
+       work_dir: ./projects/TCU/work
+       mode: golden
+    max_num_faults: -1
+    sim_runtime: 10000
+    tasks: 2
+  
+    
+  
