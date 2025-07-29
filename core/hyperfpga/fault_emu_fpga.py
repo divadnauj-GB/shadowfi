@@ -182,9 +182,9 @@ def fi_sbtr_config(fault_descriptor):
 
 def run_one_task_fault_free_emulation(input_data={},fi_config={}):
     emu_config = fi_config.get('project',{}).get('emu_config', {})
-    max_num_inj = emu_config.get('max_num_faults', -1)
     num_target_components = int(emu_config.get('num_target_components', 0))
     total_bit_shift = int(emu_config.get('total_bit_shift', 0))
+    fpga_engine_obj = emu_config.get('fpga_engine',fpga_engine)
     
     fi_structure = {
         "modules": num_target_components,  # 
@@ -200,7 +200,7 @@ def run_one_task_fault_free_emulation(input_data={},fi_config={}):
     try:
         f_descriptor=create_fault_descriptor(fi_structure)
         fi_sbtr_config(f_descriptor)
-        result_data=apply_test_data(input_data)
+        result_data=fpga_engine_obj.run(input_data)
     except Exception as error:
         raise(error)
     return result_data
@@ -212,7 +212,8 @@ def run_one_task_fault_emulation(fault_list_input: list, input_data={}, golden_r
     max_num_inj = emu_config.get('max_num_faults', -1)
     num_target_components = int(emu_config.get('num_target_components', 0))
     total_bit_shift = int(emu_config.get('total_bit_shift', 0))
-    
+    fpga_engine_obj = emu_config.get('fpga_engine',fpga_engine)
+
     sdc_count = 0
     masked = 0
     simulation_report = []
@@ -252,8 +253,8 @@ def run_one_task_fault_emulation(fault_list_input: list, input_data={}, golden_r
         f_descriptor=create_fault_descriptor(fi_structure)
         fi_sbtr_config(f_descriptor)
         try:
-            result_data=apply_test_data(input_data)
-            fi_class=sdc_check(result_data,golden_results)
+            result_data=fpga_engine_obj.run(input_data)
+            fi_class=fpga_engine_obj.sdc_check(result_data,golden_results)
         except Exception as error:
             fi_class = "DUE"
             result_data={}
@@ -327,7 +328,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     if num_tasks >= 1:
         CUT_engine = fpga_engine()
         cut_test_data_info = CUT_engine.load_test_data(emu_config.get('load_args',{}))
-
+        fi_config['project']['emu_config']['fpga_engine'] = CUT_engine
         input_data_list = []
         for _ in range(num_tasks):
             input_data_list.append(cut_test_data_info)
@@ -367,7 +368,6 @@ def run_golden_emulation(work_dir, fi_config={}):
             asyncresult.wait_interactive()
             results = asyncresult.get()
         logging.info(asyncresult)
-        fi_config['project']['emu_config']['fpga_engine'] = CUT_engine
         write_golden_data(fi_config,results)
 
     return(results[0])
