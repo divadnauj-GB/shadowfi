@@ -1,12 +1,12 @@
 import os
 import sys
 import json
-from comblock import Comblock
+from core.hyperfpga.comblock import *
 
 
-def load_data(args={}):
-    work_dir = args.get('work_dir',"~/work")
-    tcu_data_filename = f"{os.path.expanduser(work_dir)}/dataset/values_dot_product.csv"
+def load_data(args={},work_dir="~/work"):
+    #work_dir = args.get('work_dir',"~/work")
+    tcu_data_filename = f"{os.path.expanduser(work_dir)}/values_dot_product.csv"
     with open(tcu_data_filename,"r") as file:
         test_data = file.readlines()
 
@@ -29,12 +29,12 @@ def load_data(args={}):
         #new_row = [A0,A1,A2,A3,A0,A1,A2,A3,A0,A1,A2,A3,A0,A1,A2,A3,B0,B0,B0,B0,B1,B1,B1,B1,B2,B2,B2,B2,B3,B3,B3,B3,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0,D0]
         new_row = [A0,A1,A2,A3,A0,A1,A2,A3,A0,A1,A2,A3,A0,A1,A2,A3,B0,B0,B0,B0,B1,B1,B1,B1,B2,B2,B2,B2,B3,B3,B3,B3,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0,C0]
         data_ready.extend(new_row)
-    return(data_ready)
+    return({'data':data_ready})
 
 
-def write_result(args={},wite_data={}):
+def write_result(args={},wite_data={},work_dir="~/work"):
     mode = args.get('mode','golden')
-    work_dir = args.get('work_dir',"~/work")
+    #work_dir = args.get('work_dir',"~/work")
     resp = wite_data.get('resp',[])
     with open(f"{os.path.abspath(work_dir)}/output_dot_product_{mode}.csv","w") as fileo:
         for idx in range(0,len(resp),16):
@@ -45,6 +45,7 @@ def write_result(args={},wite_data={}):
             
 
 def apply_test_data(input_args={}):
+    from comblock import Comblock
     data_input = input_args.get('data',[])
     cb0 = Comblock(0)
     def reset_SVC(cb):
