@@ -92,11 +92,25 @@ def fpga_setup(config,args):
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
     os.system(f"cp -rf {os.path.abspath(FI_DESIGN_PATH)}/* {os.path.abspath(vivado_proj_dir)}/sbtr/")
 
+    if not args.no_gen_vivado_proj:
+        generate_vivado_proj(config)
+
     if not args.no_compile_vivado:
         compile_vivado_proj(config)
 
     logging.info(f'FPGA setup for project {project_name} completed successfully.')
 
+
+def generate_vivado_proj(config):
+    project_name = config.get('project', {}).get('name', 'unknown')
+    logging.info(f'Executing FPGA setup: {project_name}')
+    emu_config = config.get('project', {}).get('emu_config', {})
+
+    vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
+
+    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT}")
+
+    logging.info(f'Vivado compile for project {project_name} completed successfully.')
 
 def compile_vivado_proj(config):
     project_name = config.get('project', {}).get('name', 'unknown')
@@ -105,9 +119,8 @@ def compile_vivado_proj(config):
 
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
 
-    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT};  vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
+    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 
     run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
-
 
     logging.info(f'Vivado compile for project {project_name} completed successfully.')

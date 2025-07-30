@@ -55,6 +55,7 @@ def cli_entry(current_project=None):
     fi_fpga_setup_parser = subparsers.add_parser('fi_fpga_setup')
     fi_fpga_setup_parser.add_argument('--emu-config', default=None, help='Path to the configuration file')
     fi_fpga_setup_parser.add_argument('--no-compile-vivado', action="store_true", help='enable vivado compilation')
+    fi_fpga_setup_parser.add_argument('--no-gen-vivado-proj', action="store_true", help='enable vivado compilation')
     fi_fpga_setup_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
 
 
