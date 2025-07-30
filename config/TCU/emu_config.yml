@@ -10,7 +10,7 @@ emu_config:
    write_args:
       work_dir: ./projects/TCU/work
       mode: golden
-   max_num_faults: -1
+   max_num_faults: 1
    sim_runtime: 10000
    tasks: 2
    src_data_root_dir: ./benchmarks/Cores/TCU/TCU_2/tb

@@ -5,6 +5,11 @@ import subprocess
 
 from utils.config_loader import load_config, save_config
 
+
+GEN_VIVADO_PROJ_SCRIPT = "recreate_project.tcl"
+BUILD_VIVADO_PROJ_SCRIPT = "build_project.tcl"
+
+
 def run_cmd(cmd):
     logging.info(f"Running command: {cmd}")
     pr = subprocess.Popen(cmd, shell=True, executable="/bin/bash", preexec_fn=os.setsid)
@@ -100,7 +105,7 @@ def compile_vivado_proj(config):
 
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
 
-    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source recreate_project.tcl;  vivado -mode batch -source build_project.tcl")
+    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT};  vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 
     run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
 
