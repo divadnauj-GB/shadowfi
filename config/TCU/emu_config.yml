@@ -1,17 +1,25 @@
 emu_config:
-    engines: 1
-    target_nodes: 
-    - 1
-    design_name: TCU_1_SBTR
-    path_file: ./config/TCU/emu_config.py
-    load_args:
-       work_dir: ./projects/TCU/work
-    write_args:
-       work_dir: ./projects/TCU/work
-       mode: golden
-    max_num_faults: -1
-    sim_runtime: 10000
-    tasks: 2
+   work_dir_client: ~/work
+   engines: 1
+   target_nodes: 
+   - 1
+   design_name: TCU_1_SBTR
+   fpga_engine_module: ./config/TCU/fpga_engine.py
+   load_args:
+      work_dir: ./projects/TCU/work
+   write_args:
+      work_dir: ./projects/TCU/work
+      mode: golden
+   max_num_faults: -1
+   sim_runtime: 10000
+   tasks: 2
+   src_data_root_dir: ./benchmarks/Cores/TCU/TCU_2/tb
+   test_data_info:
+     test_app_dirs: 
+     test_app_files: 
+        - ./values_dot_product.csv
+   fpga_hw:
+     vivado_proj_dir: ./benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11
   
     
   

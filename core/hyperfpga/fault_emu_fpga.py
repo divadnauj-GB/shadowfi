@@ -26,7 +26,7 @@ if cwd not in sys.path:
 if os.path.expanduser("{path}") not in sys.path:
     sys.path.insert(0, os.path.expanduser("{path}"))
     
-#from {module_name} import apply_test_data
+#from import apply_test_data
 from core.hyperfpga.fi_manager_fpga import *
 #from core.hyperfpga.run import *
 from core.hyperfpga.fpga_engine import *
@@ -319,7 +319,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     nodes_selected = emu_config.get('target_nodes',[1,2])
     work_dir_client = emu_config.get('work_dir_client', '~/work')
     design_name = emu_config.get('design_name', 'TCU_1_SBTR')
-    module_path_file = os.path.abspath(emu_config.get('path_file',"./config/fpga_engine.py"))
+    module_path_file = os.path.abspath(emu_config.get('fpga_engine_module',"./config/fpga_engine.py"))
 
 
     work_dir_clean = work_dir
@@ -362,8 +362,8 @@ def run_golden_emulation(work_dir, fi_config={}):
                 from struct import unpack
                 from comblock import Comblock
             # Send and write the module to each engine
-            logging.info(exec_ipp.format(path=work_dir_client,module_name="module_name"))
-            nodes.execute(exec_ipp.format(path=work_dir_client,module_name="module_name"))
+            logging.info(exec_ipp.format(path=work_dir_client))
+            nodes.execute(exec_ipp.format(path=work_dir_client))
             asyncresult = nodes.map_async(run_one_task_fault_free_emulation,input_data_list,[fi_config])
             asyncresult.wait_interactive()
             results = asyncresult.get()
@@ -429,7 +429,7 @@ def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
                 from struct import unpack
                 from comblock import Comblock
             # Send and write the module to each engine
-            nodes.execute(exec_ipp.format(path=work_dir_client,module_name="fpga_engine"))
+            nodes.execute(exec_ipp.format(path=work_dir_client))
             asyncresult = nodes.map_async(run_one_task_fault_emulation,[flist_id for flist_id in fault_list_task],[cut_test_data_info for _ in range(num_tasks)],[golden_data for _ in range(num_tasks)], [fi_config for _ in range(num_tasks)])
             asyncresult.wait_interactive()
             logging.info(asyncresult)

@@ -53,7 +53,10 @@ def cli_entry(current_project=None):
 
 
     fi_fpga_setup_parser = subparsers.add_parser('fi_fpga_setup')
-    fi_fpga_setup_parser.add_argument('--config', default=None, help='Path to the testbench configuration file')
+    fi_fpga_setup_parser.add_argument('--emu-config', default=None, help='Path to the configuration file')
+    fi_fpga_setup_parser.add_argument('--no-compile-vivado', default=False, action=argparse.BooleanOptionalAction, help='enable vivado compilation')
+    fi_fpga_setup_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
+
 
     fi_fpga_exec_parser = subparsers.add_parser('fi_fpga_exec')
     fi_fpga_exec_parser.add_argument('--config', default=None, help='Path to the testbench configuration file')
@@ -93,7 +96,7 @@ def cli_entry(current_project=None):
         fi_execute.execute_fault_injection(config,args)
     elif args.command == 'fi_fpga_setup':
         config = load_config(proj_config_file)
-        fi_fpga_setup.fpga_setup(config)
+        fi_fpga_setup.fpga_setup(config,args)
     elif args.command == 'fi_fpga_exec':
         config = load_config(proj_config_file)
         fi_fpga_exec.fpga_execute(config)
