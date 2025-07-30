@@ -42,18 +42,22 @@ def cli_entry(current_project=None):
     fsim_setup_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
     fsim_setup_parser.add_argument('--run-script', default=None, help='Path to the testbench configuration file')
     fsim_setup_parser.add_argument('--sdc-check-script', default=None, help='Path to the testbench configuration file')
-    fsim_setup_parser.add_argument('--noset-run-scripts', default=False, action=argparse.BooleanOptionalAction, help= "enable setting any run.sh and sdc_check.sh scripts, otherwise directly provided by the user")
+    fsim_setup_parser.add_argument('--noset-run-scripts', action="store_true", help= "enable setting any run.sh and sdc_check.sh scripts, otherwise directly provided by the user")
 
     fsim_exec_parser = subparsers.add_parser('fsim_exec')
     fsim_exec_parser.add_argument('--fsim-config', default=None, help='Path to the testbench configuration file')
     fsim_exec_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
-    fsim_exec_parser.add_argument('--hpc',default=False, action=argparse.BooleanOptionalAction, help="enable HPC execution")
+    fsim_exec_parser.add_argument('--hpc',action="store_true", help="enable HPC execution")
     #fsim_exec_parser.add_argument('--work-dir-root',default=None,  help="optionalworking directory root, useful when hpc job is executed")
     #fsim_exec_parser.add_argument('--slurm-jobid',default="./",  help="optionalworking directory root, useful when hpc job is executed")
 
 
     fi_fpga_setup_parser = subparsers.add_parser('fi_fpga_setup')
-    fi_fpga_setup_parser.add_argument('--config', default=None, help='Path to the testbench configuration file')
+    fi_fpga_setup_parser.add_argument('--emu-config', default=None, help='Path to the configuration file')
+    fi_fpga_setup_parser.add_argument('--no-compile-vivado', action="store_true", help='enable vivado compilation')
+    fi_fpga_setup_parser.add_argument('--no-gen-vivado-proj', action="store_true", help='enable vivado compilation')
+    fi_fpga_setup_parser.add_argument('--kwargs', nargs='*', action=KeyValueAction, help="Nested key-value pairs, e.g. a.b.c=val")
+
 
     fi_fpga_exec_parser = subparsers.add_parser('fi_fpga_exec')
     fi_fpga_exec_parser.add_argument('--config', default=None, help='Path to the testbench configuration file')
@@ -93,7 +97,7 @@ def cli_entry(current_project=None):
         fi_execute.execute_fault_injection(config,args)
     elif args.command == 'fi_fpga_setup':
         config = load_config(proj_config_file)
-        fi_fpga_setup.fpga_setup(config)
+        fi_fpga_setup.fpga_setup(config,args)
     elif args.command == 'fi_fpga_exec':
         config = load_config(proj_config_file)
         fi_fpga_exec.fpga_execute(config)
