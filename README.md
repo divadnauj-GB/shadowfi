@@ -395,48 +395,38 @@ The following steps will guide you on how to execute fault emulation of several 
 
 Until here you have succesfully prepare ShadowFI for HyperFPGA integration. You can use interactiveley Shadowfi for inserting saboteurs on the target CUT. Let's walk the the procedure for running a complete fault emulation on FPGA devices for the TCU benchmark.
 
-1. Execute the following commands either using the CLI interface or the scripting support in Shadowfi. 
+1. Execute the following commands either using the CLI interface or the scripting support in Shadowfi.
 
     ```bash
     Shadowfi> create --name TCU --design-config ./config/TCU/design_config.yml
     Shadowfi> load --project-dir ./projects/TCU
     Shadowfi>  elaborate
     Shadowfi> pnr --cmp-sel hierarchy --user-cmp-sel ./config/TCU/target_modules_3k.yml
+    Shadowfi> fi_fpga_setup --emu-config ./config/TCU/emu_config.yml  
+    Shadowfi> fi_fpga_exec
     ```
 
-2. Copy all files generated under the `.projects/TCU/sbtr/` directory to `benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11/sbtr/`:
+    These commands will create, configure, compile and execute fault emulation flow automatically for the TCU benchmark. After executing the previous commands you will get promt messages on the terminal, the following indicates whether the process was successful or not. It is worth noting that executing the `fi_fpga_setup` will issue a vivado compilation process which may require approximately ~30 minutes, but this time my be longer or shorter depending on the evalauted benchmark.
 
     ```bash
-    cp -r .projects/TCU/sbtr/* ./benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11/sbtr/
+    run_one_task_fault_free_emulation: 100%|█████████████████████████████████████████| 1/1 [00:00<00:00,  4.89tasks/s]
+    [2025-07-30 12:03:33] INFO - <AsyncMapResult(run_one_task_fault_free_emulation): finished>
+    [2025-07-30 12:03:34] INFO - Starting 1 engines with <class 'ipyparallel.cluster.launcher.SSHEngineSetLauncher'>
+    [2025-07-30 12:03:37] INFO - ensuring remote mlabadm@192.168.0.16:.ipython/profile_ssh/security/ exists
+    [2025-07-30 12:03:38] INFO - sending /home/jupyter-torino-user/.ipython/profile_ssh/security/ipcontroller-1753869813-kwr1-client.json to mlabadm@192.168.0.16:.ipython/profile_ssh/security/ipcontroller-1753869813-kwr1-client.json
+    [2025-07-30 12:03:38] INFO - ensuring remote mlabadm@192.168.0.16:.ipython/profile_ssh/security/ exists
+    [2025-07-30 12:03:38] INFO - sending /home/jupyter-torino-user/.ipython/profile_ssh/security/ipcontroller-1753869813-kwr1-engine.json to mlabadm@192.168.0.16:.ipython/profile_ssh/security/ipcontroller-1753869813-kwr1-engine.json
+    [2025-07-30 12:03:39] INFO - Running `python3 -m ipyparallel.engine --profile-dir=/home/mlabadm/.ipython/profile_ssh`
+    importing os on engine(s)
+    importing unpack from struct on engine(s)
+    importing Comblock from comblock on engine(s)
+    run_one_task_fault_emulation: 100%|███████████████████████████████████████████████| 2/2 [00:00<00:00,  3.05tasks/s]
+    [2025-07-30 12:03:50] INFO - <AsyncMapResult(run_one_task_fault_emulation): finished>
+    [2025-07-30 12:03:50] INFO - Stopping engine(s): 1753869814
+    [2025-07-30 12:03:54] INFO - fetching /tmp/tmpd_w2holx/ipengine-1753869819.3422.out from mlabadm@192.168.0.16:.ipython/profile_ssh/log/ipengine-1753869819.3422.out
+    [2025-07-30 12:03:55] INFO - Removing mlabadm@192.168.0.16:.ipython/profile_ssh/log/ipengine-1753869819.3422.out
+    [2025-07-30 12:03:55] INFO - Stopping controller
+    [2025-07-30 12:03:55] INFO -  FPGA execution complete.
     ```
 
-3. Change the diretory to the vivado project and recreate the project
-
-    ```bash
-    cd ./benchmarks/HyperFPGA/1_TCU/vivado/1_SBTR/hyperfpga-basic-test-3be11
-    vivado -mode tcl -source recreate_project.tcl
-    ```
-
-4. Once the projects has been recreated you can compile and generate the XSA file required by the HyperFPGA nodes.
-
-    ```bash
-    vivado -mode batch -source build_project.tcl
-    # This will take around 30 minutes
-    ```
-
-    After compiling, ~30 min later, vivado will generate the file called `TCU_1_SBTR-3be11.xsa`.
-
-5. Copy the *.XSA file to the `~/bistreams` directory
-
-    ```bash
-    cp ./TCU_1_SBTR-3be11.xsa ~/bitstreams
-    ```
-
-6. Change directoy to ShadowFi root directory and start the CLI mode
-
-    ```bash
-    cd <path to ShadowFI>
-    python shadowfi_shell.py
-    ...
-    Shadowfi>
-    ```
+    Equivalent procedure can be follow for the other available benchmarks. Please refer to the documentation to properly configure the flow to any other design or application under test.
