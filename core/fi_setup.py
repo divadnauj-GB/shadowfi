@@ -12,6 +12,8 @@ from .shadowfi_utils.utils import (
 
 from utils.config_loader import load_config, save_config
 from core.shadowfi_utils.constants import ROOT
+from utils.constants import prompt_msg
+
 
 def testbench_creation(config):
     """
@@ -96,7 +98,7 @@ def simulation_setup(config):
 
 def setup_testbench(config,args=None):
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Setting up simulation for project: {project_name}')
+    logging.info(prompt_msg.format(msg=f'Setting up simulation for project: {project_name}'))
     if args:
         if args.tb_config:
             tb_config = args.tb_config
@@ -125,7 +127,7 @@ def setup_testbench(config,args=None):
     testbench_creation(config)
     simulation_setup(config)
 
-    logging.info(f'Simulation setup for project {project_name} completed successfully.')
+    logging.info(prompt_msg.format(msg=f'Simulation setup for project {project_name} completed successfully.'))
 
 
 def setup_fault_injection(config, args=None):
@@ -134,7 +136,7 @@ def setup_fault_injection(config, args=None):
     This step is responsible for setting up the fault injection environment, including the configuration of the fault model and the testbench.
     """
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Setting up fault injection for project: {project_name}')
+    logging.info(prompt_msg.format(msg=f'Setting up fault injection for project: {project_name}'))
 
     if args: 
         if args.fsim_config:
@@ -231,4 +233,4 @@ def setup_fault_injection(config, args=None):
 
 
 
-    logging.info(f'Fault injection setup for project {project_name} completed successfully.')
+    logging.info(prompt_msg.format(msg=f'Fault injection setup for project {project_name} completed successfully.'))

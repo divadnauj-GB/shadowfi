@@ -4,8 +4,12 @@ import shutil
 import yaml
 import logging
 from utils.config_loader import load_config,save_config
+from utils.constants import prompt_msg
+
 
 def create_project(project_name, base_dir='projects', template_config='config/project_config.yaml', design_config=None):
+    logging.info(prompt_msg.format(msg=f'Creating project: {project_name}'))
+
     project_path = os.path.join(base_dir, project_name)
     os.makedirs(project_path, exist_ok=True)
     os.makedirs(os.path.join(project_path, 'src'), exist_ok=True)
@@ -38,13 +42,16 @@ def create_project(project_name, base_dir='projects', template_config='config/pr
         
     else:
         logging.warning(f'Template config not found: {template_config}')
-    logging.info(f'Project {project_name} created at {project_path}')
+    logging.info(prompt_msg.format(msg=f'Project {project_name} created at {project_path}'))
 
 
 
 def load_project_config(project_dir):
+    logging.info(prompt_msg.format(msg=f'Loading Project from: {project_dir}'))
+
     config_path = os.path.abspath(os.path.join(project_dir, 'config.yaml'))
     if not os.path.exists(config_path):
         logging.error(f'Config file not found in {project_dir}')
         return None
+    logging.info(prompt_msg.format(msg=f'Project loaded sucessfully: {config_path}'))
     return config_path
