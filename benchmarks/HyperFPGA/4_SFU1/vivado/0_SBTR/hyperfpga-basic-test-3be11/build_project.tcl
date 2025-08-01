@@ -14,7 +14,7 @@ wait_on_run impl_1
 #report_timing_summary
 #report_utilization
 
-write_hw_platform -fixed -include_bit -force -file SFU1_0_SBTR-3be11.xsa
+write_hw_platform -fixed -include_bit -force -file TCU_1_SBTR-3be11.xsa
 
 close_project
 exit
