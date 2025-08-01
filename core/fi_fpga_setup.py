@@ -129,7 +129,10 @@ def generate_vivado_proj(config):
     emu_config = config.get('project', {}).get('emu_config', {})
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
     logging.info(prompt_msg.format(msg=f'Regenerating Vivado Project: {vivado_proj_dir}'))
-
+    project_dir = os.path.join(os.path.abspath(vivado_proj_dir, PROJ_NAME))
+    if os.path.exists(project_dir):
+        logging.info(f'Removing existing Vivado project directory: {project_dir}')
+        run_cmd(f"rm -rf {project_dir}")
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT}")
 
     logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
@@ -139,7 +142,10 @@ def update_vivado_proj(config):
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
     logging.info(prompt_msg.format(msg=f'Updating Vivado Project: {vivado_proj_dir}'))
 
-    run_cmd(f"rm -rf {os.path.abspath(vivado_proj_dir)}/{PROJ_NAME}")
+    project_dir = os.path.join(os.path.abspath(vivado_proj_dir, PROJ_NAME))
+    if not os.path.exists(project_dir):
+        logging.info(f' Recreating vivado project in: {project_dir}')
+        generate_vivado_proj(config)
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT}")
 
     logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
