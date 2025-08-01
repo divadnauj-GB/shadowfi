@@ -9,6 +9,29 @@ from utils.constants import prompt_msg
 
 GEN_VIVADO_PROJ_SCRIPT = "recreate_project.tcl"
 BUILD_VIVADO_PROJ_SCRIPT = "build_project.tcl"
+PROJ_NAME = "basic_test-3be11_prj"
+
+BUILD_PROJECT_TCL_TEMPLATE = """# Open the Vivado project
+
+open_project ./{PROJ_NAME}/{PROJ_NAME}.xpr
+
+# Launch synthesis run
+launch_runs synth_1
+wait_on_run synth_1
+
+# Launch implementation run and generate bitstream
+launch_runs impl_1 -to_step write_bitstream
+wait_on_run impl_1
+
+# Optional: Generate reports or perform other actions
+#report_timing_summary
+#report_utilization
+
+write_hw_platform -fixed -include_bit -force -file {HFPGA_NAME}-3be11.xsa
+
+close_project
+exit
+"""
 
 
 def run_cmd(cmd):
@@ -111,10 +134,26 @@ def generate_vivado_proj(config):
 
     logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
 
+def update_vivado_proj(config):
+    emu_config = config.get('project', {}).get('emu_config', {})
+    vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
+    logging.info(prompt_msg.format(msg=f'Updating Vivado Project: {vivado_proj_dir}'))
+
+    run_cmd(f"rm -rf {os.path.abspath(vivado_proj_dir)}/{PROJ_NAME}")
+    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT}")
+
+    logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
+
 def compile_vivado_proj(config):
     emu_config = config.get('project', {}).get('emu_config', {})
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
+    design_name = emu_config.get('design_name', "")
     logging.info(prompt_msg.format(msg=f'Compiling Vivado Project: {vivado_proj_dir}'))
+
+    update_vivado_proj(config)
+    
+    with open(os.path.join(os.path.abspath(vivado_proj_dir),BUILD_VIVADO_PROJ_SCRIPT ), 'w') as f:
+        f.write(BUILD_PROJECT_TCL_TEMPLATE.format(PROJ_NAME=PROJ_NAME, HFPGA_NAME=design_name))
 
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 
