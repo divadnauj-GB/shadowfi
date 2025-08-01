@@ -55,7 +55,7 @@ def extract_original_components(verilog_code, components_list):
         child_module_name = child_component["module"]
         child_instance_name = child_component["instance"]
         renamed_module = child_component["target_module"]
-        child_module_index = child_component["index"]
+        child_module_index = child_component["index_c"]
 
         def _replace_instance(match_obj):
             ports_str = match_obj.group(3)
@@ -100,7 +100,7 @@ def extract_original_components(verilog_code, components_list):
         for comp in component_list:
             module_name = comp["module"]
             child_list = comp["children"]
-            module_index = comp["index"]
+            module_index = comp["index_c"]
 
             # Recursively update child submodules
             if len(child_list) > 0:
@@ -163,7 +163,7 @@ def update_top_module(verilog_code, components_list, top_module_name):
         # For each updated component, rename the instance & connect SI->SO accordingly
         for top_idx_inst,comp in enumerate(components_list):
             component_instance = comp["instance"]
-            comp_idx = comp["index"]
+            comp_idx = comp["index_c"]
             comp_target = comp["target_module"] if comp.get("target_module") else None
 
             def update_instance(match_component_obj):
