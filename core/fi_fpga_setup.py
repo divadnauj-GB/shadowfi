@@ -162,7 +162,8 @@ def compile_vivado_proj(config):
 
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 
-    if os.path.exists("~/bitstreams"):
+    bit_stream_path = os.path.expanduser("~/bitstreams")
+    if os.path.exists(bit_stream_path):
         run_cmd(f"rm ~/bitstreams/{design_name}*.*")
         run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
 
