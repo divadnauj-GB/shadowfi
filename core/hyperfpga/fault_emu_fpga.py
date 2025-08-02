@@ -13,7 +13,12 @@ import ipyparallel as ipp
 from core.hyperfpga.fi_manager_fpga import *
 #from core.hyperfpga.run import *
 
-from core.hyperfpga.fpga_engine import *
+
+
+import core.hyperfpga.fpga_engine as fpga_engine
+
+
+
 
 
 exec_ipp="""
@@ -29,32 +34,9 @@ if os.path.expanduser("{path}") not in sys.path:
 #from import apply_test_data
 from core.hyperfpga.fi_manager_fpga import *
 #from core.hyperfpga.run import *
-from core.hyperfpga.fpga_engine import *
+import core.hyperfpga.fpga_engine as fpga_engine
 
 """
-
-
-def import_from_path(module_name, file_path):
-    """Import a module given its name and file path."""
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
-
-#import ipyparallel as ipp
-
-def read_test_data(args={}):
-    project = args.get('project',{})
-    emu_config = project.get('emu_config',{})
-    module_name = emu_config.get('test_module','test_module')
-    module_path_file = emu_config.get('path_file',"./run.py")
-    load_data_args = emu_config.get('load_args',{})
-    work_dir_clean = os.path.abspath(project.get('work_dir', ''))
-    logging.info(f"{module_name}, {module_path_file}")
-    test_module = import_from_path(module_name, module_path_file)
-    cut_input_data = test_module.load_data(load_data_args,work_dir=work_dir_clean)
-    return(cut_input_data)
 
 
 def write_sdc_data(args={},results_tasks=[]):
@@ -305,6 +287,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     import os
     from core.hyperfpga.clusterconf.clusterconf import hyperfpga, get_nodes
     from core.hyperfpga.comblock.comblock import Comblock
+    import importlib
 
     
     shadowfi_root = fi_config.get('shadowfi_root','')    
@@ -320,13 +303,14 @@ def run_golden_emulation(work_dir, fi_config={}):
     work_dir_client = emu_config.get('work_dir_client', '~/work')
     design_name = emu_config.get('design_name', 'TCU_1_SBTR')
     module_path_file = os.path.abspath(emu_config.get('fpga_engine_module',"./config/fpga_engine.py"))
-
+    os.system(f"cp {module_path_file} {shadowfi_root}/core/hyperfpga/")
+    importlib.reload(fpga_engine)
 
     work_dir_clean = work_dir
     src_work_path_dir = os.path.abspath(os.path.join(work_dir_clean))
     # check if multiple tasks are required
     if num_tasks >= 1:
-        CUT_engine = fpga_engine()
+        CUT_engine = fpga_engine.fpga_engine()
         cut_test_data_info = CUT_engine.load_test_data(emu_config.get('load_args',{}))
         fi_config['project']['emu_config']['fpga_engine'] = CUT_engine
         input_data_list = []
@@ -406,7 +390,7 @@ def run_fault_emulation(work_dir, fi_config={}, golden_data={}):
                 fault_list_task = [fault_list[task_id::num_tasks] for task_id in range(num_tasks)]
 
         # create hidden work directories  
-        CUT_engine = fpga_engine()
+        CUT_engine = fpga_engine.fpga_engine()
         cut_test_data_info = CUT_engine.load_test_data(emu_config.get('load_args',{}))
         input_data_list = []
         for _ in range(num_tasks):

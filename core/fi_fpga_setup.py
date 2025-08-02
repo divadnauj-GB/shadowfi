@@ -4,10 +4,34 @@ import subprocess
 
 
 from utils.config_loader import load_config, save_config
+from utils.constants import prompt_msg
 
 
 GEN_VIVADO_PROJ_SCRIPT = "recreate_project.tcl"
 BUILD_VIVADO_PROJ_SCRIPT = "build_project.tcl"
+PROJ_NAME = "basic_test-3be11_prj"
+
+BUILD_PROJECT_TCL_TEMPLATE = """# Open the Vivado project
+
+open_project ./{PROJ_NAME}/{PROJ_NAME}.xpr
+reset_project
+# Launch synthesis run
+launch_runs synth_1 -jobs {JOBS}
+wait_on_run synth_1
+
+# Launch implementation run and generate bitstream
+launch_runs impl_1 -jobs {JOBS} -to_step write_bitstream
+wait_on_run impl_1
+
+# Optional: Generate reports or perform other actions
+#report_timing_summary
+#report_utilization
+
+write_hw_platform -fixed -include_bit -force -file {HFPGA_NAME}-3be11.xsa
+
+close_project
+exit
+"""
 
 
 def run_cmd(cmd):
@@ -22,7 +46,7 @@ def run_cmd(cmd):
 
 def fpga_setup(config,args):
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Executing FPGA setup: {project_name}')
+    logging.info(prompt_msg.format(msg=f'Executing FPGA setup: {project_name}'))
 
     if args: 
         if args.emu_config:
@@ -90,6 +114,9 @@ def fpga_setup(config,args):
     os.system(f"cp {os.path.abspath(FI_DESIGN_PATH)}/{FAULT_MODEL}_{F_LIST_NAME} {WORK_DIR}")
 
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
+
+    os.system(f"rm {os.path.abspath(vivado_proj_dir)}/sbtr/*.*")
+
     os.system(f"cp -rf {os.path.abspath(FI_DESIGN_PATH)}/* {os.path.abspath(vivado_proj_dir)}/sbtr/")
 
     if not args.no_gen_vivado_proj:
@@ -98,29 +125,49 @@ def fpga_setup(config,args):
     if not args.no_compile_vivado:
         compile_vivado_proj(config)
 
-    logging.info(f'FPGA setup for project {project_name} completed successfully.')
+    logging.info(prompt_msg.format(msg=f'FPGA setup for project {project_name} completed successfully.'))
 
 
 def generate_vivado_proj(config):
-    project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Executing FPGA setup: {project_name}')
     emu_config = config.get('project', {}).get('emu_config', {})
-
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
-
+    logging.info(prompt_msg.format(msg=f'Regenerating Vivado Project: {vivado_proj_dir}'))
+    project_dir = os.path.join(os.path.abspath(vivado_proj_dir), PROJ_NAME)
+    if os.path.exists(project_dir):
+        logging.info(f'Removing existing Vivado project directory: {project_dir}')
+        run_cmd(f"rm -rf {project_dir}")
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT}")
 
-    logging.info(f'Vivado compile for project {project_name} completed successfully.')
+    logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
+
+def update_vivado_proj(config):
+    emu_config = config.get('project', {}).get('emu_config', {})
+    vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
+    logging.info(prompt_msg.format(msg=f'Updating Vivado Project: {vivado_proj_dir}'))
+
+    project_dir = os.path.join(os.path.abspath(vivado_proj_dir), PROJ_NAME)
+    if not os.path.exists(project_dir):
+        logging.info(f' Recreating vivado project in: {project_dir}')
+        generate_vivado_proj(config)
+
+    logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
 
 def compile_vivado_proj(config):
-    project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Executing FPGA setup: {project_name}')
     emu_config = config.get('project', {}).get('emu_config', {})
-
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
+    design_name = emu_config.get('design_name', "")
+    logging.info(prompt_msg.format(msg=f'Compiling Vivado Project: {vivado_proj_dir}'))
+
+    update_vivado_proj(config)
+    
+    with open(os.path.join(os.path.abspath(vivado_proj_dir),BUILD_VIVADO_PROJ_SCRIPT ), 'w') as f:
+        f.write(BUILD_PROJECT_TCL_TEMPLATE.format(PROJ_NAME=PROJ_NAME, HFPGA_NAME=design_name, JOBS=10))
 
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 
-    run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
+    bit_stream_path = os.path.expanduser("~/bitstreams")
+    if os.path.exists(bit_stream_path):
+        run_cmd(f"rm ~/bitstreams/{design_name}*.*")
+        run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
 
-    logging.info(f'Vivado compile for project {project_name} completed successfully.')
+    logging.info(prompt_msg.format(msg=f'Vivado project {vivado_proj_dir} completed successfully.'))

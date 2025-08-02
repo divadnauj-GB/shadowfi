@@ -5,11 +5,13 @@ from core.hyperfpga.fault_emu_fpga import(
     run_fault_emulation,
     run_golden_emulation
 )
+from utils.constants import prompt_msg
+
 
 
 def fpga_execute(config):
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Executing FPGA execute {project_name}')
+    logging.info(prompt_msg.format(msg=f'Executing FPGA execute {project_name}'))
     # Simulated logic here
 
     work_dir_root = config.get('project', {}).get('work_dir', '')
@@ -18,4 +20,4 @@ def fpga_execute(config):
     golden_results=run_golden_emulation(work_dir=work_dir_root, fi_config=config)
     run_fault_emulation(work_dir=work_dir_root, fi_config=config, golden_data=golden_results)
 
-    logging.info(' FPGA execution complete.')
+    logging.info(prompt_msg.format(msg=' FPGA execution complete.'))

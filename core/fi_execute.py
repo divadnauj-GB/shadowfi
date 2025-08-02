@@ -7,6 +7,8 @@ from core.shadowfi_core.fault_simulation.fault_sim_main import (
     split_fault_injection_task,
     run_fault_simulation_hpc
 )
+from utils.constants import prompt_msg
+
 
 def run_simulation(config):
     """
@@ -48,7 +50,7 @@ def run_simulation(config):
 
 def execute_fault_injection(config,args={}):
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Executing simulation for project: {project_name}')
+    logging.info(prompt_msg.format(msg=f'Executing simulation for project: {project_name}'))
     # Simulated logic here
     sim_config = config.get('project',{}).get('sim_config', {})
 
@@ -73,6 +75,6 @@ def execute_fault_injection(config,args={}):
         run_fault_free_simulation(work_dir=work_dir_root, fi_config=config)
         run_fault_simulation_hpc(work_dir=work_dir_root, fi_config=config)
 
-    logging.info('Simulation execution complete.')
+    logging.info(prompt_msg.format(msg='Simulation execution complete.'))
 
 

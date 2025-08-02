@@ -33,6 +33,7 @@ from .shadowfi_utils.utils import (
 )
 
 from utils.config_loader import load_config, save_config
+from utils.constants import prompt_msg
 
 
 def get_list_of_instances(module_hierarchy):
@@ -309,7 +310,7 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
 
 def run_pnr(config,args=None):
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Running Place and Route for project: {project_name}')
+    logging.info(prompt_msg.format(msg=f'Running Place and Route for project: {project_name}'))
     config['project']['sbtr_config']['component_selection']['mode']= args.cmp_sel
     config['project']['sbtr_config']['fault_model'] = args.fault_model
     config['project']['sbtr_config']['fault_sampling'] = args.fault_sampling
@@ -365,4 +366,4 @@ def run_pnr(config,args=None):
     save_config(config, config['project']['proj_config_file'])
 
     # Simulated logic here
-    logging.info('Place and Route completed.')
+    logging.info(prompt_msg.format(msg='Place and Route completed.'))

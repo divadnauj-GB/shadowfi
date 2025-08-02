@@ -125,3 +125,7 @@ sbatch_template = """#!/bin/bash
 singularity run shadowfi_v1.sif -s {PATH_TO_FILE}/script.s
 
 """
+
+
+prompt_msg = """!!!!  {msg}  !!!!
+"""

@@ -28,6 +28,8 @@ from .shadowfi_utils.utils import (
     write_json,
 )
 
+from utils.constants import prompt_msg
+
 def rtl_elaboration_step(config):
     """
     1. RTL ELABORATION
@@ -84,7 +86,7 @@ def rtl_elaboration_step(config):
 
 def elaborate(config,args=None):
     project_name = config.get('project', {}).get('name', 'unknown')
-    logging.info(f'Elaborating project: {project_name}')
+    logging.info(prompt_msg.format(msg=f'Elaborating project: {project_name}'))
     # Simulated logic here
     module_hierarchy, verilog_rtl_elab_code = rtl_elaboration_step(config)
-    logging.info('Elaboration completed.')
+    logging.info(prompt_msg.format(msg='Elaboration completed.'))

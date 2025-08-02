@@ -319,7 +319,7 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
 5. Open `tmux` or `screen` and run SHADOWFI in an interactive SLURM JOB either using the CLI or executing an script as follows.
 
     ```bash
-    srun -N 1 -n 1 -c 10 --account=<your account> --partition=<target --time=<hh:mm:ss> partition> singularity run shadowfi_v1.sif -s TCU.s
+    srun -N 1 -n 1 -c 10 --account=<your-account> --partition=<target-partition> --time=<hh:mm:ss>  singularity run shadowfi_v1.sif -s TCU.s
     ```
 
     You will see something like:

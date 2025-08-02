@@ -79,7 +79,6 @@ def cli_entry(current_project=None):
 
     elif args.command == 'load':
         proj_config_file=project.load_project_config(args.project_dir)
-        print(f"Project loaded from {proj_config_file}")
     elif args.command == 'elaborate':
         config = load_config(proj_config_file)
         elaboration.elaborate(config, args)

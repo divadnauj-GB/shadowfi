@@ -134,19 +134,25 @@ def get_components_to_copy(module_data):
                 filtered_data.append(item)
 
         return filtered_data
-
+    
     # Assign an index to each updated component
-    def add_index_recursively(components_list):
+    def add_index_recursively(components_list,abs_idx):
+        val = abs_idx
         for idx, comp in enumerate(components_list):
             if len(comp["children"]) == 0:
                 comp["index"] = idx
+                comp["index_c"] = val
+                val = val +1
                 continue
             comp["index"] = idx
-            add_index_recursively(comp["children"])
+            comp["index_c"] = val
+            val = val + 1
+            add_index_recursively(comp["children"],val)
+            val = val + len(comp["children"]) + 1
 
     components_to_update_list = remove_empty_children_and_null_target(
         components_to_update_list
     )
-    add_index_recursively(components_to_update_list)
+    add_index_recursively(components_to_update_list,0)
 
     return components_to_update_list
