@@ -28,31 +28,31 @@ class fpga_engine():
         data_arranged = {}
         with open(sfu_data_0,"r") as file:
             test_data0 = file.readlines()
-            data_arranged[0]=[int(line.strip(),16) for line in test_data0]
+            data_arranged[0]=[int(line.strip(),16) for line in test_data0[1:]]
             
         with open(sfu_data_1,"r") as file:
             test_data1 = file.readlines()
-            data_arranged[1]=[int(line.strip(),16) for line in test_data1]
+            data_arranged[1]=[int(line.strip(),16) for line in test_data1[1:]]
                 
         with open(sfu_data_2,"r") as file:
             test_data2 = file.readlines()
-            data_arranged[2]=[int(line.strip(),16) for line in test_data2]
+            data_arranged[2]=[int(line.strip(),16) for line in test_data2[1:]]
                 
         with open(sfu_data_3,"r") as file:
             test_data3 = file.readlines()
-            data_arranged[3]=[int(line.strip(),16) for line in test_data3]
+            data_arranged[3]=[int(line.strip(),16) for line in test_data3[1:]]
                 
         with open(sfu_data_4,"r") as file:
             test_data4 = file.readlines()
-            data_arranged[4]=[int(line.strip(),16) for line in test_data4]
+            data_arranged[4]=[int(line.strip(),16) for line in test_data4[1:]]
                 
         with open(sfu_data_5,"r") as file:
             test_data5 = file.readlines()
-            data_arranged[5]=[int(line.strip(),16) for line in test_data5]
+            data_arranged[5]=[int(line.strip(),16) for line in test_data5[1:]]
                 
         with open(sfu_data_6,"r") as file:
             test_data6 = file.readlines()
-            data_arranged[6]=[int(line.strip(),16) for line in test_data6]
+            data_arranged[6]=[int(line.strip(),16) for line in test_data6[1:]]
             
         self.load_result_struct['data']=data_arranged
         return(self.load_result_struct)
