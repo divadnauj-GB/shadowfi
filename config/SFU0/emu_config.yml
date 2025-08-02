@@ -6,9 +6,9 @@ emu_config:
    design_name: SFU0_1_SBTR
    fpga_engine_module: ./benchmarks/HyperFPGA/3_SFU0/hyperfpga/fpga_engine.py
    load_args:
-      work_dir: ./projects/SFU0/work
+      work_dir: ./
    write_args:
-      work_dir: ./projects/SFU0/work
+      work_dir: ./
       mode: golden
    max_num_faults: 1
    sim_runtime: 10000

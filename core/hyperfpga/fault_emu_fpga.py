@@ -43,9 +43,10 @@ def write_sdc_data(args={},results_tasks=[]):
     project = args.get('project',{})
     emu_config = project.get('emu_config',{})
     write_args = emu_config.get('write_args',{})
-    write_args['work_dir'] = f"{write_args['work_dir']}/tmp"
-
     work_dir_clean = os.path.abspath(project.get('work_dir', ''))
+    orig_write_path = write_args['work_dir']
+    new_work_dir = os.path.abspath(os.path.join(work_dir_clean,orig_write_path,"tmp"))
+    write_args['work_dir'] = new_work_dir
     os.system(f"mkdir -p {work_dir_clean}/logs")
     FPGA_ENGINE = emu_config.get('fpga_engine',fpga_engine)
     for results_task in results_tasks:
@@ -53,31 +54,35 @@ def write_sdc_data(args={},results_tasks=[]):
             if fault_result[1] == "SDC":
                 fault_descriptor = fault_result[0].split(',')
                 tmp_dir = f"{work_dir_clean}/C{int(fault_descriptor[0])}_B{int(fault_descriptor[5])}_F{int(fault_descriptor[6])}"
-                os.system(f"mkdir -p {work_dir_clean}/tmp")
+                os.system(f"mkdir -p {new_work_dir}")
                 FPGA_ENGINE.write_result(write_args,fault_result[2])
                 shutil.rmtree(tmp_dir, True)
-                os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
+                os.system(f"mv {new_work_dir} {tmp_dir}")
                 shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
                 os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/logs/")
                 shutil.rmtree(tmp_dir, True)
     os.system(f"mv {work_dir_clean}/logs {work_dir_clean}/../logs/")
+    write_args['work_dir'] = orig_write_path
 
 def write_golden_data(args={},result_sim=[]):
         project = args.get('project',{})
         emu_config = project.get('emu_config',{})
         write_args = emu_config.get('write_args',{})
-        write_args['work_dir'] = f"{write_args['work_dir']}/golden"
         work_dir_clean = os.path.abspath(project.get('work_dir', ''))
+        orig_write_path = write_args['work_dir']
+        new_work_dir = os.path.abspath(os.path.join(work_dir_clean,orig_write_path,"golden"))
+        write_args['work_dir'] = new_work_dir
         FPGA_ENGINE = emu_config.get('fpga_engine',fpga_engine)
         for result in result_sim:
-            tmp_dir = f"{work_dir_clean}/golden"
+            tmp_dir = f"{new_work_dir}"
             shutil.rmtree(tmp_dir, True)
-            os.system(f"mkdir -p {work_dir_clean}/golden")
+            os.system(f"mkdir -p {new_work_dir}")
             FPGA_ENGINE.write_result(write_args,result)
             #os.system(f"mv {work_dir_clean}/tmp {tmp_dir}")
             shutil.make_archive(tmp_dir, "gztar", tmp_dir)  # archieve the outputs
             os.system(f"mv {work_dir_clean}/*.gz {work_dir_clean}/../logs/")
             shutil.rmtree(tmp_dir, True)
+        write_args['work_dir'] = orig_write_path
 
 """
 def create_fault_descriptor(fi_structure):

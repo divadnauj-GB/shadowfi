@@ -6,9 +6,9 @@ emu_config:
    design_name: TCU_1_SBTR
    fpga_engine_module: ./benchmarks/HyperFPGA/1_TCU/hyperfpga/fpga_engine.py
    load_args:
-      work_dir: ./projects/TCU/work
+      work_dir: ./
    write_args:
-      work_dir: ./projects/TCU/work
+      work_dir: ./
       mode: golden
    max_num_faults: 1
    sim_runtime: 10000
