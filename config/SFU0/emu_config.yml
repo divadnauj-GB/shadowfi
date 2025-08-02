@@ -1,0 +1,25 @@
+emu_config:
+   work_dir_client: ~/work
+   engines: 1
+   target_nodes: 
+   - 1
+   design_name: SFU1_1_SBTR
+   fpga_engine_module: ./benchmarks/HyperFPGA/3_SFU0/hyperfpga/fpga_engine.py
+   load_args:
+      work_dir: ./projects/SFU0/work
+   write_args:
+      work_dir: ./projects/SFU0/work
+      mode: golden
+   max_num_faults: 1
+   sim_runtime: 10000
+   tasks: 2
+   src_data_root_dir: ./benchmarks/Cores/SFU/SFU_0/tb
+   test_data_info:
+     test_app_dirs: 
+      - ./SFU_Input_data
+     test_app_files: 
+   fpga_hw:
+     vivado_proj_dir: ./benchmarks/HyperFPGA/3_SFU0/vivado/1_SBTR/hyperfpga-basic-test-3be11
+  
+    
+  

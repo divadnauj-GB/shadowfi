@@ -1,0 +1,25 @@
+emu_config:
+   work_dir_client: ~/work
+   engines: 1
+   target_nodes: 
+   - 1
+   design_name: SVC_1_SBTR
+   fpga_engine_module: ./benchmarks/HyperFPGA/2_SVC/hyperfpga/fpga_engine.py
+   load_args:
+      work_dir: ./projects/SVC/work
+   write_args:
+      work_dir: ./projects/SVC/work
+      mode: golden
+   max_num_faults: 1
+   sim_runtime: 10000
+   tasks: 2
+   src_data_root_dir: ./benchmarks/Cores/stereo_vision_core
+   test_data_info:
+     test_app_dirs: 
+      - ./dataset
+     test_app_files: 
+   fpga_hw:
+     vivado_proj_dir: ./benchmarks/HyperFPGA/2_SVC/vivado/1_SBTR/hyperfpga-basic-test-3be11
+  
+    
+  
