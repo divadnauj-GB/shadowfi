@@ -3,7 +3,7 @@ emu_config:
    engines: 1
    target_nodes: 
    - 1
-   design_name: SFU1_1_SBTR
+   design_name: SFU0_1_SBTR
    fpga_engine_module: ./benchmarks/HyperFPGA/3_SFU0/hyperfpga/fpga_engine.py
    load_args:
       work_dir: ./projects/SFU0/work

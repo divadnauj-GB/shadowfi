@@ -17,13 +17,13 @@ class fpga_engine():
         data_set_work_dir=input_args.get('work_dir',self.DEFAULWORKPATH)
         data_set_dir = os.path.abspath(data_set_work_dir)
         
-        sfu_data_0 = f"{data_set_dir}/dataset/input_sin.csv"
-        sfu_data_1 = f"{data_set_dir}/dataset/input_cos.csv"
-        sfu_data_2 = f"{data_set_dir}/dataset/input_rsqrt.csv"
-        sfu_data_3 = f"{data_set_dir}/dataset/input_log2.csv"
-        sfu_data_4 = f"{data_set_dir}/dataset/input_ex2.csv"
-        sfu_data_5 = f"{data_set_dir}/dataset/input_rcp.csv"
-        sfu_data_6 = f"{data_set_dir}/dataset/input_sqrt.csv"
+        sfu_data_0 = f"{data_set_dir}/SFU_Input_data/input_sin.csv"
+        sfu_data_1 = f"{data_set_dir}/SFU_Input_data/input_cos.csv"
+        sfu_data_2 = f"{data_set_dir}/SFU_Input_data/input_rsqrt.csv"
+        sfu_data_3 = f"{data_set_dir}/SFU_Input_data/input_log2.csv"
+        sfu_data_4 = f"{data_set_dir}/SFU_Input_data/input_ex2.csv"
+        sfu_data_5 = f"{data_set_dir}/SFU_Input_data/input_rcp.csv"
+        sfu_data_6 = f"{data_set_dir}/SFU_Input_data/input_sqrt.csv"
 
         data_arranged = {}
         with open(sfu_data_0,"r") as file:
