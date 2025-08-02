@@ -115,8 +115,10 @@ def fpga_setup(config,args):
 
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
 
+    if not os.path.exists(f"{os.path.abspath(vivado_proj_dir)}/sbtr/"):
+        os.system(f"mkdir -p {os.path.abspath(vivado_proj_dir)}/sbtr/")
+        
     os.system(f"rm {os.path.abspath(vivado_proj_dir)}/sbtr/*.*")
-
     os.system(f"cp -rf {os.path.abspath(FI_DESIGN_PATH)}/* {os.path.abspath(vivado_proj_dir)}/sbtr/")
 
     if not args.no_gen_vivado_proj:
