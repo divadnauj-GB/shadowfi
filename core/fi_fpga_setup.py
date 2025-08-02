@@ -14,13 +14,13 @@ PROJ_NAME = "basic_test-3be11_prj"
 BUILD_PROJECT_TCL_TEMPLATE = """# Open the Vivado project
 
 open_project ./{PROJ_NAME}/{PROJ_NAME}.xpr
-
+reset_project
 # Launch synthesis run
-launch_runs synth_1
+launch_runs synth_1 -jobs {JOBS}
 wait_on_run synth_1
 
 # Launch implementation run and generate bitstream
-launch_runs impl_1 -to_step write_bitstream
+launch_runs impl_1 -jobs {JOBS} -to_step write_bitstream
 wait_on_run impl_1
 
 # Optional: Generate reports or perform other actions
@@ -158,10 +158,12 @@ def compile_vivado_proj(config):
     update_vivado_proj(config)
     
     with open(os.path.join(os.path.abspath(vivado_proj_dir),BUILD_VIVADO_PROJ_SCRIPT ), 'w') as f:
-        f.write(BUILD_PROJECT_TCL_TEMPLATE.format(PROJ_NAME=PROJ_NAME, HFPGA_NAME=design_name))
+        f.write(BUILD_PROJECT_TCL_TEMPLATE.format(PROJ_NAME=PROJ_NAME, HFPGA_NAME=design_name, JOBS=10))
 
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 
-    run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
+    if os.path.exists("~/bitstreams"):
+        run_cmd(f"rm ~/bitstreams/{design_name}*.*")
+        run_cmd(f"cp -r {os.path.abspath(vivado_proj_dir)}/*.xsa ~/bitstreams")
 
     logging.info(prompt_msg.format(msg=f'Vivado project {vivado_proj_dir} completed successfully.'))
