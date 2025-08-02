@@ -18,10 +18,42 @@ exit
 NEW_SOURCES_TEMPLATE = """# This is a template for reading the new sbtr files
 set obj [get_filesets sources_1]
 set files {}
+foreach f [glob -nocomplain -directory "./cut_io_interface" *.v] {
+            lappend files [file normalize $f]
+        }
 foreach f [glob -nocomplain -directory "./sbtr" *.v] {
             lappend files [file normalize $f]
         }
 add_files -norecurse -fileset $obj $files
+
+# foreach f [glob -nocomplain -directory "./sbtr" *.v] {
+#     set file [file normalize $f]
+#     set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+#     set_property -name "file_type" -value "Verilog" -objects $file_obj
+#     set_property -name "is_enabled" -value "1" -objects $file_obj
+#     set_property -name "is_global_include" -value "0" -objects $file_obj
+#     set_property -name "library" -value "xil_defaultlib" -objects $file_obj
+#     set_property -name "path_mode" -value "RelativeFirst" -objects $file_obj
+#     set_property -name "used_in" -value "synthesis implementation simulation" -objects $file_obj
+#     set_property -name "used_in_implementation" -value "1" -objects $file_obj
+#     set_property -name "used_in_simulation" -value "1" -objects $file_obj
+#     set_property -name "used_in_synthesis" -value "1" -objects $file_obj
+# }
+"""
+
+NEW_FILE_IMPORTS_TEMPLATE = """# Generic loop to import all .v files in ./sbtr if not already present
+foreach f [glob -nocomplain ./cut_io_interface/*.v] {
+    set fname [file tail $f]
+    if { [get_files $fname] == "" } {
+        import_files -quiet -fileset sources_1 $f
+    }
+}
+foreach f [glob -nocomplain ./sbtr/*.v] {
+    set fname [file tail $f]
+    if { [get_files $fname] == "" } {
+        import_files -quiet -fileset sources_1 $f
+    }
+}
 """
 
 BUILD_PROJECT_TCL_TEMPLATE = """# Open the Vivado project
@@ -116,7 +148,7 @@ def recreate_script_generation():
         recreate_project_tcl
     )
     if section_bd:
-        recreate_project_tcl = recreate_project_tcl.replace(section_bd, "\n")
+        recreate_project_tcl = recreate_project_tcl.replace(section_bd, NEW_FILE_IMPORTS_TEMPLATE)
     recreate_project_tcl = recreate_project_tcl + "\n exit\n"
     save_modified_tcl_file(os.path.join(proj_dir, "recreate_project.tcl"), recreate_project_tcl)
 
