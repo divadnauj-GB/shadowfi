@@ -4,7 +4,7 @@ emu_config:
    target_nodes: 
    - 1
    design_name: TCU_1_SBTR
-   fpga_engine_module: ./config/TCU/fpga_engine.py
+   fpga_engine_module: ./benchmarks/HyperFPGA/1_TCU/hyperfpga/fpga_engine.py
    load_args:
       work_dir: ./projects/TCU/work
    write_args:
