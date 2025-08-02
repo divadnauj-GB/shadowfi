@@ -316,6 +316,7 @@ def run_golden_emulation(work_dir, fi_config={}):
     # check if multiple tasks are required
     if num_tasks >= 1:
         CUT_engine = fpga_engine.fpga_engine()
+        emu_config['load_args']['work_dir'] = os.path.abspath(os.path.join(work_dir,emu_config['load_args']['work_dir']))
         cut_test_data_info = CUT_engine.load_test_data(emu_config.get('load_args',{}))
         fi_config['project']['emu_config']['fpga_engine'] = CUT_engine
         input_data_list = []
