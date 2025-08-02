@@ -146,7 +146,6 @@ def update_vivado_proj(config):
     if not os.path.exists(project_dir):
         logging.info(f' Recreating vivado project in: {project_dir}')
         generate_vivado_proj(config)
-    run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode tcl -source {GEN_VIVADO_PROJ_SCRIPT}")
 
     logging.info(prompt_msg.format(msg=f'Vivado Project at {vivado_proj_dir} generated successfully.'))
 
