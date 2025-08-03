@@ -446,4 +446,4 @@ Until here you have succesfully prepare ShadowFI for HyperFPGA integration. You 
     [2025-07-30 12:03:55] INFO -  FPGA execution complete.
     ```
 
-    Equivalent procedure can be follow for the other available benchmarks. Please refer to the documentation to properly configure the flow to any other design or application under test.
+    Equivalent procedure can be follow for the other available benchmarks. Please refer to the [documentation](https://shadowfi-userdocs.readthedocs.io/en/latest/) to properly configure the flow to any other design or application under test.
