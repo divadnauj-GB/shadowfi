@@ -16,7 +16,7 @@ SHADOWFI implments fault instrumentation by inserting saboteur circuits directly
 | | | | 
 |:-:|:-:|:-:|
 |Fault instrumentation flow|  Fault simulation flow         |      Fault emulation flow     |
-| <div style="text-align: center;"> <img src="./doc/Fault_instrumentation_flow.png" width="300" > </div> | <div style="text-align: center;"> <img src="./doc/Fault_simulation_flow.png" width="200" > </div>  | <div style="text-align: center;"> <img src="./doc/Fault_emulation_flow.png" width="250" > </div> |
+| <img src="./doc/Fault_instrumentation_flow.png" width="300" > | <img src="./doc/Fault_simulation_flow.png" width="200" > | <img src="./doc/Fault_emulation_flow.png" width="250" > |
 
 
 SHADOWFI provides both a CLI and GUI interfaces to automate the configuration and setup of the fault injection campaigns. SHADOWFI incorporates two main workflows. The simulation workflow is mainly dedicated for executing fault injection workloads on HPC systems, whereas the emulation workflow accelerates the fault injection taks by using FPGA hiperscale systems.  
@@ -25,9 +25,9 @@ SHADOWFI provides both a CLI and GUI interfaces to automate the configuration an
 ||
 |:-:|
 | Simulation Workflow for deployment on HPC systems.|
-|<div style="text-align: center;"> <img src="./doc/Simulation_Workflow.png" width="800" ></div>|
+| <img src="./doc/Simulation_Workflow.png" width="800" >|
 | FPGA emulation Workflow for deployment on HyperFPGA system.|
-|<div style="text-align: center;"> <img src="./doc/Emulation_Workflow.png" width="800" ></div>|
+| <img src="./doc/Emulation_Workflow.png" width="800" >|
 
 ## Host System Requirements
 
