@@ -19,6 +19,13 @@ foreach f [glob -nocomplain -directory "./sbtr" *.v] {
         }
 add_files -norecurse -fileset $obj $files
 
+foreach f [glob -nocomplain ./sbtr/*.v] {
+    set fname [file tail $f]
+    if { [get_files $fname] == "" } {
+        import_files -quiet -fileset sources_1 $f
+    }
+}
+
 reset_run synth_1
 """
 
