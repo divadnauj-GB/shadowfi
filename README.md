@@ -1,6 +1,6 @@
 # SHADOWFI 
 <div style="text-align: center;">
-    <img src="./doc/SHADOWFI-logo.png" width="100" >
+    <img src="./doc/SHADOWFI-logo.png" width="150" >
 </div>
 
 SHADOWFI is an emulation-based fault injection framework for fault chareacterization and reliability assesemnt of hardware designs.  SHADOWFI leverages the acceleration capabilities of hiperscale infrastructures providing support for executing long fault injection tasks in both High Performance Computing (HPC) and FPGA hiperscaler systems.
@@ -375,18 +375,15 @@ The following steps will guide you on how to execute fault emulation of several 
     cd -
     ```
 
-4. Create a conda environmet with all the necesary packages
+4. Activate the conda environmet in HyperFPGA:
 
     ```bash
-    conda create -n SHADOWFI python=3.11
-    conda activate SHADOWFI
-    pip install -r requirements 
+    conda activate python311
     ```
 
 5. Run SHADOWFI in CLI mode
 
     ```bash
-    conda activate SHADOWFI
     python shadowfi_shell.py 
     # the following prompt will appear
     "Welcome to the SHADOWFI Tool shell. Type help or ? to list commands."
