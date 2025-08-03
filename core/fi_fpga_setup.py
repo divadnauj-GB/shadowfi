@@ -11,10 +11,30 @@ GEN_VIVADO_PROJ_SCRIPT = "recreate_project.tcl"
 BUILD_VIVADO_PROJ_SCRIPT = "build_project.tcl"
 PROJ_NAME = "basic_test-3be11_prj"
 
+RELOAD_FILES = """
+set obj [get_filesets sources_1]
+set files {}
+foreach f [glob -nocomplain -directory "./sbtr" *.v] {
+            lappend files [file normalize $f]
+        }
+add_files -norecurse -fileset $obj $files
+
+foreach f [glob -nocomplain ./sbtr/*.v] {
+    set fname [file tail $f]
+    if { [get_files $fname] == "" } {
+        import_files -quiet -fileset sources_1 $f
+    }
+}
+update_compile_order -fileset sources_1
+reset_run synth_1
+"""
+
+
 BUILD_PROJECT_TCL_TEMPLATE = """# Open the Vivado project
 
 open_project ./{PROJ_NAME}/{PROJ_NAME}.xpr
-reset_project
+#reset_project
+{RELOAD_FILES}
 # Launch synthesis run
 launch_runs synth_1 -jobs {JOBS}
 wait_on_run synth_1
@@ -115,8 +135,10 @@ def fpga_setup(config,args):
 
     vivado_proj_dir = emu_config.get('fpga_hw',{}).get('vivado_proj_dir', '')
 
+    if not os.path.exists(f"{os.path.abspath(vivado_proj_dir)}/sbtr/"):
+        os.system(f"mkdir -p {os.path.abspath(vivado_proj_dir)}/sbtr/")
+        
     os.system(f"rm {os.path.abspath(vivado_proj_dir)}/sbtr/*.*")
-
     os.system(f"cp -rf {os.path.abspath(FI_DESIGN_PATH)}/* {os.path.abspath(vivado_proj_dir)}/sbtr/")
 
     if not args.no_gen_vivado_proj:
@@ -158,10 +180,10 @@ def compile_vivado_proj(config):
     design_name = emu_config.get('design_name', "")
     logging.info(prompt_msg.format(msg=f'Compiling Vivado Project: {vivado_proj_dir}'))
 
-    update_vivado_proj(config)
+    #update_vivado_proj(config)
     
     with open(os.path.join(os.path.abspath(vivado_proj_dir),BUILD_VIVADO_PROJ_SCRIPT ), 'w') as f:
-        f.write(BUILD_PROJECT_TCL_TEMPLATE.format(PROJ_NAME=PROJ_NAME, HFPGA_NAME=design_name, JOBS=10))
+        f.write(BUILD_PROJECT_TCL_TEMPLATE.format(PROJ_NAME=PROJ_NAME, RELOAD_FILES=RELOAD_FILES, HFPGA_NAME=design_name, JOBS=10))
 
     run_cmd(f"cd {os.path.abspath(vivado_proj_dir)}; vivado -mode batch -source {BUILD_VIVADO_PROJ_SCRIPT}")
 

@@ -17,32 +17,32 @@ class fpga_engine():
         data_set_work_dir=input_args.get('work_dir',self.DEFAULWORKPATH)
         data_set_dir = os.path.abspath(data_set_work_dir)
         
-        sfu_data_0 = f"{data_set_dir}/dataset/input_cordic.csv"
-        sfu_data_1 = f"{data_set_dir}/dataset/input_cordic.csv"
-        sfu_data_2 = f"{data_set_dir}/dataset/input_rsqrt.csv"
-        sfu_data_3 = f"{data_set_dir}/dataset/input_log2.csv"
-        sfu_data_4 = f"{data_set_dir}/dataset/input_ex2.csv"
+        sfu_data_0 = f"{data_set_dir}/SFU_input_data/input_cordic.csv"
+        sfu_data_1 = f"{data_set_dir}/SFU_input_data/input_cordic.csv"
+        sfu_data_2 = f"{data_set_dir}/SFU_input_data/input_rsqrt.csv"
+        sfu_data_3 = f"{data_set_dir}/SFU_input_data/input_log2.csv"
+        sfu_data_4 = f"{data_set_dir}/SFU_input_data/input_ex2.csv"
 
         data_arranged = {}
         with open(sfu_data_0,"r") as file:
             test_data0 = file.readlines()
-            data_arranged[0]=[int(line.strip(),16) for line in test_data0]
+            data_arranged[0]=[int(line.strip(),16) for line in test_data0[1:]]
             
         with open(sfu_data_1,"r") as file:
             test_data1 = file.readlines()
-            data_arranged[1]=[int(line.strip(),16) for line in test_data1]
+            data_arranged[1]=[int(line.strip(),16) for line in test_data1[1:]]
                 
         with open(sfu_data_2,"r") as file:
             test_data2 = file.readlines()
-            data_arranged[2]=[int(line.strip(),16) for line in test_data2]
+            data_arranged[2]=[int(line.strip(),16) for line in test_data2[1:]]
                 
         with open(sfu_data_3,"r") as file:
             test_data3 = file.readlines()
-            data_arranged[3]=[int(line.strip(),16) for line in test_data3]
+            data_arranged[3]=[int(line.strip(),16) for line in test_data3[1:]]
                 
         with open(sfu_data_4,"r") as file:
             test_data4 = file.readlines()
-            data_arranged[4]=[int(line.strip(),16) for line in test_data4]
+            data_arranged[4]=[int(line.strip(),16) for line in test_data4[1:]]
             
         self.load_result_struct['data']=data_arranged
         return(self.load_result_struct)

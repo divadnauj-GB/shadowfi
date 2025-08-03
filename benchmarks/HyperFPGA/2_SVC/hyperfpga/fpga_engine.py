@@ -1,5 +1,5 @@
 import os
-from PIL import Image
+
 import numpy as np
 import sys
 import json
@@ -19,6 +19,7 @@ class fpga_engine():
         self.num_channels = 0
 
     def load_test_data(self, input_args={}):
+        from PIL import Image
         data_set_work_dir=input_args.get('work_dir',self.DEFAULWORKPATH)
         image=input_args.get('input_image','Cones')
         
@@ -66,6 +67,7 @@ class fpga_engine():
         return(self.load_result_struct)
 
     def write_result(self,write_args={},write_data={}):
+        from PIL import Image
         mode = write_args.get('mode','golden')
         work_dir = write_args.get('work_dir',"~/work")
         resp = write_data.get('resp',[])
@@ -78,9 +80,8 @@ class fpga_engine():
         
         flat_list = []
         for xs in resp:
-            for xx in xs:
-                for x in xx:
-                    flat_list.append(x)
+            for x in xs:
+                flat_list.append(x)
         csv_out=[]
         i=0
         j=0
