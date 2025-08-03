@@ -25,7 +25,7 @@ foreach f [glob -nocomplain ./sbtr/*.v] {
         import_files -quiet -fileset sources_1 $f
     }
 }
-
+update_compile_order -fileset sources_1
 reset_run synth_1
 """
 
