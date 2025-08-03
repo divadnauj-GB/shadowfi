@@ -11,14 +11,30 @@ SHADOWFI is an emulation-based fault injection framework for fault chareacteriza
 
 SHADOWFI implments fault instrumentation by inserting saboteur circuits directly on syntesizable HDL designs. This instrumentation is applied automatically based on user configurations, providing flexibility regarding the target components or hardware structures subject of evaluation.
 
+
+
+| | | | 
+|:-:|:-:|:-:|
+|Fault instrumentation flow|  Fault simulation flow         |      Fault emulation flow     |
+| <div style="text-align: center;"> <img src="./doc/Fault_instrumentation_flow.png" width="300" > </div> | <div style="text-align: center;"> <img src="./doc/Fault_simulation_flow.png" width="200" > </div>  | <div style="text-align: center;"> <img src="./doc/Fault_emulation_flow.png" width="250" > </div> |
+
+
 SHADOWFI provides both a CLI and GUI interfaces to automate the configuration and setup of the fault injection campaigns. SHADOWFI incorporates two main workflows. The simulation workflow is mainly dedicated for executing fault injection workloads on HPC systems, whereas the emulation workflow accelerates the fault injection taks by using FPGA hiperscale systems.  
+
+
+||
+|:-:|
+| Simulation Workflow for deployment on HPC systems.|
+|<div style="text-align: center;"> <img src="./doc/Simulation_Workflow.png" width="800" ></div>|
+| FPGA emulation Workflow for deployment on HyperFPGA system.|
+|<div style="text-align: center;"> <img src="./doc/Emulation_Workflow.png" width="800" ></div>|
 
 ## Host System Requirements
 
 - linux X64
 - gcc >= 10
 - g++ >= 10
-- Clang
+- Clangt Image 
 - llvm
 - ninja-build
 - Singularity >= 3.10.5
