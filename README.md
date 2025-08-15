@@ -190,7 +190,15 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
           └── work/ # work directory
     ```
 
-3. Elaborate the project:
+3. After creating the project it is necesary to load the project either the project was just created or in case the project was created previously.
+
+    ```bash
+    Shadowfi> load --project-dir ./projects/TCU 
+    [2025-07-25 03:52:20] INFO - !!!!  Loading Project from: ./projects/TCU  !!!!
+    [2025-07-25 03:52:20] INFO - !!!!  Project loaded sucessfully: /home/juancho/Documents/GitHub/EmuFaultSim/shadowfi/projects/TCU/config.yaml  !!!!
+    ```
+
+4. Elaborate the project:
 
     ```bash
     Shadowfi> elaborate
@@ -204,7 +212,7 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     Shadowfi>
     ```
 
-4. Configure the fault instrumentation and run saboteur placing and routing:
+5. Configure the fault instrumentation and run saboteur placing and routing:
 
     ```bash
     Shadowfi> pnr --cmp-sel hierarchy --user-cmp-sel ./config/TCU/target_modules_3k.yml
@@ -216,7 +224,7 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     Shadowfi>
     ```
 
-5. Configure and compile the testbench simulation:
+6. Configure and compile the testbench simulation:
 
     ```bash
     Shadowfi> tb_setup --tb-config ./config/TCU/tb_config.yml
@@ -230,7 +238,7 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     Shadowfi> 
     ```
 
-6. Configure the fault simulation:
+7. Configure the fault simulation:
 
     ```bash
     Shadowfi> fsim_setup --fsim-config ./config/TCU/sim_config.yml --run-script ./config/TCU/run.sh --sdc-check-script ./config/TCU/sdc_check.sh
@@ -241,7 +249,7 @@ The following sequence of steps illustate the interactive use of SHADOFI across 
     Shadowfi> 
     ```
 
-7. Run the fault injection campaign:
+8. Run the fault injection campaign:
 
     ```bash
     Shadowfi> fsim_exec
