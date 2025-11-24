@@ -47,6 +47,7 @@ def get_list_of_instances(module_hierarchy):
         for module in modules:
             if len(module['dependency']['components']) > 0:
                 str_path += f"{module['module']}@"
+                instances.append([str_path[:-1],module['component']])
                 get_instances_recursive(module['dependency']['components'], instances,str_path)
                 str_path = str_path.split('@')[:-2]  # Remove last module
                 str_path = '@'.join(str_path) + '@'  # Rebuild the path
@@ -70,8 +71,9 @@ def resolve_target_modules(config):
     
     cmp_sel = sbtr_config.get('component_selection', {}).get('mode', 'random')
     max_num_cmp = sbtr_config.get('component_selection', {}).get('max_sel_cmp', 4)
-    file_name = f"{sbtr_config['sbtr_dir']}/{design_config['top_module']}_hierarchy.json"
-    module_hierarchy=read_json(os.path.join(sbtr_config['sbtr_dir'], file_name))
+    file_name = os.path.join(sbtr_config['sbtr_dir'], f"{design_config['top_module']}_hierarchy.json")
+
+    module_hierarchy=read_json(file_name)
     instances=get_list_of_instances(module_hierarchy)
     
     selected_instances = []
@@ -113,7 +115,8 @@ def target_extraction_and_sbrt_insertion(config):
     sbtr_config = config.get('project',{}).get('sbtr_config', {})
 
     TOP = design_config.get('top_module', '')
-    SRC_LIST_FILES = design_config.get('src_list_files', [])
+    #SRC_LIST_FILES = design_config.get('src_list_files', [])
+    SRC_LIST_FILES = [os.path.join(sbtr_config['sbtr_dir'], f"{design_config['top_module']}_rtl_elab.v")]
     if not isinstance(SRC_LIST_FILES,list):
         SRC_LIST_FILES=[]
     MODULES = sbtr_config.get('component_selection',{}).get('target_modules',[]) 
