@@ -1,0 +1,7 @@
+design_config:
+    design_root_dir:
+    inc_directories: #<optional list>
+    src_path: 
+    src_list_files: #<optional list>
+    top_module: 
+    module_params: #<optional list> 

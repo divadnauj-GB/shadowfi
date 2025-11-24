@@ -1,0 +1,14 @@
+testbench_config:
+    external_tb_build: False
+    external_tb_config: 
+      tb_build_cmd:  #<optional list>
+      tb_working_dir: 
+    internal_tb_config: 
+       tb_list_files:
+       tb_path: 
+       tb_working_dir: 
+       tb_target_file: 
+       tb_top: 
+       tb_inc_directories:  #<optional list>
+       tb_params: #<optional list>
+       tb_verilator_params: #<optional> 

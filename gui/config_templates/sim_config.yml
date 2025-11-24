@@ -1,0 +1,35 @@
+sim_config:
+    tasks: 1
+    engines: 1
+    sim_runtime: 
+    max_num_faults: 1
+    work_sim_root_dir: 
+    work_sim_dir: 
+    tb_build_dir: 
+    tb_run_info:
+      tb_run_script: 
+      tb_run_args: #<optional str>
+      tb_run_timeout: #<optional>
+      tb_run_env_vars: #<optional list>
+    tb_sdc_check_info:
+      tb_sdc_check_script: 
+      tb_sdc_check_args: #<optional>
+      tb_sdc_check_env_vars: #<optional list>
+    tb_test_app_info:
+      test_app: #<optional>
+      test_app_args: #<optional>
+      test_app_env_vars: #<optional list>
+      test_app_dirs: #<list rel dirs>
+      test_app_files: #<list rel files>
+    slurm:
+      account: 
+      partition: 
+      qos: 
+      time: 
+      nodes: 
+      tasks_per_node: 
+      cpus_per_task: 
+      mem: 
+      job_name: 
+      output: 
+      error: 

@@ -9,7 +9,7 @@ import os
     
 
 def cli_entry(current_project=None):
-    root_dir = os.getenv('SHADOWFI_ROOT', os.path.join(os.path.dirname(os.path.abspath(__file__)),"/.."))
+    root_dir = os.getenv('SHADOWFI_ROOT', os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..")))
     setup_logger()
     parser = CustomArgumenrParser(description='SHADOWFI Tool CLI')#argparse.ArgumentParser(description='SHADOWFI Tool CLI')
     subparsers = parser.add_subparsers(dest='command')

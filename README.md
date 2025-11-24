@@ -31,17 +31,33 @@ SHADOWFI provides both a CLI and GUI interfaces to automate the configuration an
 
 ## Host System Requirements
 
-- linux X64
+- Ubuntu 22.04 LTS X86/AMD64
 - gcc >= 10
 - g++ >= 10
-- Clangt Image 
+- Clang
 - llvm
 - ninja-build
 - Singularity >= 3.10.5
-- OSS CAD Suite >= 20241117 or superior
+- OSS CAD Suite >= 20241117
 - Anaconda / Miniconda
 - Python >=3.11
 - Vivado v2022.2 (For HyperFPGA binaries generation)
+
+### Tool versioning SHADOWFI flow
+
+- **Simulation workflow**
+  - **GHDL v3.0.0**: VDHL to verilog (only for VHDL designs)
+  - **Yosys v0.27**: Verilog RTL elaboration
+  - **SHADOWFI v1.0.1**: Saboteur insertion and FI handler
+  - **Verilator v5.012**: RTL simulation
+  - **ipyparallel**: Distributed computing oschestration
+
+- **Emulation workflow**
+  - **GHDL v3.0.0**: VDHL to verilog (only for VHDL designs)
+  - **Yosys v0.27**: Verilog RTL elaboration
+  - **SHADOWFI v1.0.1**: Saboteur insertion and FI handler
+  - **Vivado v2022.2**: FPGA toolchain (Design Kit Support)
+  - **ipyparallel**: Distributed computing oschestration
 
 ## Getting Started with SHADOWFI on a local machine
 
