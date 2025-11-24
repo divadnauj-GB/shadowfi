@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: ubuntu
+From: ubuntu:20.04
 
 %pre
 # Before install (host)
@@ -74,8 +74,31 @@ echo "conda activate SHADOWFI" >> $SINGULARITY_ENVIRONMENT
 #!/bin/bash
 
 # Script to run when executing environment  
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      echo "run shadowfi script"
+      GUI="h"
+      break
+      ;;
+    -gui)
+      GUI="1"
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
-python shadowfi_shell.py "$@"
+if [ "$GUI" = "1" ]; then
+  python shadowfi_gui.py
+elif [[ "$GUI" = "h" ]]; then
+    echo "exit"
+else
+  python shadowfi_shell.py "$@"
+fi
+
 
 %startscript
 # Script to run when executing as instance

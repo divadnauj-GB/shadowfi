@@ -6,3 +6,4 @@ memory_profiler
 ipyparallel
 asyncssh
 matplotlib
+nicegui
