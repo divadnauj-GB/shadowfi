@@ -264,6 +264,7 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
     #MAX_TB_RUN_TIME = testbench_config.get('sim_runtime', 1000)
     FAULT_MODEL = sbtr_config.get('fault_model', 'S@')
     FI_DESIGN_PATH = sbtr_config.get('sbtr_dir','')
+    seu_time_window = sbtr_config.get('time_window', 0)
 
     if FAULT_MODEL in ["S@", "SET"]:
         TYPE_SABOTEUR = "SABOTUER"
@@ -291,7 +292,7 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
             end_bit_pos = (start_bit_pos + faults_per_module[TOP] + 2) 
             for fault_index in range(faults_per_module[TOP]):
                 for ftype in F_CNTRL:
-                    seutime = 0
+                    seutime = randint(1, seu_time_window) if ftype == 2 else seu_time_window
                     List_injections.append([0, TOP, TOP, start_bit_pos, end_bit_pos, fault_index, ftype, seutime])
                     fp.write(f"{0},{TOP},{TOP},{start_bit_pos},{end_bit_pos},{fault_index},{ftype},{seutime}\n")
             start_bit_pos = start_bit_pos + faults_per_module[TOP] + 2
@@ -300,7 +301,7 @@ def fault_list_generation(config, fi_infrastructure_system, faults_per_module):
                 end_bit_pos = (start_bit_pos + faults_per_module[module] + 2) 
                 for fault_index in range(faults_per_module[module]):
                     for ftype in F_CNTRL:
-                        seutime = 0
+                        seutime = randint(1, seu_time_window) if ftype == 2 else seu_time_window
                         List_injections.append([idx, inst, module, start_bit_pos, end_bit_pos, fault_index, ftype, seutime])
                         fp.write(f"{idx},{inst},{module},{start_bit_pos},{end_bit_pos},{fault_index},{ftype},{seutime}\n")
                 start_bit_pos = start_bit_pos + faults_per_module[module] + 2
@@ -317,8 +318,9 @@ def run_pnr(config,args=None):
     config['project']['sbtr_config']['component_selection']['mode']= args.cmp_sel
     config['project']['sbtr_config']['fault_model'] = args.fault_model
     config['project']['sbtr_config']['fault_sampling'] = args.fault_sampling
-    logging.info(f"Component selection: {args.cmp_sel}, Fault model: {args.fault_model}, Fault sampling: {args.fault_sampling}")
-
+    config['project']['sbtr_config']['time_window'] = int(args.time_window)
+    logging.info(f"Component selection: {args.cmp_sel}, Fault model: {args.fault_model}, Fault sampling: {args.fault_sampling}, Time window: {args.time_window} cycles")
+    
     if args.cmp_sel=='hierarchy':
         if args.user_cmp_sel:
             components_config = args.user_cmp_sel

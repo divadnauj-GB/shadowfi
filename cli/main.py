@@ -31,7 +31,7 @@ def cli_entry(current_project=None):
     pnr_parser.add_argument('--fault-sampling', default='Full', choices=['Full', 'Statistical'], help='Fault sampling strategy') 
     pnr_parser.add_argument('--user-cmp-sel', default=None, help="components selection") 
     pnr_parser.add_argument('--max-sel-cmp', default=4, help="Maximum Number of selected components") 
-
+    pnr_parser.add_argument('--time-window', default=0, help="The time window for injecting faults, in number of cycles, default 0 means S@ faults") 
 
     tb_setup_parser = subparsers.add_parser('tb_setup')
     tb_setup_parser.add_argument('--tb-config', default=None, help='Path to the testbench configuration file')

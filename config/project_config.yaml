@@ -69,6 +69,7 @@ project:
       target_modules: 
     fault_model: S@
     max_num_faults: -1
+    time_window: 0 # time window for injecting faults, in number of cycles, default 0 means S@ faults
   emu_config:
     engines: 1
     target_nodes: #<List of target nodes>
