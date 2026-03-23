@@ -3,7 +3,7 @@ import tcu_hw
 
 
 class TensorBackend:
-    def __init__(self, bitwidth=8, format="float", tile_latency=30, persistent_core=True):
+    def __init__(self, bitwidth=8, format="float", tile_latency=12, persistent_core=True):
         self.bitwidth = bitwidth
         self.format = format
         self.tile_latency = tile_latency

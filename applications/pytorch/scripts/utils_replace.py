@@ -70,6 +70,7 @@ def replace_fp32_layers_with_rtl(
                 backend,
                 replaced,
                 prefix=f"{full_name}.",
+                format=format
             )
     return replaced
 
