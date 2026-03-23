@@ -1,7 +1,7 @@
 import logging
 from pytorch.models import LeNet, VGG11
 
-logger = logging.getLogger("qtorchlab")
+logger = logging.getLogger("shadowfi")
 
 
 def get_model(name: str, **kwargs):

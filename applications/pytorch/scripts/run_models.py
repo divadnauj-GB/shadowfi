@@ -17,7 +17,7 @@ def main(config):
     log_file = config.logging.get("log_file", None)
     logger = setup_logging(log_file=log_file, level=log_level)
 
-    device = torch.device("cpu")  # INT8 models only run on CPU in PyTorch
+    device = torch.device("cpu")
 
     logger.info(f"Running on {device} device")
 

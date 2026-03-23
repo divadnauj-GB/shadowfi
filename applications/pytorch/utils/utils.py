@@ -5,7 +5,7 @@ from tqdm import (
     tqdm,
 )
 
-logger = logging.getLogger("qtorchlab")
+logger = logging.getLogger("shadowfi")
 
 
 def get_device():

@@ -3,14 +3,14 @@ import sys
 from pathlib import Path
 
 
-def setup_logging(log_file: str = None, level: str = "INFO", name: str = "qtorchlab"):
+def setup_logging(log_file: str = None, level: str = "INFO", name: str = "shadowfi"):
     """
     Sets up a global logger for the project.
 
     Args:
         log_file (str, optional): Path to the log file. If None, no file logging.
         level (str, optional): Logging level (e.g., 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'). Defaults to 'INFO'.
-        name (str, optional): The name of the logger instance. Defaults to 'qtorchlab'.
+        name (str, optional): The name of the logger instance. Defaults to 'shadowfi'.
                               Using a specific name avoids interfering with other libraries' loggers.
 
     Returns:
