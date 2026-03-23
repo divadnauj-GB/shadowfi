@@ -3,7 +3,8 @@
 #include "Vsub_tensor_core.h"
 #include "tcu_utils.hpp"
 
-TcuDriver::TcuDriver(Vsub_tensor_core* dut) : dut_(dut) {}
+TcuDriver::TcuDriver(Vsub_tensor_core* dut, int tile_latency)
+    : dut_(dut), tile_latency_(tile_latency) {}
 
 void TcuDriver::tick() {
     dut_->clk = 0;
@@ -60,4 +61,10 @@ mat4f TcuDriver::read_W() const {
     W[2] = unpack4(dut_->W_2X3);
     W[3] = unpack4(dut_->W_3X3);
     return W;
+}
+
+mat4f TcuDriver::run_tile(const mat4f& A, const mat4f& B, const mat4f& C) {
+    load_inputs(A, B, C);
+    tick(tile_latency_);
+    return read_W();
 }
