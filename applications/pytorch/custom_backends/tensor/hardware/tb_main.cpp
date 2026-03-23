@@ -6,6 +6,7 @@
 #include "tcu_reference.hpp"
 #include "tcu_tiled.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -40,15 +41,25 @@ int main(int argc, char** argv) {
 
     driver.reset(4);
 
-    Matrixf A(8, 8, 0.0f);
-    Matrixf B(8, 8, 0.0f);
-    Matrixf C(8, 8, 0.0f);
+    Matrixf A(5, 7, 0.0f);
+    Matrixf B(7, 6, 0.0f);
+    Matrixf C(5, 6, 0.0f);
 
-    for (std::size_t i = 0; i < 8; ++i) {
-        for (std::size_t j = 0; j < 8; ++j) {
-            A(i, j) = 0.1f * static_cast<float>(i + 1) + static_cast<float>(j);
-            B(i, j) = 0.2f * static_cast<float>(j + 1) - 0.05f * static_cast<float>(i);
-            C(i, j) = (i == j) ? 1.0f : 0.25f;
+    for (std::size_t i = 0; i < A.rows(); ++i) {
+        for (std::size_t j = 0; j < A.cols(); ++j) {
+            A(i, j) = 0.1f * static_cast<float>(i + 1) + 0.3f * static_cast<float>(j + 1);
+        }
+    }
+
+    for (std::size_t i = 0; i < B.rows(); ++i) {
+        for (std::size_t j = 0; j < B.cols(); ++j) {
+            B(i, j) = 0.2f * static_cast<float>(j + 1) - 0.05f * static_cast<float>(i + 1);
+        }
+    }
+
+    for (std::size_t i = 0; i < C.rows(); ++i) {
+        for (std::size_t j = 0; j < C.cols(); ++j) {
+            C(i, j) = ((i + j) % 3 == 0) ? 1.0f : 0.25f;
         }
     }
 

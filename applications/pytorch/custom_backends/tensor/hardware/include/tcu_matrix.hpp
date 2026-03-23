@@ -14,6 +14,8 @@ public:
     std::size_t rows() const { return rows_; }
     std::size_t cols() const { return cols_; }
 
+    bool empty() const { return rows_ == 0 || cols_ == 0; }
+
     float& operator()(std::size_t r, std::size_t c) {
         return data_.at(r * cols_ + c);
     }
