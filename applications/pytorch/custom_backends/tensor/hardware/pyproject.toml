@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "pybind11>=3.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tcu-hw"
+version = "0.1.0"
+description = "Pybind11 wrapper for Verilated tiled tensor core hardware"
+requires-python = ">=3.9"
+dependencies = ["numpy"]

@@ -1,37 +1,33 @@
-TOP       := sub_tensor_core
-RTL       := TCU_core.v
-OBJDIR    := obj_dir
-BIN       := sim_$(TOP)
-ROOT      := $(CURDIR)
+PYTHON ?= python
 
-VERILATOR ?= verilator
-CXXFLAGS  := -O2 -std=c++17 -I$(ROOT)/include
+VERILATOR_BIN  := $(shell which verilator 2>/dev/null)
+VERILATOR_ROOT := $(shell $(PYTHON) -c 'import pathlib; p = pathlib.Path("$(VERILATOR_BIN)").resolve(); print((p.parent.parent / "share" / "verilator").as_posix())' 2>/dev/null)
 
-TB_SRCS := \
-	tb_main.cpp \
-	src/tcu_utils.cpp \
-	src/tcu_reference.cpp \
-	src/tcu_driver.cpp \
-	src/tcu_tiled.cpp
+check-verilator:
+	@if [ -z "$(VERILATOR_BIN)" ]; then \
+		echo "Error: verilator is not in PATH"; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(VERILATOR_ROOT)/include/verilated.h" ]; then \
+		echo "Error: detected VERILATOR_ROOT is invalid: $(VERILATOR_ROOT)"; \
+		exit 1; \
+	fi
+	@echo "Using verilator: $(VERILATOR_BIN)"
+	@echo "Detected VERILATOR_ROOT: $(VERILATOR_ROOT)"
 
-all: build
+pybind-install: check-verilator
+	$(PYTHON) -m pip install -U pip
+	VERILATOR_ROOT=$(VERILATOR_ROOT) $(PYTHON) -m pip install -e .
 
-build:
-	$(VERILATOR) \
-		--cc $(RTL) \
-		--top-module $(TOP) \
-		--exe $(TB_SRCS) \
-		--build \
-		-Wno-fatal \
-		-Wno-WIDTHTRUNC \
-		-Wno-CASEOVERLAP \
-		-CFLAGS "$(CXXFLAGS)" \
-		-o $(BIN)
+pyext: check-verilator
+	$(PYTHON) -m pip install -U pip
+	VERILATOR_ROOT=$(VERILATOR_ROOT) $(PYTHON) -m pip install -e .
 
-run: build
-	./$(OBJDIR)/$(BIN)
+test-python: check-verilator
+	VERILATOR_ROOT=$(VERILATOR_ROOT) $(PYTHON) -c "import tcu_hw; print(tcu_hw.__doc__)"
 
 clean:
-	rm -rf $(OBJDIR) *.vcd
+	rm -rf build dist *.egg-info obj_dir *.so *.dylib
+	find . -type d -name '__pycache__' -prune -exec rm -rf {} +
 
-.PHONY: all build run clean
+.PHONY: check-verilator pybind-install pyext test-python clean

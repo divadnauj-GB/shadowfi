@@ -84,3 +84,5 @@ __pycache__
 /applications/datasets
 /applications/logs
 **pretrained/
+**.egg-info/
+**.so
