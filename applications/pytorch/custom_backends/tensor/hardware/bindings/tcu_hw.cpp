@@ -70,7 +70,7 @@ void validate_shapes(const Matrixf& A, const Matrixf& B, const Matrixf& C) {
 
 class TcuHardware {
 public:
-    explicit TcuHardware(int tile_latency = 30)
+    explicit TcuHardware(int tile_latency = 12)
         : dut_(std::make_unique<Vsub_tensor_core>()),
           driver_(dut_.get(), tile_latency) {
         driver_.reset(4);
@@ -128,7 +128,7 @@ py::array_t<float> matmul_hw_py(
     const py::array_t<float, py::array::c_style | py::array::forcecast>& A_in,
     const py::array_t<float, py::array::c_style | py::array::forcecast>& B_in,
     const py::array_t<float, py::array::c_style | py::array::forcecast>& C_in,
-    int tile_latency = 30
+    int tile_latency = 12
 ) {
     TcuHardware hw(tile_latency);
     return hw.matmul(A_in, B_in, C_in);
@@ -145,11 +145,11 @@ PYBIND11_MODULE(tcu_hw, m) {
 
     m.def("matmul_hw", &matmul_hw_py,
           py::arg("A"), py::arg("B"), py::arg("C"),
-          py::arg("tile_latency") = 30,
+          py::arg("tile_latency") = 12,
           "Hardware tiled matmul: A @ B + C");
 
     py::class_<TcuHardware>(m, "TcuHardware")
-        .def(py::init<int>(), py::arg("tile_latency") = 30)
+        .def(py::init<int>(), py::arg("tile_latency") = 12)
         .def("matmul", &TcuHardware::matmul,
              py::arg("A"), py::arg("B"), py::arg("C"))
         .def_property("tile_latency",

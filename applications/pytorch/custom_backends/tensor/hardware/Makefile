@@ -28,6 +28,7 @@ test-python: check-verilator
 
 clean:
 	rm -rf build dist *.egg-info obj_dir *.so *.dylib
+	rm -rf src/*.egg-info src/*.so
 	find . -type d -name '__pycache__' -prune -exec rm -rf {} +
 
 .PHONY: check-verilator pybind-install pyext test-python clean

@@ -42,10 +42,15 @@ void TcuDriver::load_B(const mat4f& B) {
 }
 
 void TcuDriver::load_C(const mat4f& C) {
-    pack4(dut_->C_0X, C[0]);
-    pack4(dut_->C_1X, C[1]);
-    pack4(dut_->C_2X, C[2]);
-    pack4(dut_->C_3X, C[3]);
+    vec4f c0 = {C[0][0], C[1][0], C[2][0], C[3][0]};
+    vec4f c1 = {C[0][1], C[1][1], C[2][1], C[3][1]};
+    vec4f c2 = {C[0][2], C[1][2], C[2][2], C[3][2]};
+    vec4f c3 = {C[0][3], C[1][3], C[2][3], C[3][3]};
+
+    pack4(dut_->C_0X, c0);
+    pack4(dut_->C_1X, c1);
+    pack4(dut_->C_2X, c2);
+    pack4(dut_->C_3X, c3);
 }
 
 void TcuDriver::load_inputs(const mat4f& A, const mat4f& B, const mat4f& C) {
