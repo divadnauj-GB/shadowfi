@@ -10,9 +10,10 @@ dataset:
 training:
   batch_size_train: 100
   batch_size_test: 1000
-  epochs: 5
-  lr: 0.001
-
+  num_workers_train: 4
+  num_workers_test: 0
+  pin_memory: false
+  persistent_workers: false
 paths:
   dataset_root: datasets
   model_fp32: pytorch/models/lenet/pretrained/lenet_fp32.pth

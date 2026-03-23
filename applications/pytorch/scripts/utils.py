@@ -37,10 +37,12 @@ def get_test_loader(main_config, dataset_config, training_config):
         test_resize=dataset_config.get("test_resize"),
         test_center_crop=dataset_config.get("test_center_crop"),
         train_random_resized_crop=dataset_config.get("train_random_resized_crop"),
-        train_horizontal_flip_prob=dataset_config.get(
-            "train_horizontal_flip_prob", 0.0
-        ),
+        train_horizontal_flip_prob=dataset_config.get("train_horizontal_flip_prob", 0.0),
         max_test_samples=dataset_config.get("max_test_samples", None),
+        num_workers_train=training_config.get("num_workers_train", 4),
+        num_workers_test=training_config.get("num_workers_test", 0),
+        pin_memory=training_config.get("pin_memory", False),
+        persistent_workers=training_config.get("persistent_workers", False),
     )
     _, test_loader = data_loader.get_loaders()
 

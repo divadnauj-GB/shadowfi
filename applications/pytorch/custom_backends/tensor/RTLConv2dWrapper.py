@@ -29,7 +29,49 @@ class RTLConv2dWrapper(nn.Module):
         self.layer_name = layer_name
         self.backend = TensorBackend(bitwidth, format)
 
+        # Static weight layout for GEMM path
+        self._weight_2d_torch = self.weight.view(self.weight.size(0), -1).t().contiguous()
+        self.out_channels = self.weight.size(0)
+
+        # Float caches
+        self._weight_np = None
+        self._bias_np = None
+
+        # Int caches
+        self._weight_q_np = None
+        self._weight_scale = None
+        self._bias_q_np = None
+
+        self._build_caches()
+
+    def _build_caches(self):
+        if self.format == "float":
+            self._weight_np = self._weight_2d_torch.detach().cpu().numpy().astype(np.float32)
+            self._bias_np = (
+                self.bias.detach().cpu().numpy().astype(np.float32)
+                if self.bias is not None
+                else None
+            )
+
+        elif self.format == "int":
+            weight_q, weight_scale = quantize_tensor(
+                self._weight_2d_torch,
+                self.bitwidth,
+                dtype=torch.int32,
+            )
+            self._weight_q_np = weight_q.detach().cpu().numpy().astype(np.int32)
+            self._weight_scale = float(weight_scale)
+
+            if self.bias is not None:
+                bias_q = quantize_bias(self.bias, 1.0, self._weight_scale)
+                self._bias_q_np = bias_q.detach().cpu().numpy().astype(np.int32)
+            else:
+                self._bias_q_np = None
+
     def forward(self, x):
+        if x.device.type != "cpu":
+            x = x.cpu()
+
         B, C, H, W = x.shape
         KH, KW = self.kernel_size
         out_h = (H + 2 * self.padding[0] - KH) // self.stride[0] + 1
@@ -42,56 +84,52 @@ class RTLConv2dWrapper(nn.Module):
             padding=self.padding,
         )  # (B, C*KH*KW, L)
 
-        x_unf = x_unf.transpose(1, 2).contiguous()  # (B, L, C*KH*KW)
-        w = self.weight.view(self.weight.size(0), -1).t().contiguous()  # (C*KH*KW, out_channels)
+        x_unf = x_unf.transpose(1, 2).contiguous()  # (B, L, K)
+        Bsz, L, Kdim = x_unf.shape
 
-        outputs = []
+        if self.format == "float":
+            A_np = x_unf.reshape(Bsz * L, Kdim).detach().cpu().numpy().astype(np.float32)
+            B_np = self._weight_np
 
-        for b in range(B):
-            if self.format == "int":
-                # Quantize activations and weights
-                A_q, A_scale = quantize_tensor(x_unf[b], self.bitwidth, dtype=torch.int32)
-                B_q, B_scale = quantize_tensor(w, self.bitwidth, dtype=torch.int32)
-
-                # Quantize bias to accumulator scale
-                if self.bias is not None:
-                    bias_q = quantize_bias(self.bias, A_scale, B_scale)
-                    C_q = bias_q.unsqueeze(0).repeat(A_q.shape[0], 1)
-                else:
-                    C_q = torch.zeros(
-                        (A_q.shape[0], w.shape[1]),
-                        dtype=torch.int32,
-                        device=A_q.device,
-                    )
-
-                A_np = A_q.detach().cpu().numpy().astype(np.int32)
-                B_np = B_q.detach().cpu().numpy().astype(np.int32)
-                C_np = C_q.detach().cpu().numpy().astype(np.int32)
-
-                # Integer backend computes: A_q @ B_q + C_q
-                D_q_np = self.backend.matmul(A_np, B_np, C_np)
-
-                # Dequantize
-                D = torch.from_numpy(D_q_np).to(x.device).float() * (A_scale * B_scale)
-
+            if self._bias_np is not None:
+                C_np = np.broadcast_to(self._bias_np, (A_np.shape[0], self.out_channels)).copy()
             else:
-                A_np = x_unf[b].detach().cpu().numpy().astype(np.float32)
-                B_np = w.detach().cpu().numpy().astype(np.float32)
+                C_np = np.zeros((A_np.shape[0], self.out_channels), dtype=np.float32)
 
-                if self.bias is not None:
-                    bias_np = self.bias.detach().cpu().numpy().astype(np.float32)
-                    C_np = np.tile(bias_np, (A_np.shape[0], 1))
-                else:
-                    C_np = np.zeros((A_np.shape[0], w.shape[1]), dtype=np.float32)
+            D_np = self.backend.matmul(A_np, B_np, C_np)
+            D = torch.from_numpy(D_np).float().reshape(Bsz, L, self.out_channels)
 
-                D_np = self.backend.matmul(A_np, B_np, C_np)
-                D = torch.from_numpy(D_np).to(x.device).float()
+        elif self.format == "int":
+            x_2d = x_unf.reshape(Bsz * L, Kdim)
 
-            outputs.append(D)
+            A_q, A_scale = quantize_tensor(x_2d, self.bitwidth, dtype=torch.int32)
+
+            # Cached quantized weights
+            B_np = self._weight_q_np
+            B_scale = self._weight_scale
+
+            if self.bias is not None:
+                bias_q = quantize_bias(self.bias, A_scale, B_scale)
+                C_q = bias_q.unsqueeze(0).repeat(A_q.shape[0], 1)
+            else:
+                C_q = torch.zeros(
+                    (A_q.shape[0], self.out_channels),
+                    dtype=torch.int32,
+                    device=A_q.device,
+                )
+
+            A_np = A_q.detach().cpu().numpy().astype(np.int32)
+            C_np = C_q.detach().cpu().numpy().astype(np.int32)
+
+            D_q_np = self.backend.matmul(A_np, B_np, C_np)
+            D = torch.from_numpy(D_q_np).float() * (A_scale * B_scale)
+            D = D.reshape(Bsz, L, self.out_channels)
+
+        else:
+            raise ValueError(f"Unsupported format: {self.format}")
 
         return (
-            torch.stack(outputs)
-            .permute(0, 2, 1)
+            D.permute(0, 2, 1)
             .contiguous()
-            .view(B, self.weight.size(0), out_h, out_w)
+            .view(Bsz, self.out_channels, out_h, out_w)
         )

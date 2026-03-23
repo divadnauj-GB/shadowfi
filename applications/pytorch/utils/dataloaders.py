@@ -67,6 +67,10 @@ class DatasetLoader:
         train_random_resized_crop: int = None,
         train_horizontal_flip_prob: float = 0.5,
         max_test_samples: int = None,
+        num_workers_train: int | None = None,
+        num_workers_test: int | None = 0,
+        pin_memory: bool = False,
+        persistent_workers: bool = False,
     ):
         self.dataset_name = dataset_name.lower()
         self.dataset_root = Path(dataset_root)
@@ -74,6 +78,7 @@ class DatasetLoader:
         self.batch_size_test = batch_size_test
         self.download = download
         self.normalize = normalize
+        self.max_test_samples = max_test_samples
 
         if self.dataset_name not in self._DATASET_INFO:
             raise ValueError(
@@ -87,7 +92,19 @@ class DatasetLoader:
         self.num_classes = self.dataset_info["num_classes"]
         self.input_channels = self.dataset_info["input_channels"]
         self.image_size = self.dataset_info["image_size"]
-        self.max_test_samples = max_test_samples
+
+        if num_workers_train is None:
+            self.num_workers_train = 4
+        else:
+            self.num_workers_train = num_workers_train
+
+        if num_workers_test is None:
+            self.num_workers_test = 0
+        else:
+            self.num_workers_test = num_workers_test
+
+        self.pin_memory = pin_memory
+        self.persistent_workers = persistent_workers
 
         self.train_transform = self._get_transforms(
             is_train=True,
@@ -107,6 +124,13 @@ class DatasetLoader:
             f"with root '{self.dataset_root}'. "
             f"Input channels: {self.input_channels}, Num classes: {self.num_classes}."
         )
+        logger.info(
+            f"Loader settings -> "
+            f"train_workers: {self.num_workers_train}, "
+            f"test_workers: {self.num_workers_test}, "
+            f"pin_memory: {self.pin_memory}, "
+            f"persistent_workers: {self.persistent_workers}"
+        )
 
     def _get_transforms(
         self,
@@ -123,6 +147,7 @@ class DatasetLoader:
                 transform_list.append(transforms.RandomResizedCrop(random_resized_crop))
             elif resize:
                 transform_list.append(transforms.Resize(resize))
+
             if horizontal_flip_prob > 0:
                 transform_list.append(
                     transforms.RandomHorizontalFlip(horizontal_flip_prob)
@@ -155,6 +180,19 @@ class DatasetLoader:
         logger.debug(f"{'Train' if is_train else 'Test'} Transforms: {transform_list}")
         return transforms.Compose(transform_list)
 
+    def _loader_kwargs(self, is_train: bool) -> dict:
+        num_workers = self.num_workers_train if is_train else self.num_workers_test
+
+        kwargs = {
+            "num_workers": num_workers,
+            "pin_memory": self.pin_memory,
+        }
+
+        if num_workers > 0:
+            kwargs["persistent_workers"] = self.persistent_workers
+
+        return kwargs
+
     def get_loaders(self):
         try:
             train_dataset = self.dataset_class(
@@ -163,16 +201,17 @@ class DatasetLoader:
                 transform=self.train_transform,
                 download=self.download,
             )
+
             train_loader = DataLoader(
                 train_dataset,
                 batch_size=self.batch_size_train,
                 shuffle=True,
-                num_workers=(
-                    torch.cuda.device_count() * 4 if torch.cuda.is_available() else 4
-                ),
+                **self._loader_kwargs(is_train=True),
             )
+
             logger.info(
-                f"Train loader created for {self.dataset_name}. Samples: {len(train_dataset)}, Batches: {len(train_loader)}"
+                f"Train loader created for {self.dataset_name}. "
+                f"Samples: {len(train_dataset)}, Batches: {len(train_loader)}"
             )
 
             test_dataset_full = self.dataset_class(
@@ -184,14 +223,14 @@ class DatasetLoader:
 
             if self.max_test_samples is not None and self.max_test_samples > 0:
                 if self.max_test_samples < len(test_dataset_full):
-                    # Crear un subconjunto de test_dataset
                     indices = list(range(self.max_test_samples))
                     test_dataset = Subset(test_dataset_full, indices)
                     logger.info(f"Limiting test set to {len(test_dataset)} samples.")
                 else:
                     test_dataset = test_dataset_full
                     logger.info(
-                        f"max_test_samples ({self.max_test_samples}) is greater than or equal to total test samples ({len(test_dataset_full)}). Using full test set."
+                        f"max_test_samples ({self.max_test_samples}) is greater than or equal to "
+                        f"total test samples ({len(test_dataset_full)}). Using full test set."
                     )
             else:
                 test_dataset = test_dataset_full
@@ -200,12 +239,12 @@ class DatasetLoader:
                 test_dataset,
                 batch_size=self.batch_size_test,
                 shuffle=False,
-                num_workers=(
-                    torch.cuda.device_count() * 4 if torch.cuda.is_available() else 4
-                ),
+                **self._loader_kwargs(is_train=False),
             )
+
             logger.info(
-                f"Test loader created for {self.dataset_name}. Samples: {len(test_dataset)}, Batches: {len(test_loader)}"
+                f"Test loader created for {self.dataset_name}. "
+                f"Samples: {len(test_dataset)}, Batches: {len(test_loader)}"
             )
 
         except Exception as e:

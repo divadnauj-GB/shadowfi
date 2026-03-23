@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
-import argparse
+import argparse, torch
 from omegaconf import OmegaConf
 
 from pytorch.utils.logging_config import setup_logging
@@ -18,15 +18,13 @@ from utils import (
 from utils_replace import replace_fp32_layers_with_rtl
 
 
-def run_evaluation(config, logger, use_wrappers=True):
-    device = get_device()
-    logger.info(f"Using device: {device}")
-
-    test_loader, num_classes, in_chans, img_size = get_test_loader(
-        config,
-        config.dataset,
-        config.training,
-    )
+def run_evaluation(config, logger, test_loader, num_classes, in_chans, img_size, use_wrappers=True):
+    if use_wrappers:
+        device = torch.device("cpu")
+        logger.info("Using CPU for wrapped model to avoid MPS<->CPU transfer overhead.")
+    else:
+        device = get_device()
+        logger.info(f"Using device: {device}")
 
     if use_wrappers:
         logger.info("🧠 Loading FP32 model and applying RTL wrappers...")
@@ -77,8 +75,14 @@ def main(config):
         level=config.logging.get("level", "INFO"),
     )
 
-    acc_baseline = run_evaluation(config, logger, use_wrappers=False)
-    acc_wrapped = run_evaluation(config, logger, use_wrappers=True)
+    test_loader, num_classes, in_chans, img_size = get_test_loader(
+        config,
+        config.dataset,
+        config.training,
+    )
+
+    acc_baseline = run_evaluation(config, logger, test_loader, num_classes, in_chans, img_size, use_wrappers=False)
+    acc_wrapped = run_evaluation(config, logger, test_loader, num_classes, in_chans, img_size, use_wrappers=True)
 
     logger.info(f"✅ Baseline Accuracy: {acc_baseline:.2f}%")
     logger.info(f"✅ RTL Accuracy: {acc_wrapped:.2f}%")

@@ -52,10 +52,10 @@ def evaluate_model(model, device, test_loader, desc="Test"):
 
     acc = 100.0 * correct / total
 
-    logger.info(f"📊 {desc} Accuracy: {acc:.2f}% (Correct: {correct}/{total})")
-    logger.info(f"⏱️ {desc} Total inference time: {total_time:.4f} seconds")
-    logger.info(f"⏱️ {desc} Avg batch time: {total_time / len(test_loader):.6f} seconds")
-    logger.info(f"⏱️ {desc} Min batch time: {min(batch_times):.6f} seconds")
-    logger.info(f"⏱️ {desc} Max batch time: {max(batch_times):.6f} seconds")
+    forward_time = sum(batch_times)
+
+    logger.info(f"⏱️ {desc} Total loop time: {total_time:.4f} seconds")
+    logger.info(f"⏱️ {desc} Pure forward time: {forward_time:.4f} seconds")
+    logger.info(f"⏱️ {desc} Avg batch forward time: {forward_time / len(batch_times):.6f} seconds")
 
     return acc

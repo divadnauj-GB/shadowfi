@@ -5,13 +5,15 @@ model:
 dataset:
   name: mnist
   normalize: True
-  max_test_samples: 1000
+  max_test_samples: 100
 
 training:
   batch_size_train: 100
-  batch_size_test: 1000
-  epochs: 10
-  lr: 0.001
+  batch_size_test: 10
+  num_workers_train: 4
+  num_workers_test: 0
+  pin_memory: false
+  persistent_workers: false
 
 paths:
   dataset_root: datasets
@@ -27,4 +29,4 @@ backend:
   name: tensor
   bitwidth: 8
   format: "float"
-  backend_layers: ["conv2d", "linear"]
+  backend_layers: ["conv2d"]

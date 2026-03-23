@@ -163,7 +163,7 @@ def replace_layers_by_id(
                         backend=backend,
                         bitwidth=num_bits,
                         layer_name=full_name,
-                        format=format,
+                        format=format
                     )
                     model._modules[child_name] = wrapped
                     replaced.append(full_name)
@@ -181,6 +181,7 @@ def replace_layers_by_id(
                 replaced,
                 prefix=f"{full_name}.",
                 current_id=current_id,
+                format=format
             )
 
     return current_id
