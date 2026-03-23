@@ -1,11 +1,16 @@
 TOP       := sub_tensor_core
 RTL       := TCU_core.v
-TB        := tb_sub_tensor_core.cpp
 OBJDIR    := obj_dir
 BIN       := sim_$(TOP)
 
 VERILATOR ?= verilator
-CXXFLAGS  := -O2 -std=c++17
+CXXFLAGS  := -O2 -std=c++17 -I../include
+
+TB_SRCS := \
+	tb_main.cpp \
+	src/tcu_utils.cpp \
+	src/tcu_reference.cpp \
+	src/tcu_driver.cpp
 
 all: build
 
@@ -13,7 +18,7 @@ build:
 	$(VERILATOR) \
 		--cc $(RTL) \
 		--top-module $(TOP) \
-		--exe $(TB) \
+		--exe $(TB_SRCS) \
 		--build \
 		-Wno-fatal \
 		-Wno-WIDTHTRUNC \
