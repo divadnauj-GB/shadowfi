@@ -79,3 +79,8 @@ obj_dir
 
 __pycache__
 .vscode
+
+# Applciations
+/applications/datasets
+/applications/logs
+**pretrained/

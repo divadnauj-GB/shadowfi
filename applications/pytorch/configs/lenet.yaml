@@ -1,0 +1,29 @@
+model:
+  name: lenet
+  num_classes: 10
+
+dataset:
+  name: mnist
+  normalize: True
+  max_test_samples: 1000
+
+training:
+  batch_size_train: 100
+  batch_size_test: 1000
+  epochs: 5
+  lr: 0.001
+
+paths:
+  dataset_root: datasets
+  model_fp32: pytorch/models/lenet/pretrained/lenet_fp32.pth
+  model_int8: pytorch/models/lenet/pretrained/lenet_int8.pth
+  output_dir: pytorch/models/lenet/pretrained/profiles
+
+logging:
+  level: INFO
+  log_file: logs/lenet.log
+
+backend:
+  name: tensor
+  bitwidth: 8
+  backend_layers: ["conv2d", "linear"]
