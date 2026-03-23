@@ -26,4 +26,5 @@ logging:
 backend:
   name: tensor
   bitwidth: 8
+  format: "float"
   backend_layers: ["conv2d", "linear"]
