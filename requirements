@@ -1,9 +1,23 @@
 pyyaml
-omegaconf
 numpy == 2.1.3
 pillow == 11.0.0
 memory_profiler
 ipyparallel
 asyncssh
-matplotlib
 nicegui
+
+# Core ML and data
+torch==2.7.1
+torchvision==0.22.1
+torchao==0.11.0
+omegaconf==2.3.0
+matplotlib==3.10.0
+seaborn
+scipy
+tqdm
+pyyaml
+
+# Logging & visualization
+loguru
+rich
+tensorboard
