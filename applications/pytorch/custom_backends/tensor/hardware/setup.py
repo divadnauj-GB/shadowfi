@@ -62,6 +62,10 @@ class VerilatedBuildExt(build_ext):
             TOP,
             "--Mdir",
             str(OBJDIR),
+            "-O3",
+            "--x-assign", "fast",
+            "--x-initial", "fast",
+            "--no-assert",
             "-Wno-fatal",
             "-Wno-WIDTHTRUNC",
             "-Wno-CASEOVERLAP",
@@ -106,7 +110,15 @@ ext_modules = [
             "src/tcu_tiled.cpp",
         ],
         include_dirs=[],
-        extra_compile_args=["-O3", "-std=c++17"],
+        extra_compile_args=[
+            "-O3",
+            "-std=c++17",
+            "-march=native",
+            "-flto",
+        ],
+        extra_link_args=[
+            "-flto",
+        ],
         cxx_std=17,
     )
 ]
