@@ -1,5 +1,5 @@
 model:
-  name: lenet
+  name: alexnet
   num_classes: 10
 
 dataset:
@@ -14,18 +14,18 @@ training:
   num_workers_test: 0
   pin_memory: false
   persistent_workers: false
-  epochs: 5
+  epochs: 10
   lr: 0.001
 
 paths:
   dataset_root: datasets
-  model_fp32: pytorch/models/lenet/pretrained/lenet_fp32.pth
-  model_int8: pytorch/models/lenet/pretrained/lenet_int8.pth
-  output_dir: pytorch/models/lenet/pretrained/profiles
+  model_fp32: pytorch/models/alexnet/pretrained/alexnet_fp32.pth
+  model_int8: pytorch/models/alexnet/pretrained/alexnet_int8.pth
+  output_dir: pytorch/models/alexnet/pretrained/profiles
 
 logging:
   level: INFO
-  log_file: logs/lenet.log
+  log_file: logs/alexnet.log
 
 backend:
   name: tensor

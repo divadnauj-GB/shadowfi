@@ -1,5 +1,5 @@
 import logging
-from pytorch.models import LeNet, VGG11
+from pytorch.models import AlexNet, LeNet, VGG11
 
 logger = logging.getLogger("shadowfi")
 
@@ -16,6 +16,9 @@ def get_model(name: str, **kwargs):
     elif model_name_lower == "vgg11":
         # Pass in_channels to VGG11
         return VGG11(**kwargs)
+    elif model_name_lower == "alexnet":
+        # Pass in_channels to AlexNet
+        return AlexNet(**kwargs)
     else:
         logger.error(
             f"❌ Unknown model: '{name}'. Available models: alexnet, lenet, vgg11, ResNet18, vit_tiny."

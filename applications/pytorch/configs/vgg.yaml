@@ -14,6 +14,8 @@ training:
   num_workers_test: 0
   pin_memory: false
   persistent_workers: false
+  epochs: 5
+  lr: 0.001
 
 paths:
   dataset_root: datasets
