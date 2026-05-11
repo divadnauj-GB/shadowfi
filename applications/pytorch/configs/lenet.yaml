@@ -32,3 +32,11 @@ backend:
   bitwidth: 8
   format: "float"
   backend_layers: ["conv2d", "linear"]
+
+fault_injection:
+  enabled: true
+  mode: STUCK_AT_1
+  # target_nodes_range: [1500, 1531]
+  target_nodes: [1500]
+  fault_cycle: 6
+  sr_length: 1534

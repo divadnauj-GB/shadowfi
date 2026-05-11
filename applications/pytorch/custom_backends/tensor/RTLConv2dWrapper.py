@@ -17,6 +17,8 @@ class RTLConv2dWrapper(nn.Module):
         bitwidth=8,
         format="int",
         layer_name: str | None = None,
+        fault_config=None,
+        sr_length: int = 1534,
     ):
         super().__init__()
         self.stride = conv.stride
@@ -27,7 +29,9 @@ class RTLConv2dWrapper(nn.Module):
         self.bitwidth = bitwidth
         self.format = format
         self.layer_name = layer_name
-        self.backend = TensorBackend(bitwidth, format)
+        self.backend = TensorBackend(bitwidth, format,
+                                     fault_config=fault_config,
+                                     sr_length=sr_length)
 
         # Static weight layout for GEMM path
         self._weight_2d_torch = self.weight.view(self.weight.size(0), -1).t().contiguous()

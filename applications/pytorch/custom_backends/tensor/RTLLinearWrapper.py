@@ -14,6 +14,8 @@ class RTLLinearWrapper(nn.Module):
         bitwidth=8,
         format="int",
         layer_name: str | None = None,
+        fault_config=None,
+        sr_length: int = 1534,
     ):
         super().__init__()
         self.in_features = linear.in_features
@@ -23,7 +25,9 @@ class RTLLinearWrapper(nn.Module):
         self.bitwidth = bitwidth
         self.format = format
         self.layer_name = layer_name
-        self.backend = TensorBackend(bitwidth, format)
+        self.backend = TensorBackend(bitwidth, format,
+                                     fault_config=fault_config,
+                                     sr_length=sr_length)
 
         self._weight_t = self.weight.t().contiguous()
 

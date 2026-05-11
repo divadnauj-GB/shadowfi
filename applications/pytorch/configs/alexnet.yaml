@@ -32,3 +32,10 @@ backend:
   bitwidth: 8
   format: "float"
   backend_layers: ["conv2d", "linear"]
+
+fault_injection:
+  enabled: false
+  mode: STUCK_AT_0            # STUCK_AT_0 | STUCK_AT_1 | BIT_FLIP
+  target_nodes_range: [1500, 1531]  # o target_nodes: [n1, n2, ...]
+  fault_cycle: 6              # solo para BIT_FLIP (rango: 1..tile_latency)
+  sr_length: 1534

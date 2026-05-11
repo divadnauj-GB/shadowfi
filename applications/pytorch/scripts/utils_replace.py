@@ -16,9 +16,19 @@ def replace_fp32_layers_with_rtl(
     replaced=None,
     prefix="",
     format="int",
+    fault_config=None,
+    sr_length: int = 1534,
 ):
     """
     Recursively replace selected FP32 layers with RTL wrappers.
+
+    Parameters
+    ----------
+    fault_config : tcu_hw.FaultConfig | None
+        When set, every replaced layer will inject faults according to this
+        descriptor.  None means golden execution (no fault injection).
+    sr_length : int
+        Shift register length of the FI-instrumented RTL variant.
 
     Returns
     -------
@@ -55,6 +65,8 @@ def replace_fp32_layers_with_rtl(
                     bitwidth=num_bits,
                     layer_name=full_name,
                     format=format,
+                    fault_config=fault_config,
+                    sr_length=sr_length,
                 )
                 model._modules[child_name] = wrapped
                 replaced.append(full_name)
@@ -70,7 +82,9 @@ def replace_fp32_layers_with_rtl(
                 backend,
                 replaced,
                 prefix=f"{full_name}.",
-                format=format
+                format=format,
+                fault_config=fault_config,
+                sr_length=sr_length,
             )
     return replaced
 
