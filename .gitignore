@@ -77,6 +77,11 @@ obj_dir
 //obj_dir
 ///obj_dir
 
+obj_dir_fi
+/obj_dir_fi
+//obj_dir_fi
+///obj_dir_fi
+
 __pycache__
 .vscode
 
